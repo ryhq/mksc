@@ -16,8 +16,9 @@ class AuthenticationServices {
     }
     
     Map<String, dynamic> authenticationCredential = {
-      "Code" : int.parse(codeController.text)
+      "code" : int.parse(codeController.text)
     };
+    debugPrint("Authentication Credential $authenticationCredential");
     final Uri uri = Uri.parse("https://nethub.co.tz/demo/api/v2/auth/user");
     try {
       final http.Response response = await http.post(
@@ -26,10 +27,23 @@ class AuthenticationServices {
         body: json.encode(authenticationCredential),
       );
 
+      debugPrint("Authentication Credential ${json.encode(authenticationCredential)}");
+      debugPrint("Response status code ${response.statusCode}");
+      debugPrint("Response body ${response.body}");
+      debugPrint("Response bodyBytes ${response.bodyBytes}");
+      debugPrint("Response contentLength ${response.contentLength}");
+      debugPrint("Response isRedirect ${response.isRedirect}");
+      debugPrint("Response persistentConnection ${response.persistentConnection}");
+      debugPrint("Response reasonPhrase ${response.reasonPhrase}");
       if (response.statusCode == 200) {
         debugPrint("\n\n\nLogin successful...\n\n\n");
         
+      } else if(response.statusCode == 302 && context.mounted){
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Sorry, The requested resource has been temporarily moved to a new location"))
+        );
       } else {
+        if(!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('An error occurred during login, may be invalid code...')),
         );        

@@ -16,7 +16,7 @@ class MajorCategoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
+      onLongPress: () {
         showAppModalBottomSheet(
           context, 
           [
@@ -36,7 +36,7 @@ class MajorCategoryCard extends StatelessWidget {
           ],
         );
       },
-      onDoubleTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => InputDataPage(categoryTitle: title),)),
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => InputDataPage(categoryTitle: title),)),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 7.0, horizontal: 14.0),
         child: Card(

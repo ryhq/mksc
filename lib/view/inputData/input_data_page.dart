@@ -1,9 +1,12 @@
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:loading_indicator/loading_indicator.dart';
 import 'package:mksc/provider/theme_provider.dart';
 import 'package:mksc/services/authentication_services.dart';
 import 'package:mksc/utils/validator_utility.dart';
-import 'package:mksc/widgets/app_circular_progress_indicator.dart';
 import 'package:mksc/widgets/app_text_form_field.dart';
 import 'package:mksc/widgets/button.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +23,15 @@ class _InputDataPageState extends State<InputDataPage> {
   final TextEditingController codeController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _continueClicked = false;
+  IconData networkStatus = Icons.signal_cellular_nodata_sharp;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    checkConnectivity();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -77,13 +89,33 @@ class _InputDataPageState extends State<InputDataPage> {
                 ),
                 const SizedBox(height: 21,),
                 _continueClicked ? 
-                const Center(child: AppCircularProgressIndicator()) : 
+                Center(
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.1,
+                    child: LoadingIndicator(
+                      indicatorType: Indicator.ballPulse,
+                      colors: [
+                        Theme.of(context).colorScheme.primary,
+                        Colors.red,
+                        Colors.green,
+                      ],
+                      backgroundColor: Colors.transparent,
+                      pathBackgroundColor: Colors.transparent,
+                    ),
+                  ),
+                ): 
                 Button(
                   title: "Continue...", 
                   onTap: () => authenticate(),
                 ),
                 const SizedBox(height: 21,),
-                const Center(child: AppCircularProgressIndicator())
+                Center(
+                  child: Icon(
+                    networkStatus,
+                    size:Provider.of<ThemeProvider>(context).fontSize + 84,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                ),
               ],
             ),
           ),
@@ -91,7 +123,65 @@ class _InputDataPageState extends State<InputDataPage> {
       )
     );
   }
-  
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void checkConnectivity() async{
+    List<ConnectivityResult> connectivityResult = await Connectivity().checkConnectivity();
+    
+    // StreamSubscription<List<ConnectivityResult>> subscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) {
+    //   // Received changes in available connectivity types!
+    //   setState(() {
+    //     if (result.contains(ConnectivityResult.none)) {
+    //       networkStatus = Icons.signal_cellular_nodata_sharp;
+    //     } else if (result.contains(ConnectivityResult.bluetooth)) {
+    //       networkStatus = Icons.bluetooth;
+    //     } else if (result.contains(ConnectivityResult.ethernet)) {
+    //       networkStatus = Icons.settings_ethernet;
+    //     } else if (result.contains(ConnectivityResult.mobile)) {
+    //       networkStatus = Icons.signal_cellular_alt;
+    //     } else if (result.contains(ConnectivityResult.vpn)) {
+    //       networkStatus = Icons.vpn_lock;
+    //     } else if (result.contains(ConnectivityResult.wifi)) {
+    //       networkStatus = Icons.wifi;
+    //     }
+    //   });
+    //  });
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) async{
+      connectivityResult = await Connectivity().checkConnectivity();
+
+      if (connectivityResult.contains(ConnectivityResult.none) && context.mounted) {
+        setState(() {
+          networkStatus = Icons.signal_cellular_nodata_sharp;
+        });
+      } else if (connectivityResult.contains(ConnectivityResult.bluetooth) && context.mounted) {
+        setState(() {
+          networkStatus = Icons.bluetooth;
+        });
+      }else if (connectivityResult.contains(ConnectivityResult.ethernet) && context.mounted) {
+        setState(() {
+          networkStatus = Icons.settings_ethernet;
+        });
+      }else if (connectivityResult.contains(ConnectivityResult.mobile) && context.mounted) {
+        setState(() {
+          networkStatus = Icons.signal_cellular_alt;
+        });
+      }else if (connectivityResult.contains(ConnectivityResult.vpn) && context.mounted) {
+        setState(() {
+          networkStatus = Icons.vpn_lock;
+        });
+      }else if (connectivityResult.contains(ConnectivityResult.wifi) && context.mounted) {
+        setState(() {
+          networkStatus = Icons.wifi;
+        });
+      }
+    });
+  }
   void authenticate() async{
     if (_formKey.currentState!.validate()) {
       setState(() {

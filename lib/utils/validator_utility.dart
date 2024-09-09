@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class ValidatorUtility {
   static String? validateRequiredField(String? value, String message) {
     if (value == null || value.isEmpty) {
@@ -19,7 +17,6 @@ class ValidatorUtility {
       r'^[^@]+@[^@]+\.[^@]+',
     );
     if (!emailRegExp.hasMatch(value)) {
-      debugPrint("statement");
       return "Invalid Email";
     }
     return null;

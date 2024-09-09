@@ -66,7 +66,7 @@ class _MKSCHomeState extends State<MKSCHome> {
                         child: SingleChildScrollView(
                           reverse: true,
                           child: Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
+                            padding: const EdgeInsets.all(8.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
