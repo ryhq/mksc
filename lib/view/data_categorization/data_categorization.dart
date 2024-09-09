@@ -5,6 +5,8 @@ import 'package:mksc/provider/theme_provider.dart';
 import 'package:mksc/services/population_data_services.dart';
 import 'package:mksc/view/data_categorization/widget/add_data_to_category.dart';
 import 'package:mksc/view/data_categorization/widget/population_data_widget.dart';
+import 'package:mksc/view/data_categorization/widget/today_uploaded_data.dart';
+import 'package:mksc/widgets/app_text_form_field.dart';
 import 'package:mksc/widgets/ball_pulse_indicator.dart';
 import 'package:mksc/widgets/card_category.dart';
 import 'package:provider/provider.dart';
@@ -18,9 +20,14 @@ class DataCategorization extends StatefulWidget {
 }
 
 class _DataCategorizationState extends State<DataCategorization> {
+
+  TextEditingController dateController = TextEditingController();
+  DateTime dateTime = DateTime.now();
   
   List<PopulationData> populationData = [];
   List<String> selectedCategories = [];
+
+  bool _isLoading = true;
 
   List<PopulationData> get filteredPopulationData {
     if (selectedCategories.isEmpty) {
@@ -109,11 +116,31 @@ class _DataCategorizationState extends State<DataCategorization> {
                 const SizedBox(height: 21,),
                 AddDataToCategory(selectedCategories: selectedCategories, categoryTitle: widget.categoryTitle),
                 const SizedBox(height: 21,),
+                const TodayUploadedData(),
+                const SizedBox(height: 21,),
                 Text(
-                  "Today Uploaded Data",
+                  "Filter by date",
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
-                const BallPulseIndicator(),
+                
+                const SizedBox(height: 21,),
+                
+                GestureDetector(
+                  onTap: () => _selectDateTime(context),
+                  child: AbsorbPointer(
+                    child: AppTextFormField(
+                      hintText: "yyyy-mm-dd", 
+                      iconData: Icons.date_range, 
+                      obscureText: false, 
+                      textInputType: TextInputType.number,
+                      textEditingController: dateController,
+                    ),
+                  ),
+                ),
+                
+                const SizedBox(height: 21,),
+
+                _isLoading ? const Center(child: BallPulseIndicator(),) : 
                 PopulationDataWidget(populationData: populationData, filteredPopulationData: filteredPopulationData),
               ],
             ),
@@ -127,6 +154,22 @@ class _DataCategorizationState extends State<DataCategorization> {
     List<PopulationData> fetchedPopulationData = await PopulationDataServices.fetchPopulationData(context);
     setState(() {
       populationData = fetchedPopulationData;
+      _isLoading = false;
     });
+  }
+
+  Future<void> _selectDateTime(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (pickedDate != null) {
+      setState(() {
+        dateTime = pickedDate;
+        dateController.text = pickedDate.toString().split(' ')[0];
+      });
+    }
   }
 }
