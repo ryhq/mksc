@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:mksc/model/population_data.dart';
 import 'package:mksc/provider/theme_provider.dart';
 import 'package:mksc/services/population_data_services.dart';
+import 'package:mksc/view/data_categorization/widget/add_data_to_category.dart';
+import 'package:mksc/view/data_categorization/widget/population_data_widget.dart';
 import 'package:mksc/widgets/ball_pulse_indicator.dart';
+import 'package:mksc/widgets/card_category.dart';
 import 'package:provider/provider.dart';
 
 class DataCategorization extends StatefulWidget {
@@ -15,7 +18,27 @@ class DataCategorization extends StatefulWidget {
 }
 
 class _DataCategorizationState extends State<DataCategorization> {
+  
   List<PopulationData> populationData = [];
+  List<String> selectedCategories = [];
+
+  List<PopulationData> get filteredPopulationData {
+    if (selectedCategories.isEmpty) {
+      return populationData; 
+    } else {
+      return populationData.where((data) => selectedCategories.contains(data.item)).toList();
+    }
+  }
+
+  void onCategorySelected(String category) {
+    setState(() {
+      if (selectedCategories.contains(category)) {
+        selectedCategories.remove(category);
+      } else {
+        selectedCategories.add(category);
+      }
+    });
+  }
 
   @override
   void initState() {
@@ -74,55 +97,24 @@ class _DataCategorizationState extends State<DataCategorization> {
                   ),
                   itemCount: 4,
                   itemBuilder: (BuildContext context, int index) {
-                    return switch (index) {
-                      0 => const CardCategory(title: "Cock", iconData: Icons.egg),
-                      1 => const CardCategory(title: "Hen", iconData: Icons.egg),
-                      2 => const CardCategory(title: "Chick", iconData: Icons.egg),
-                      3 => const CardCategory(title: "Eggs", iconData: Icons.egg),
-                      int() => throw UnimplementedError(),
-                    };
+                    final categories = ['cock', 'hen', 'chick', 'eggs'];
+                    return CardCategory(
+                      title: categories[index],
+                      iconData: Icons.egg,
+                      isSelected: selectedCategories.contains(categories[index]),
+                      onCategorySelected: onCategorySelected,
+                    );
                   },
                 ),
+                const SizedBox(height: 21,),
+                AddDataToCategory(selectedCategories: selectedCategories, categoryTitle: widget.categoryTitle),
+                const SizedBox(height: 21,),
                 Text(
                   "Today Uploaded Data",
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
-                
                 const BallPulseIndicator(),
-                
-                Text(
-                  "Population Data",
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                populationData.isEmpty ? const BallPulseIndicator() :
-                ListView.builder(
-                  physics: const BouncingScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: populationData.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    var data = populationData[index];
-                    return Card(
-                      elevation: 3,
-                      shape: const  RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8))
-                      ),
-                      child: ListTile(
-                        title: Text(
-                          "${data.item[0].toUpperCase()}${data.item.replaceFirst(RegExp(data.item[0]), '',)}",
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Text(
-                          data.month,
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        trailing: Text(
-                          data.total,
-                          style: Theme.of(context).textTheme.headlineSmall,
-                        ),
-                      ),
-                    );
-                  },
-                ),
+                PopulationDataWidget(populationData: populationData, filteredPopulationData: filteredPopulationData),
               ],
             ),
           ),
@@ -136,51 +128,5 @@ class _DataCategorizationState extends State<DataCategorization> {
     setState(() {
       populationData = fetchedPopulationData;
     });
-  }
-}
-
-class CardCategory extends StatefulWidget {
-  final String title;
-  final IconData iconData;
-  const CardCategory({
-    super.key, required this.title, required this.iconData,
-  });
-
-  @override
-  State<CardCategory> createState() => _CardCategoryState();
-}
-
-class _CardCategoryState extends State<CardCategory> {
-  bool _isSelected = false;
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _isSelected = !_isSelected;
-        });
-      },
-      child: Card(
-        elevation: 3,
-        color: _isSelected ? Theme.of(context).colorScheme.primary : Colors.white,
-        shape: const  RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(8))
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              _isSelected ? Icons.check : widget.iconData,
-              color: _isSelected ? Colors.white : Theme.of(context).colorScheme.primary,
-              size: Provider.of<ThemeProvider>(context).fontSize + 7,
-            ),
-            Text(
-              widget.title,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: _isSelected ? Colors.white : Theme.of(context).colorScheme.primary),
-            )
-          ],
-        ),
-      ),
-    );
   }
 }

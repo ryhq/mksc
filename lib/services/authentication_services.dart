@@ -36,6 +36,7 @@ class AuthenticationServices {
       debugPrint("Response isRedirect ${response.isRedirect}");
       debugPrint("Response persistentConnection ${response.persistentConnection}");
       debugPrint("Response reasonPhrase ${response.reasonPhrase}");
+      
       if (response.statusCode == 200) {
         debugPrint("\n\n\nLogin successful...\n\n\n");
         if (!context.mounted) {
