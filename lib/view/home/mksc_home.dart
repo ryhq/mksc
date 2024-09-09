@@ -107,7 +107,7 @@ class _MKSCHomeState extends State<MKSCHome> {
                 return switch (index) {
                   0 => const MajorCategoryCard(
                     title: "Chicken House", 
-                    iconData: Icons.donut_large
+                    iconData: Icons.egg
                   ),
                   1 => const MajorCategoryCard(
                     title: "Menu", 

@@ -3,9 +3,10 @@ import 'dart:convert';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:mksc/view/data_categorization/data_categorization.dart';
 
 class AuthenticationServices {
-  static Future<void> authenticate(TextEditingController codeController, BuildContext context)async{
+  static Future<void> authenticate(String categoryTitle, TextEditingController codeController, BuildContext context)async{
     List<ConnectivityResult> connectivityResult = await Connectivity().checkConnectivity();
 
     if (connectivityResult.contains(ConnectivityResult.none) && context.mounted) {
@@ -37,11 +38,18 @@ class AuthenticationServices {
       debugPrint("Response reasonPhrase ${response.reasonPhrase}");
       if (response.statusCode == 200) {
         debugPrint("\n\n\nLogin successful...\n\n\n");
-        
+        if (!context.mounted) {
+          return;
+        }
+        Navigator.push(context, MaterialPageRoute(builder: (context) => DataCategorization(categoryTitle: categoryTitle),));
       } else if(response.statusCode == 302 && context.mounted){
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Sorry, The requested resource has been temporarily moved to a new location"))
         );
+        if (!context.mounted) {
+          return;
+        }
+        Navigator.push(context, MaterialPageRoute(builder: (context) => DataCategorization(categoryTitle: categoryTitle),));
       } else {
         if(!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
@@ -50,6 +58,7 @@ class AuthenticationServices {
       }
     } catch (e) {
       debugPrint("Error making authentication request: $e");
+      if(!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('An error occurred during authentication')),
       );

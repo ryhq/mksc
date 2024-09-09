@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:loading_indicator/loading_indicator.dart';
 import 'package:mksc/provider/theme_provider.dart';
 import 'package:mksc/services/authentication_services.dart';
 import 'package:mksc/utils/validator_utility.dart';
 import 'package:mksc/widgets/app_text_form_field.dart';
+import 'package:mksc/widgets/ball_pulse_indicator.dart';
 import 'package:mksc/widgets/button.dart';
 import 'package:provider/provider.dart';
 
@@ -89,21 +89,7 @@ class _InputDataPageState extends State<InputDataPage> {
                 ),
                 const SizedBox(height: 21,),
                 _continueClicked ? 
-                Center(
-                  child: SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.1,
-                    child: LoadingIndicator(
-                      indicatorType: Indicator.ballPulse,
-                      colors: [
-                        Theme.of(context).colorScheme.primary,
-                        Colors.red,
-                        Colors.green,
-                      ],
-                      backgroundColor: Colors.transparent,
-                      pathBackgroundColor: Colors.transparent,
-                    ),
-                  ),
-                ): 
+                const BallPulseIndicator(): 
                 Button(
                   title: "Continue...", 
                   onTap: () => authenticate(),
@@ -188,7 +174,7 @@ class _InputDataPageState extends State<InputDataPage> {
         _continueClicked = true;
       });
 
-      await AuthenticationServices.authenticate(codeController, context);
+      await AuthenticationServices.authenticate(widget.categoryTitle, codeController, context);
 
       setState(() {
         _continueClicked = false;
