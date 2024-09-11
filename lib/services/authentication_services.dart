@@ -3,10 +3,20 @@ import 'dart:convert';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:mksc/model/token.dart';
+import 'package:mksc/storage/token_storage.dart';
 import 'package:mksc/view/data_categorization/data_categorization.dart';
+import 'package:mksc/widgets/custom_alert.dart';
 
 class AuthenticationServices {
-  static Future<void> authenticate(String categoryTitle, TextEditingController codeController, BuildContext context)async{
+  static Future<void> authenticate(
+    String categoryTitle, 
+    BuildContext context, 
+    {
+      required TextEditingController emailController,
+      required TextEditingController passwordCodeController
+    }
+  )async{
     List<ConnectivityResult> connectivityResult = await Connectivity().checkConnectivity();
 
     if (connectivityResult.contains(ConnectivityResult.none) && context.mounted) {
@@ -17,9 +27,12 @@ class AuthenticationServices {
     }
     
     Map<String, dynamic> authenticationCredential = {
-      "code" : int.parse(codeController.text)
+      "email": emailController.text,
+      "password": passwordCodeController.text
     };
+
     debugPrint("Authentication Credential $authenticationCredential");
+
     final Uri uri = Uri.parse("https://nethub.co.tz/demo/api/v2/auth/user");
     try {
       final http.Response response = await http.post(
@@ -28,7 +41,7 @@ class AuthenticationServices {
         body: json.encode(authenticationCredential),
       );
 
-      debugPrint("Authentication Credential ${json.encode(authenticationCredential)}");
+      debugPrint("Authentication Credential JSON ${json.encode(authenticationCredential)}");
       debugPrint("Response status code ${response.statusCode}");
       debugPrint("Response body ${response.body}");
       debugPrint("Response bodyBytes ${response.bodyBytes}");
@@ -39,18 +52,27 @@ class AuthenticationServices {
       
       if (response.statusCode == 200) {
         debugPrint("\n\n\nLogin successful...\n\n\n");
+
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final Token receivedToken = Token.fromJson(responseData);
+        
+        debugPrint("\n\n\n ️‍🔥️‍🔥️‍🔥️‍🔥 Received Token ${receivedToken.token}\n\n\n");
+        
+        TokenStorage tokenStorage = TokenStorage();
+
+        await tokenStorage.saveToken(receivedToken.token); // Saving the token
+
         if (!context.mounted) {
           return;
         }
         Navigator.push(context, MaterialPageRoute(builder: (context) => DataCategorization(categoryTitle: categoryTitle),));
+
       } else if(response.statusCode == 302 && context.mounted){
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Sorry, The requested resource has been temporarily moved to a new location"))
         );
-        if (!context.mounted) {
-          return;
-        }
-        Navigator.push(context, MaterialPageRoute(builder: (context) => DataCategorization(categoryTitle: categoryTitle),));
+      } else if(response.statusCode == 401 && context.mounted){
+        CustomAlert.showAlert(context, "Failed", "${json.decode(response.body)['message']}");
       } else {
         if(!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(

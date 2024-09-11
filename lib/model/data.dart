@@ -13,9 +13,19 @@ class Data {
     return Data(
       id: json['id'] ?? 0, 
       item: json['item'] ?? "", 
-      number: json['number'] ?? ""
+      number: (json['number'] != null) ? json['number'].toString() : "",  // Convert number to String
     );
   }
+
+  // After saving the new data the server respond back with this format data of new data
+  // {
+  //   "item": "Test item",
+  //   "number": 30,
+  //   "created_at": null,
+  //   "camp": "",
+  //   "updated_at": "2024-09-11T09:38:53.000000Z",
+  //   "id": 268
+  // }                       
 
   Map<String, dynamic> toJson() {
     return {
@@ -34,6 +44,14 @@ class Data {
       id: id ?? this.id, 
       item: item ?? this.item, 
       number: number ?? this.number
+    );
+  }
+  
+  static Data empty() {
+    return Data(
+      id: 0,        
+      item: "",     
+      number: "",
     );
   }
 }

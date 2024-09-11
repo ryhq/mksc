@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mksc/services/population_data_services.dart';
+import 'package:mksc/provider/data_provider.dart';
 import 'package:mksc/utils/validator_utility.dart';
 import 'package:mksc/widgets/app_text_form_field.dart';
 import 'package:mksc/widgets/ball_pulse_indicator.dart';
 import 'package:mksc/widgets/button.dart';
+import 'package:provider/provider.dart';
 
 class AddDataToCategory extends StatefulWidget {
   final String categoryTitle;
@@ -73,7 +74,11 @@ class _AddDataToCategoryState extends State<AddDataToCategory> {
                       setState(() {
                         savingClicked = true;
                       });
-                      await PopulationDataServices.saveData(context, item: widget.selectedCategories[0], number: int.parse(dataController.text));
+                      await Provider.of<DataProvider>(context, listen: false).saveData(
+                        context, 
+                        item: widget.selectedCategories[0], 
+                        number: int.parse(dataController.text
+                      ));
                       setState(() {
                         widget.selectedCategories.clear();
                         _formKey.currentState!.reset();

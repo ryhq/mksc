@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:mksc/provider/data_provider.dart';
 import 'package:mksc/provider/theme_provider.dart';
 import 'package:mksc/view/home/mksc_home.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +14,8 @@ void main(List<String> args) async {
       providers: [
         // Theme Provider
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        // Data Provider
+        ChangeNotifierProvider(create: (_) => DataProvider()),
       ],
       child: const MKSC(),
     )

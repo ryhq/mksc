@@ -29,19 +29,22 @@ class _CardCategoryState extends State<CardCategory> {
         shape: const  RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(8))
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              widget.isSelected ? Icons.check : widget.iconData,
-              color: widget.isSelected ? Colors.white : Theme.of(context).colorScheme.primary,
-              size: Provider.of<ThemeProvider>(context).fontSize + 7,
-            ),
-            Text(
-              widget.title,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: widget.isSelected ? Colors.white : Theme.of(context).colorScheme.primary),
-            )
-          ],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                widget.isSelected ? Icons.check : widget.iconData,
+                color: widget.isSelected ? Colors.white : Theme.of(context).colorScheme.primary,
+                size: Provider.of<ThemeProvider>(context).fontSize + 7,
+              ),
+              Text(
+                widget.title,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: widget.isSelected ? Colors.white : Theme.of(context).colorScheme.primary),
+              )
+            ],
+          ),
         ),
       ),
     );

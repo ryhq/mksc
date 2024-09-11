@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:mksc/model/population_data.dart';
+import 'package:mksc/provider/data_provider.dart';
 import 'package:mksc/provider/theme_provider.dart';
-import 'package:mksc/services/population_data_services.dart';
 import 'package:mksc/view/data_categorization/widget/add_data_to_category.dart';
 import 'package:mksc/view/data_categorization/widget/population_data_widget.dart';
 import 'package:mksc/view/data_categorization/widget/today_uploaded_data.dart';
@@ -19,7 +20,8 @@ class DataCategorization extends StatefulWidget {
   State<DataCategorization> createState() => _DataCategorizationState();
 }
 
-class _DataCategorizationState extends State<DataCategorization> {
+class _DataCategorizationState extends State<DataCategorization> with SingleTickerProviderStateMixin{
+  TabController? _tabController;
 
   TextEditingController dateController = TextEditingController();
   DateTime dateTime = DateTime.now();
@@ -28,6 +30,7 @@ class _DataCategorizationState extends State<DataCategorization> {
   List<String> selectedCategories = [];
 
   bool _isLoading = true;
+  bool _isLoadingTodayData = true;
 
   List<PopulationData> get filteredPopulationData {
     if (selectedCategories.isEmpty) {
@@ -51,10 +54,21 @@ class _DataCategorizationState extends State<DataCategorization> {
   void initState() {
     super.initState();
     fetchPopulationData();
+    fetchTodayData();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController?.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    List<String> categories = Provider.of<DataProvider>(context).categories.reversed.toList();
+    int totalFilteredPopulationData = Provider.of<DataProvider>(context).filteredPopulationData(selectedCategories).length;
+    int totalFilteredData = Provider.of<DataProvider>(context).filteredData(selectedCategories).length;
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -89,36 +103,6 @@ class _DataCategorizationState extends State<DataCategorization> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  "Please select Category",
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                const SizedBox(height: 21,),
-                GridView.builder(
-                  physics: const BouncingScrollPhysics(),
-                  shrinkWrap: true,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 3, // For landscape mode, show 4 items per row,
-                    mainAxisSpacing: 5.0,
-                    crossAxisSpacing: 5.0,
-                    childAspectRatio: 3.0
-                  ),
-                  itemCount: 4,
-                  itemBuilder: (BuildContext context, int index) {
-                    final categories = ['cock', 'hen', 'chick', 'eggs'];
-                    return CardCategory(
-                      title: categories[index],
-                      iconData: Icons.egg,
-                      isSelected: selectedCategories.contains(categories[index]),
-                      onCategorySelected: onCategorySelected,
-                    );
-                  },
-                ),
-                const SizedBox(height: 21,),
-                AddDataToCategory(selectedCategories: selectedCategories, categoryTitle: widget.categoryTitle),
-                const SizedBox(height: 21,),
-                const TodayUploadedData(),
-                const SizedBox(height: 21,),
-                Text(
                   "Filter by date",
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
@@ -137,11 +121,93 @@ class _DataCategorizationState extends State<DataCategorization> {
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(height: 21,),
 
-                _isLoading ? const Center(child: BallPulseIndicator(),) : 
-                PopulationDataWidget(populationData: populationData, filteredPopulationData: filteredPopulationData),
+                Text(
+                  "Please select Category",
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+
+                const SizedBox(height: 21,),
+                _isLoading ? const BallPulseIndicator() :
+
+                SizedBox(
+                  height: 60,
+                  child: ListView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    scrollDirection: Axis.horizontal,
+                    controller: ScrollController(),
+                    shrinkWrap: true,
+                    itemCount: categories.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final category =  categories[index];
+                      return CardCategory(
+                        title: category,
+                        iconData: Icons.egg,
+                        isSelected: selectedCategories.contains(category),
+                        onCategorySelected: onCategorySelected,
+                      );
+                    },
+                  ),
+                ),
+
+                // SizedBox(
+                //   height: 48,
+                //   child: GridView.builder(
+                //     physics: const BouncingScrollPhysics(),
+                //     scrollDirection: Axis.horizontal,
+                //     controller: ScrollController(),
+                //     shrinkWrap: true,
+                //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                //       crossAxisCount:  1, //MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 3, // For landscape mode, show 4 items per row,
+                //       mainAxisSpacing: 5.0,
+                //       crossAxisSpacing: 5.0,
+                //       childAspectRatio: 3.0
+                //     ),
+                //     itemCount: categories.length,
+                //     itemBuilder: (BuildContext context, int index) {
+                //       final category =  categories[index];
+                //       return CardCategory(
+                //         title: category,
+                //         iconData: Icons.egg,
+                //         isSelected: selectedCategories.contains(category),
+                //         onCategorySelected: onCategorySelected,
+                //       );
+                //     },
+                //   ),
+                // ),
+                const SizedBox(height: 21,),
+
+                AddDataToCategory(selectedCategories: selectedCategories, categoryTitle: widget.categoryTitle),
+
+                TabBar(
+                  controller: _tabController,
+                  tabs: [
+                    Tab(text: 'Today\'s Data ($totalFilteredData)'),
+                    Tab(text: 'Population Data ($totalFilteredPopulationData)'),
+                  ]
+                ),
+                SizedBox(
+                  height: 450,
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: <Widget>[
+                      TodayUploadedData(selectedCategories: selectedCategories, isLoadingTodayData: _isLoadingTodayData,),
+                      PopulationDataWidget(selectedCategories: selectedCategories,),
+                    ]
+                  ),
+                ),
+                // const SizedBox(height: 21,),
+
+                // TodayUploadedData(selectedCategories: selectedCategories,),
+
+                
+                // const SizedBox(height: 21,),
+
+                // _isLoading ? const Center(child: BallPulseIndicator(),) : 
+
+                // PopulationDataWidget(selectedCategories: selectedCategories,),
               ],
             ),
           ),
@@ -151,10 +217,16 @@ class _DataCategorizationState extends State<DataCategorization> {
   }
 
   Future<void> fetchPopulationData()async{
-    List<PopulationData> fetchedPopulationData = await PopulationDataServices.fetchPopulationData(context);
+    await Provider.of<DataProvider>(context, listen: false).fetchPopulationData(context);
     setState(() {
-      populationData = fetchedPopulationData;
       _isLoading = false;
+    });
+  }
+
+  Future<void> fetchTodayData()async{
+    await Provider.of<DataProvider>(context, listen: false).fetchTodayData(context);
+    setState(() {
+      _isLoadingTodayData = false;
     });
   }
 

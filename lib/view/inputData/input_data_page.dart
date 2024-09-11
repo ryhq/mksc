@@ -20,7 +20,8 @@ class InputDataPage extends StatefulWidget {
 }
 
 class _InputDataPageState extends State<InputDataPage> {
-  final TextEditingController codeController = TextEditingController();
+  final TextEditingController passwordCodeController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _continueClicked = false;
   IconData networkStatus = Icons.signal_cellular_nodata_sharp;
@@ -78,13 +79,27 @@ class _InputDataPageState extends State<InputDataPage> {
                 ),
                 Form(
                   key: _formKey,
-                  child: AppTextFormField(
-                    hintText: "####", 
-                    iconData: Icons.code, 
-                    obscureText: false, 
-                    textInputType: TextInputType.number,
-                    textEditingController: codeController,
-                    validator: (value) => ValidatorUtility.validateRequiredField(value, "Code number for ${widget.categoryTitle} is Required!"),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppTextFormField(
+                        hintText: "chicken@chicken.com", 
+                        iconData: Icons.email, 
+                        obscureText: false, 
+                        textInputType: TextInputType.emailAddress,
+                        textEditingController: emailController,
+                        validator: (value) => ValidatorUtility.validateEmail(value),
+                      ),
+                      const SizedBox(height: 21,),
+                      AppTextFormField(
+                        hintText: "####", 
+                        iconData: Icons.code, 
+                        obscureText: false, 
+                        textInputType: TextInputType.number,
+                        textEditingController: passwordCodeController,
+                        validator: (value) => ValidatorUtility.validateRequiredField(value, "Code number for ${widget.categoryTitle} is Required!"),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 21,),
@@ -174,7 +189,12 @@ class _InputDataPageState extends State<InputDataPage> {
         _continueClicked = true;
       });
 
-      await AuthenticationServices.authenticate(widget.categoryTitle, codeController, context);
+      await AuthenticationServices.authenticate(
+        widget.categoryTitle, 
+        context, 
+        emailController: emailController, 
+        passwordCodeController: passwordCodeController
+      );
 
       setState(() {
         _continueClicked = false;
