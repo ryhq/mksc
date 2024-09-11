@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:mksc/model/data.dart';
 import 'package:mksc/model/population_data.dart';
 import 'package:mksc/provider/data_provider.dart';
 import 'package:mksc/provider/theme_provider.dart';
+import 'package:mksc/view/data_categorization/data_report_page.dart';
 import 'package:mksc/view/data_categorization/widget/add_data_to_category.dart';
 import 'package:mksc/view/data_categorization/widget/population_data_widget.dart';
 import 'package:mksc/view/data_categorization/widget/today_uploaded_data.dart';
@@ -67,6 +69,8 @@ class _DataCategorizationState extends State<DataCategorization> with SingleTick
   @override
   Widget build(BuildContext context) {
     List<String> categories = Provider.of<DataProvider>(context).categories.reversed.toList();
+    List<PopulationData> filteredPopulationData = Provider.of<DataProvider>(context).filteredPopulationData(selectedCategories);
+    List<Data> filteredTodayData =  Provider.of<DataProvider>(context).filteredData(selectedCategories);
     int totalFilteredPopulationData = Provider.of<DataProvider>(context).filteredPopulationData(selectedCategories).length;
     int totalFilteredData = Provider.of<DataProvider>(context).filteredData(selectedCategories).length;
     return SafeArea(
@@ -92,6 +96,22 @@ class _DataCategorizationState extends State<DataCategorization> with SingleTick
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           centerTitle: true,
+          actions: [
+            filteredPopulationData.isEmpty && filteredTodayData.isEmpty ? const SizedBox() :
+            IconButton(
+              onPressed: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context) => DataReportPage(
+                  populationDataList: filteredPopulationData.reversed.toList(),
+                  dataList: filteredTodayData.reversed.toList(),
+                ),));
+              }, 
+              icon: Icon(
+                Icons.summarize_outlined,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              tooltip: "View Report",
+            )
+          ],
         ),
         backgroundColor: Theme.of(context).colorScheme.surface,
         body: Padding(

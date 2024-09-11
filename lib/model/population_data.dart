@@ -36,4 +36,16 @@ class PopulationData {
       total: total ?? this.total
     );
   }
+
+  static Map<String, double> createItemTotalMap(List<PopulationData> populationDataList) {
+    Map<String, double> itemTotalMap = {};
+
+    for (var data in populationDataList) {
+      double totalValue = double.tryParse(data.total) ?? 0.0;
+      itemTotalMap[data.item] = totalValue;
+    }
+
+    return itemTotalMap;
+  }
+
 }

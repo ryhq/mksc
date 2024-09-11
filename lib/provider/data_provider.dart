@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mksc/model/data.dart';
 import 'package:mksc/model/population_data.dart';
 import 'package:mksc/services/population_data_services.dart';
+import 'package:mksc/utils/pdf_exporter.dart';
 import 'package:mksc/widgets/custom_alert.dart';
 
 class DataProvider with ChangeNotifier {
@@ -48,7 +49,7 @@ class DataProvider with ChangeNotifier {
   Future<void> saveData(BuildContext context, {required String item, required int number}) async{
     try {
       Data newData = await PopulationDataServices.saveData(context, item: item, number: number);
-      _dataList.add(newData);
+      newData.id == 0 ? null : _dataList.add(newData);
       notifyListeners();
     } catch (e) {
       if (!context.mounted) return;
@@ -60,10 +61,15 @@ class DataProvider with ChangeNotifier {
     try {
       final List<PopulationData> fetchedPopulationData = await PopulationDataServices.fetchPopulationData(context);
       fetchedPopulationData.isEmpty ? null : _populationDataList = fetchedPopulationData;
-      _categories.clear();
-      for (var populationData in fetchedPopulationData) {
-        _categories.contains(populationData.item.toLowerCase()) ? null : _categories.add(populationData.item);
+      if (fetchedPopulationData.isNotEmpty) {
+        _categories.clear();
+        for (var populationData in fetchedPopulationData) {
+          _categories.contains(populationData.item.toLowerCase()) ? null : _categories.add(populationData.item);
+        }
       }
+      PdfExporter pdfExporter = PdfExporter();
+      pdfExporter.exportPdf(_populationDataList,);
+      
       notifyListeners();
     } catch (e) {
       if (!context.mounted) return;
