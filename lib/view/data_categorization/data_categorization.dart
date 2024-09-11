@@ -189,7 +189,7 @@ class _DataCategorizationState extends State<DataCategorization> with SingleTick
                   ]
                 ),
                 SizedBox(
-                  height: 450,
+                  height: MediaQuery.of(context).orientation == Orientation.portrait ? MediaQuery.of(context).size.height * 0.75 :  MediaQuery.of(context).size.height * 0.25,
                   child: TabBarView(
                     controller: _tabController,
                     children: <Widget>[

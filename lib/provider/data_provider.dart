@@ -37,7 +37,7 @@ class DataProvider with ChangeNotifier {
   Future<void> fetchTodayData (BuildContext context) async{
     try {
       final List<Data> fetchedData = await PopulationDataServices.fetchTodayData(context);
-      _dataList = fetchedData;
+      fetchedData.isEmpty ? null : _dataList = fetchedData;
       notifyListeners();
     } catch (e) {
       if (!context.mounted) return;
@@ -59,7 +59,7 @@ class DataProvider with ChangeNotifier {
   Future<void> fetchPopulationData (BuildContext context) async{
     try {
       final List<PopulationData> fetchedPopulationData = await PopulationDataServices.fetchPopulationData(context);
-      _populationDataList = fetchedPopulationData;
+      fetchedPopulationData.isEmpty ? null : _populationDataList = fetchedPopulationData;
       _categories.clear();
       for (var populationData in fetchedPopulationData) {
         _categories.contains(populationData.item.toLowerCase()) ? null : _categories.add(populationData.item);
@@ -67,7 +67,7 @@ class DataProvider with ChangeNotifier {
       notifyListeners();
     } catch (e) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error", "Failed to load population data: ${e.toString()}");      
+      CustomAlert.showAlert(context, "Error", "Failed to load population data: \nDataProvider@fetchPopulationData\n${e.toString()}");      
     }
   }
 }

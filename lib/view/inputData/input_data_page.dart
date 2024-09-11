@@ -72,16 +72,17 @@ class _InputDataPageState extends State<InputDataPage> {
                   "Welcome to MKSC - ${widget.categoryTitle} category",
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
-                const SizedBox(height: 21,),
-                Text(
-                  "Enter code to Input Data for ${widget.categoryTitle}.",
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
                 Form(
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      const SizedBox(height: 21,),
+                      Text(
+                        "Email for authentication.",
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      const SizedBox(height: 21,),
                       AppTextFormField(
                         hintText: "chicken@chicken.com", 
                         iconData: Icons.email, 
@@ -89,6 +90,11 @@ class _InputDataPageState extends State<InputDataPage> {
                         textInputType: TextInputType.emailAddress,
                         textEditingController: emailController,
                         validator: (value) => ValidatorUtility.validateEmail(value),
+                      ),
+                      const SizedBox(height: 21,),
+                      Text(
+                        "Enter code to Input Data for ${widget.categoryTitle}.",
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       const SizedBox(height: 21,),
                       AppTextFormField(
