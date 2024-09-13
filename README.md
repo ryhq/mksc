@@ -34,22 +34,16 @@ For detailed platform-specific requirements, refer to the official [Flutter inst
 ### Installation
 
 1. Clone the repository:
-   ```\git clone https://github.com/ryhq/mksc.git``` cd mksc```
+   ```git clone https://github.com/ryhq/mksc.git``` then ```cd mksc```
 
 2. Install Flutter dependencies:
-   \```bash
-   flutter pub get
-   \```
+   ```flutter pub get```
 
 3. For Android, iOS, and Web launcher icons, generate them by running:
-   \```bash
-   flutter pub run flutter_launcher_icons:main
-   \```
+   ```flutter pub run flutter_launcher_icons:main```
 
 4. For splash screens, generate the native splash screen with:
-   \```bash
-   flutter pub run flutter_native_splash:create
-   \```
+   ```flutter pub run flutter_native_splash:create```
 
 ### Running the App
 
