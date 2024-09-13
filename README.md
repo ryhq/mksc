@@ -47,7 +47,7 @@ For detailed platform-specific requirements, refer to the official [Flutter inst
 
 ### Running the App
 
-To run the app, use Flutterâs `run` command: ```flutter run```
+To run the app, use command: ```flutter run```
 
 ## Dependencies
 
@@ -64,7 +64,7 @@ This project uses various third-party dependencies, each adding specific functio
 - **flutter_slidable**: Implements a sliding action menu.
 - **device_info_plus**: Fetches device-specific information.
 - **shared_preferences**: Persistent storage across app launches.
-- **path_provider**: Finds commonly used locations on the deviceâs file system.
+- **path_provider**: Finds commonly used locations on the device as file system.
 - **animated_text_kit**: Provides animated text widgets.
 - **http**: A client for making HTTP requests.
 - **connectivity_plus**: Network connectivity information.
@@ -96,7 +96,7 @@ To run unit tests:
 
 ## Building
 
-You can build the app for various platforms by using Flutterâs build commands:
+You can build the app for various platforms by using Flutter build commands:
 
 - For Android:
   ```flutter build apk```
