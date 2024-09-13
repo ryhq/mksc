@@ -14,16 +14,6 @@ class _MKSCHomeState extends State<MKSCHome> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          shape: const OvalBorder(eccentricity: 1, side: BorderSide.none),
-          onPressed: () {
-            
-          },
-          child: const Icon(
-            CupertinoIcons.printer
-          ),
-        ),
         body: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [

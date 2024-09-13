@@ -72,28 +72,28 @@ class _DataReportPageState extends State<DataReportPage> {
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           centerTitle: true,
-          actions: [
-            if(viewList || pieChart)...[
-              // IconButton(
-              //   onPressed: (){
+          // actions: [
+          //   if(viewList || pieChart)...[
+          //     // IconButton(
+          //     //   onPressed: (){
       
-              //   }, 
-              //   icon: Icon(
-              //     Icons.table_chart_sharp,
-              //     color: Theme.of(context).colorScheme.primary,
-              //   ),
-              //   tooltip: "Share as csv",
-              // ),
-              IconButton(
-                onPressed: () => createPdf(), 
-                icon: Icon(
-                  Icons.picture_as_pdf,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                tooltip: "Save Pdf",
-              ),
-            ]
-          ],
+          //     //   }, 
+          //     //   icon: Icon(
+          //     //     Icons.table_chart_sharp,
+          //     //     color: Theme.of(context).colorScheme.primary,
+          //     //   ),
+          //     //   tooltip: "Share as csv",
+          //     // ),
+          //     IconButton(
+          //       onPressed: () => createPdf(), 
+          //       icon: Icon(
+          //         Icons.picture_as_pdf,
+          //         color: Theme.of(context).colorScheme.primary,
+          //       ),
+          //       tooltip: "Save Pdf",
+          //     ),
+          //   ]
+          // ],
           bottom: PreferredSize(
             preferredSize: const Size(double.infinity, 40), 
             child: Row(
@@ -125,6 +125,14 @@ class _DataReportPageState extends State<DataReportPage> {
                 ),
               ],
             )
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          shape: const OvalBorder(eccentricity: 1, side: BorderSide.none),
+          onPressed: () => createPdf(),
+          child: const Icon(
+            CupertinoIcons.printer
           ),
         ),
         backgroundColor: Theme.of(context).colorScheme.surface,
