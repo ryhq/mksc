@@ -34,9 +34,8 @@ For detailed platform-specific requirements, refer to the official [Flutter inst
 ### Installation
 
 1. Clone the repository:
-   \```bash
-   git clone <your-repo-url>
-   cd mksc_project
+   \```git clone https://github.com/ryhq/mksc.git
+   cd mksc
    \```
 
 2. Install Flutter dependencies:
