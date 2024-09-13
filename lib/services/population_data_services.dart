@@ -191,10 +191,11 @@ class PopulationDataServices {
         final Map<String, dynamic> responseData = json.decode(response.body);
         final Data data = Data.fromJson(responseData['data']);
 
-        if(!context.mounted) Data.empty();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Saved Successfull"), backgroundColor: Colors.green,)
-        );
+        if(context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Saved Successfull"), backgroundColor: Colors.green,)
+          );
+        }
 
         return data;
       } else {

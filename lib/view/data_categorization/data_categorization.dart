@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:mksc/model/data.dart';
 import 'package:mksc/model/population_data.dart';
 import 'package:mksc/provider/data_provider.dart';
@@ -171,32 +170,6 @@ class _DataCategorizationState extends State<DataCategorization> with SingleTick
                     },
                   ),
                 ),
-
-                // SizedBox(
-                //   height: 48,
-                //   child: GridView.builder(
-                //     physics: const BouncingScrollPhysics(),
-                //     scrollDirection: Axis.horizontal,
-                //     controller: ScrollController(),
-                //     shrinkWrap: true,
-                //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                //       crossAxisCount:  1, //MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 3, // For landscape mode, show 4 items per row,
-                //       mainAxisSpacing: 5.0,
-                //       crossAxisSpacing: 5.0,
-                //       childAspectRatio: 3.0
-                //     ),
-                //     itemCount: categories.length,
-                //     itemBuilder: (BuildContext context, int index) {
-                //       final category =  categories[index];
-                //       return CardCategory(
-                //         title: category,
-                //         iconData: Icons.egg,
-                //         isSelected: selectedCategories.contains(category),
-                //         onCategorySelected: onCategorySelected,
-                //       );
-                //     },
-                //   ),
-                // ),
                 const SizedBox(height: 21,),
 
                 AddDataToCategory(selectedCategories: selectedCategories, categoryTitle: widget.categoryTitle),
@@ -218,16 +191,6 @@ class _DataCategorizationState extends State<DataCategorization> with SingleTick
                     ]
                   ),
                 ),
-                // const SizedBox(height: 21,),
-
-                // TodayUploadedData(selectedCategories: selectedCategories,),
-
-                
-                // const SizedBox(height: 21,),
-
-                // _isLoading ? const Center(child: BallPulseIndicator(),) : 
-
-                // PopulationDataWidget(selectedCategories: selectedCategories,),
               ],
             ),
           ),

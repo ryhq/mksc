@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +18,7 @@ class AuthenticationServices {
       required TextEditingController emailController,
       required TextEditingController passwordCodeController
     }
-  )async{
+  ) async {
     List<ConnectivityResult> connectivityResult = await Connectivity().checkConnectivity();
 
     if (connectivityResult.contains(ConnectivityResult.none) && context.mounted) {
@@ -79,13 +81,39 @@ class AuthenticationServices {
           const SnackBar(content: Text('An error occurred during login, may be invalid code...')),
         );        
       }
+    } on SocketException catch (_) {
+      // Handle network issues (e.g., no internet, DNS failures)
+      debugPrint("Network error: Could not resolve hostname.");
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Network error: Could not reach the server. Please check your internet connection.')),
+        );
+      }
+    } on TimeoutException catch (_) {
+      // Handle request timeout
+      debugPrint("Request timeout");
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Request timed out. Please try again later.')),
+        );
+      }
+    } on HttpException catch (_) {
+      // Handle HTTP protocol errors
+      debugPrint("HTTP error: Failed to retrieve the requested resource.");
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('HTTP error: Unable to connect to the server.')),
+        );
+      }
     } catch (e) {
-      debugPrint("Error making authentication request: $e");
-      if(!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('An error occurred during authentication')),
-      );
-      rethrow;      
+      // Handle any other errors
+      debugPrint("Error during authentication request: $e");
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('An unexpected error occurred during authentication.')),
+        );
+      }
+      rethrow;
     }
   }
 }

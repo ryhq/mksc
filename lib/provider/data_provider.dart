@@ -10,7 +10,7 @@ class DataProvider with ChangeNotifier {
 
   List<PopulationData> _populationDataList = [];
 
-  List<String> _categories = [];
+  final List<String> _categories = [];
 
   List<Data> get dataList => _dataList;
   
