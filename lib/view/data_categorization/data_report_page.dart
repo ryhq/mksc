@@ -74,23 +74,23 @@ class _DataReportPageState extends State<DataReportPage> {
           centerTitle: true,
           actions: [
             if(viewList || pieChart)...[
-              IconButton(
-                onPressed: (){
+              // IconButton(
+              //   onPressed: (){
       
-                }, 
-                icon: Icon(
-                  Icons.table_chart_sharp,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                tooltip: "Share as csv",
-              ),
+              //   }, 
+              //   icon: Icon(
+              //     Icons.table_chart_sharp,
+              //     color: Theme.of(context).colorScheme.primary,
+              //   ),
+              //   tooltip: "Share as csv",
+              // ),
               IconButton(
                 onPressed: () => createPdf(), 
                 icon: Icon(
                   Icons.picture_as_pdf,
                   color: Theme.of(context).colorScheme.primary,
                 ),
-                tooltip: "Share as Pdf",
+                tooltip: "Save Pdf",
               ),
             ]
           ],
