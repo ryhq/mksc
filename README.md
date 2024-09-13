@@ -47,10 +47,7 @@ For detailed platform-specific requirements, refer to the official [Flutter inst
 
 ### Running the App
 
-To run the app, use Flutterâs `run` command:
-\```bash
-flutter run
-\```
+To run the app, use Flutterâs `run` command: ```flutter run```
 
 ## Dependencies
 
@@ -83,9 +80,7 @@ For dev dependencies, we are using:
 - **flutter_lints**: Recommended lint rules for better coding practices.
 
 To update the dependencies to the latest versions, run:
-\```bash
-flutter pub upgrade --major-versions
-\```
+```flutter pub upgrade --major-versions```
 
 ## Development
 
@@ -94,38 +89,26 @@ This project uses **provider** for state management, **sqflite** for database st
 ### Code Linting
 
 Ensure that your code follows the recommended linting practices by running:
-\```bash
-flutter analyze
-\```
+```flutter analyze```
 
 To run unit tests:
-\```bash
-flutter test
-\```
+```flutter test```
 
 ## Building
 
 You can build the app for various platforms by using Flutterâs build commands:
 
 - For Android:
-  \```bash
-  flutter build apk
-  \```
+  ```flutter build apk```
 
 - For iOS:
-  \```bash
-  flutter build ios
-  \```
+  ```flutter build ios```
 
 - For Web:
-  \```bash
-  flutter build web
-  \```
+  ```flutter build web```
 
 - For Windows:
-  \```bash
-  flutter build windows
-  \```
+  ```flutter build windows```
 
 ## Features
 
@@ -164,16 +147,11 @@ This project follows the **Semantic Versioning** model:
   - `1.0.0` represents the version.
   - `+1` represents the build number.
 
-To update the version, modify the `pubspec.yaml` file:
-\```yaml
-version: 1.0.0+1
-\```
+To update the version, modify the `pubspec.yaml` file:```yaml
+version: 1.0.0+1```
 
 ## License
 
-This project is not published to pub.dev and includes the following line in `pubspec.yaml` to prevent accidental publication:
-\```yaml
-publish_to: 'none'
-\```
+This project is not published to pub.dev and includes the following line in `pubspec.yaml` to prevent accidental publication:```yaml publish_to: 'none'```
 
 If you want to publish this package, simply remove that line.
