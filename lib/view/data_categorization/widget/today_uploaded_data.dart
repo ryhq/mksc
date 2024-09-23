@@ -7,10 +7,12 @@ import 'package:provider/provider.dart';
 class TodayUploadedData extends StatefulWidget {
   final List<String> selectedCategories;
   final bool isLoadingTodayData;
+  final String token;
   const TodayUploadedData({
     super.key, 
     required this.selectedCategories, 
-    required this.isLoadingTodayData
+    required this.isLoadingTodayData, 
+    required this.token
   });
 
   @override
@@ -79,7 +81,7 @@ class _TodayUploadedDataState extends State<TodayUploadedData> {
                           setState(() {
                             reLoading = true;
                           });
-                          await Provider.of<DataProvider>(context, listen: false).fetchTodayData(context);
+                          await Provider.of<DataProvider>(context, listen: false).fetchTodayData(context, token: widget.token, date: DateTime.now().toString().split(' ')[0]);
                           setState(() {
                             reLoading = false;
                           });
@@ -101,11 +103,16 @@ class _TodayUploadedDataState extends State<TodayUploadedData> {
                   itemBuilder: (BuildContext context, int index) {
                     var dat = filteredTodayData[index];
                     return Card(
-                      elevation: 3,
-                      shape: const  RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8))
+                      elevation: 0,
+                      color: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: const  BorderRadius.all(Radius.circular(8)),
+                        side: BorderSide(
+                          color: Theme.of(context).colorScheme.primary,
+                        )
                       ),
                       child: ListTile(
+                        tileColor: Colors.transparent,
                         title: Text(
                           dat.item,
                           style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -141,13 +148,6 @@ class _TodayUploadedDataState extends State<TodayUploadedData> {
     );
   }
 
-  Future<void> fetchTodayData()async{
-    await Provider.of<DataProvider>(context, listen: false).fetchTodayData(context);
-    setState(() {
-      // _isLoading = false;
-    });
-  }
-
   // Fetch data method to trigger data refresh
   Future<void> _fetchData() async {
     if (!reLoading) {
@@ -156,7 +156,7 @@ class _TodayUploadedDataState extends State<TodayUploadedData> {
         _refreshIconOffset = -100;
       });
 
-      await Provider.of<DataProvider>(context, listen: false).fetchTodayData(context);
+      await Provider.of<DataProvider>(context, listen: false).fetchTodayData(context, token: widget.token, date: DateTime.now().toString().split(' ')[0]);
 
       setState(() {
         reLoading = false;

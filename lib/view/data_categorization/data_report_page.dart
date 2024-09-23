@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:mksc/model/data.dart';
 import 'package:mksc/model/population_data.dart';
 import 'package:mksc/provider/theme_provider.dart';
@@ -131,8 +132,12 @@ class _DataReportPageState extends State<DataReportPage> {
           backgroundColor: Theme.of(context).colorScheme.primary,
           shape: const OvalBorder(eccentricity: 1, side: BorderSide.none),
           onPressed: () => createPdf(),
-          child: const Icon(
-            CupertinoIcons.printer
+          child: SvgPicture.asset(
+            "assets/icons/report_02.svg",
+            height: 20,
+            width: 20,
+            theme: const SvgTheme(currentColor: Colors.white),
+            color: Colors.white,
           ),
         ),
         backgroundColor: Theme.of(context).colorScheme.surface,

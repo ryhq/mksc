@@ -35,9 +35,15 @@ class DataProvider with ChangeNotifier {
   }
 
   
-  Future<void> fetchTodayData (BuildContext context) async{
+  Future<void> fetchTodayData (
+    BuildContext context, 
+    {
+      required String token, 
+      required String date,
+    }
+  ) async{
     try {
-      final List<Data> fetchedData = await PopulationDataServices.fetchTodayData(context);
+      final List<Data> fetchedData = await PopulationDataServices.fetchTodayData(context, token: token, date: date);
       fetchedData.isEmpty ? null : _dataList = fetchedData;
       notifyListeners();
     } catch (e) {

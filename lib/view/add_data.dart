@@ -55,7 +55,7 @@ class _AddDataState extends State<AddData> {
 
   void navigate(){
     if(savedToken.isNotEmpty && context.mounted){
-      Navigator.push(context, MaterialPageRoute(builder: (context) => DataCategorization(categoryTitle: widget.title),));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => DataCategorization(categoryTitle: widget.title, token: savedToken,),));
     }
   }
 
@@ -64,6 +64,12 @@ class _AddDataState extends State<AddData> {
     if (widget.title == "Chicken House") {
       setState(() {
         email = "chicken@chicken.com";
+        code = 2288;
+      });
+    }
+    if (widget.title == "Laundry") {
+      setState(() {
+        email = "laundry@laundry.com";
         code = 2288;
       });
     }

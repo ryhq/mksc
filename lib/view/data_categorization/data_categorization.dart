@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mksc/model/data.dart';
 import 'package:mksc/model/population_data.dart';
+import 'package:mksc/model/token.dart';
 import 'package:mksc/provider/data_provider.dart';
 import 'package:mksc/provider/theme_provider.dart';
 import 'package:mksc/view/data_categorization/data_report_page.dart';
@@ -15,7 +16,8 @@ import 'package:provider/provider.dart';
 
 class DataCategorization extends StatefulWidget {
   final String categoryTitle;
-  const DataCategorization({super.key, required this.categoryTitle});
+  final String token;
+  const DataCategorization({super.key, required this.categoryTitle, required this.token});
 
   @override
   State<DataCategorization> createState() => _DataCategorizationState();
@@ -57,6 +59,9 @@ class _DataCategorizationState extends State<DataCategorization> with SingleTick
     fetchPopulationData();
     fetchTodayData();
     _tabController = TabController(length: 2, vsync: this);
+    setState(() {
+      dateController.text = DateTime.now().toString().split(' ')[0];
+    });
   }
 
   @override
@@ -83,7 +88,7 @@ class _DataCategorizationState extends State<DataCategorization> with SingleTick
                   padding: const EdgeInsets.all(3.0),
                   child: Icon(
                     CupertinoIcons.back,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: Colors.white,
                     size: Provider.of<ThemeProvider>(context).fontSize + 7,
                   ),
                 ),
@@ -92,9 +97,10 @@ class _DataCategorizationState extends State<DataCategorization> with SingleTick
           ),
           title: Text(
             widget.categoryTitle,
-            style: Theme.of(context).textTheme.headlineSmall,
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white),
           ),
           centerTitle: true,
+          backgroundColor: Theme.of(context).colorScheme.primary,
           actions: [
             filteredPopulationData.isEmpty && filteredTodayData.isEmpty ? const SizedBox() :
             IconButton(
@@ -104,94 +110,111 @@ class _DataCategorizationState extends State<DataCategorization> with SingleTick
                   dataList: filteredTodayData.reversed.toList(),
                 ),));
               }, 
-              icon: Icon(
+              icon: const Icon(
                 Icons.summarize_outlined,
-                color: Theme.of(context).colorScheme.primary,
+                color: Colors.white,
               ),
               tooltip: "View Report",
-            )
+            ),
           ],
         ),
         backgroundColor: Theme.of(context).colorScheme.surface,
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  "Filter by date",
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                
-                const SizedBox(height: 21,),
-                
-                GestureDetector(
-                  onTap: () => _selectDateTime(context),
-                  child: AbsorbPointer(
-                    child: AppTextFormField(
-                      hintText: "yyyy-mm-dd", 
-                      iconData: Icons.date_range, 
-                      obscureText: false, 
-                      textInputType: TextInputType.number,
-                      textEditingController: dateController,
+        body: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.blue[100]!,
+                Colors.grey[50]!,
+                Colors.white,
+                Colors.grey[50]!,
+                Colors.blue[100]!,
+              ],
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    "Filter by date",
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  
+                  const SizedBox(height: 21,),
+                  
+                  GestureDetector(
+                    onTap: () => _selectDateTime(context),
+                    child: AbsorbPointer(
+                      child: AppTextFormField(
+                        hintText: "yyyy-mm-dd", 
+                        iconData: Icons.date_range, 
+                        obscureText: false, 
+                        textInputType: TextInputType.number,
+                        textEditingController: dateController,
+                      ),
                     ),
                   ),
-                ),
-
-                const SizedBox(height: 21,),
-
-                Text(
-                  "Please select Category",
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-
-                const SizedBox(height: 21,),
-                _isLoading ? const BallPulseIndicator() :
-
-                SizedBox(
-                  height: 60,
-                  child: ListView.builder(
-                    physics: const BouncingScrollPhysics(),
-                    scrollDirection: Axis.horizontal,
-                    controller: ScrollController(),
-                    shrinkWrap: true,
-                    itemCount: categories.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final category =  categories[index];
-                      return CardCategory(
-                        title: category,
-                        iconData: Icons.egg,
-                        isSelected: selectedCategories.contains(category),
-                        onCategorySelected: onCategorySelected,
-                      );
-                    },
+            
+                  const SizedBox(height: 21,),
+            
+                  Text(
+                    "Please select Category",
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
-                ),
-                const SizedBox(height: 21,),
-
-                AddDataToCategory(selectedCategories: selectedCategories, categoryTitle: widget.categoryTitle),
-
-                TabBar(
-                  controller: _tabController,
-                  tabs: [
-                    Tab(text: 'Today\'s Data ($totalFilteredData)'),
-                    Tab(text: 'Population Data ($totalFilteredPopulationData)'),
-                  ]
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).orientation == Orientation.portrait ? MediaQuery.of(context).size.height * 0.75 :  MediaQuery.of(context).size.height * 0.25,
-                  child: TabBarView(
+            
+                  const SizedBox(height: 21,),
+                  _isLoading ? const BallPulseIndicator() :
+            
+                  SizedBox(
+                    height: 60,
+                    child: ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      scrollDirection: Axis.horizontal,
+                      controller: ScrollController(),
+                      shrinkWrap: true,
+                      itemCount: categories.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final category =  categories[index];
+                        return CardCategory(
+                          title: category,
+                          iconData: Icons.egg,
+                          isSelected: selectedCategories.contains(category),
+                          onCategorySelected: onCategorySelected,
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 21,),
+            
+                  AddDataToCategory(selectedCategories: selectedCategories, categoryTitle: widget.categoryTitle),
+            
+                  TabBar(
                     controller: _tabController,
-                    children: <Widget>[
-                      TodayUploadedData(selectedCategories: selectedCategories, isLoadingTodayData: _isLoadingTodayData,),
-                      PopulationDataWidget(selectedCategories: selectedCategories,),
+                    tabs: [
+                      Tab(text: 'Today\'s Data ($totalFilteredData)'),
+                      Tab(text: 'Population Data ($totalFilteredPopulationData)'),
                     ]
                   ),
-                ),
-              ],
+                  SizedBox(
+                    height: MediaQuery.of(context).orientation == Orientation.portrait ? MediaQuery.of(context).size.height * 0.75 :  MediaQuery.of(context).size.height * 0.25,
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: <Widget>[
+                        TodayUploadedData(selectedCategories: selectedCategories, isLoadingTodayData: _isLoadingTodayData, token: widget.token,),
+                        PopulationDataWidget(selectedCategories: selectedCategories,),
+                      ]
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -207,7 +230,7 @@ class _DataCategorizationState extends State<DataCategorization> with SingleTick
   }
 
   Future<void> fetchTodayData()async{
-    await Provider.of<DataProvider>(context, listen: false).fetchTodayData(context);
+    await Provider.of<DataProvider>(context, listen: false).fetchTodayData(context, token: widget.token, date: DateTime.now().toString().split(' ')[0]);
     setState(() {
       _isLoadingTodayData = false;
     });
@@ -218,7 +241,7 @@ class _DataCategorizationState extends State<DataCategorization> with SingleTick
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
+      lastDate: DateTime.now(),
     );
     if (pickedDate != null) {
       setState(() {

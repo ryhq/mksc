@@ -72,7 +72,7 @@ class AuthenticationServices {
         if (!context.mounted) {
           return;
         }
-        Navigator.push(context, MaterialPageRoute(builder: (context) => DataCategorization(categoryTitle: categoryTitle),));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => DataCategorization(categoryTitle: categoryTitle, token: receivedToken.token,),));
 
       } else if(response.statusCode == 302 && context.mounted){
         ScaffoldMessenger.of(context).showSnackBar(

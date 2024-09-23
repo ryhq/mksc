@@ -133,7 +133,7 @@ class _ReportPopulationDataState extends State<ReportPopulationData> {
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     trailing: Text(
-                      populationData.total,
+                      populationData.total.toString(),
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ),

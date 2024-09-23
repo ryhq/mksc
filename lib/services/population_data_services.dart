@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mksc/model/data.dart';
 import 'package:mksc/model/population_data.dart';
 import 'package:http/http.dart' as http;
+import 'package:mksc/services/mksc_urls.dart';
 import 'package:mksc/widgets/custom_alert.dart';
 
 class PopulationDataServices {
@@ -20,16 +21,11 @@ class PopulationDataServices {
     } else {
       try {
         final response = await http.get(
-          Uri.parse('https://nethub.co.tz/demo/api/v2/chickenHouse'),
+          Uri.parse(MKSCUrls.chickenUrl),
         );
 
-        debugPrint("Response status code ${response.statusCode}");
-        debugPrint("Response body ${response.body}");
-        debugPrint("Response bodyBytes ${response.bodyBytes}");
-        debugPrint("Response contentLength ${response.contentLength}");
-        debugPrint("Response isRedirect ${response.isRedirect}");
-        debugPrint("Response persistentConnection ${response.persistentConnection}");
-        debugPrint("Response reasonPhrase ${response.reasonPhrase}");
+        debugPrint("\n\n\nResponse status code ${response.statusCode}");
+        
 
         if (response.statusCode == 200) {  
           final Map<String, dynamic> responseData = json.decode(response.body);
@@ -105,7 +101,13 @@ class PopulationDataServices {
     }
   }
 
-  static Future<List<Data>> fetchTodayData(BuildContext context) async{    
+  static Future<List<Data>> fetchTodayData(
+    BuildContext context, 
+    {
+      required String token, 
+      required String date,
+    }
+  ) async{    
     List<ConnectivityResult> connectivityResult = await Connectivity().checkConnectivity();
 
     if (connectivityResult.contains(ConnectivityResult.none) && context.mounted) {
@@ -117,23 +119,33 @@ class PopulationDataServices {
 
     try {
       
+      // final response = await http.post(
+      //   Uri.parse(MKSCUrls.chickenToDayUrl),
+      //   headers: {
+      //     'Accept': 'application/json',
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: json.encode({'date': date, 'token': token}),
+      // );
+      
       final response = await http.get(
-        Uri.parse('https://nethub.co.tz/demo/api/v2/chicken/House/today'),
+        Uri.parse(MKSCUrls.getchickendata),
       );
 
       debugPrint("Response status code ${response.statusCode}");
-      debugPrint("Response body ${response.body}");
-      debugPrint("Response bodyBytes ${response.bodyBytes}");
-      debugPrint("Response contentLength ${response.contentLength}");
-      debugPrint("Response isRedirect ${response.isRedirect}");
-      debugPrint("Response persistentConnection ${response.persistentConnection}");
-      debugPrint("Response reasonPhrase ${response.reasonPhrase}");
+      // debugPrint("Response body ${response.body}");
+      // debugPrint("Response bodyBytes ${response.bodyBytes}");
+      // debugPrint("Response contentLength ${response.contentLength}");
+      // debugPrint("Response isRedirect ${response.isRedirect}");
+      // debugPrint("Response persistentConnection ${response.persistentConnection}");
+      // debugPrint("Response reasonPhrase ${response.reasonPhrase}");
 
       if (response.statusCode == 200) {  
         final Map<String, dynamic> responseData = json.decode(response.body);
         debugPrint("\n\n\nData $responseData");
-        // Extract the populationData list
-        final List<dynamic> dataList = responseData['data'];
+        // Extract the populationData list populationData
+        // final List<dynamic> dataList = responseData['data'];
+        final List<dynamic> dataList = responseData['populationData'];
         debugPrint("\n\n\nPopulation Data $dataList");
 
         final List<Data>  fetchedData = dataList.map((data) => Data.fromJson(data)).toList();

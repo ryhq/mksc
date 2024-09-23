@@ -1,7 +1,7 @@
 class PopulationData {
   final String month;
   final String item;
-  final String total;
+  final int total;
 
   PopulationData({
     required this.month, 
@@ -28,7 +28,7 @@ class PopulationData {
   PopulationData copyWith({
     String? month,
     String? item,
-    String? total,
+    int? total,
   }) {
     return PopulationData(
       month: month ?? this.month, 
@@ -41,8 +41,8 @@ class PopulationData {
     Map<String, double> itemTotalMap = {};
 
     for (var data in populationDataList) {
-      double totalValue = double.tryParse(data.total) ?? 0.0;
-      itemTotalMap[data.item] = totalValue;
+      int totalValue = data.total;
+      itemTotalMap[data.item] = double.parse(totalValue.toString());
     }
 
     return itemTotalMap;

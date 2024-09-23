@@ -107,7 +107,7 @@ class _AppPieChartFlState extends State<AppPieChartFl> {
   List<PieChartSectionData> showingSections(List<PopulationData> populationDataList) {
     double total = 0.0;
     for (var populationData in populationDataList) {
-      total += double.parse(populationData.total);
+      total += populationData.total;
     }
     return List.generate(populationDataList.length, (i) {
       final isTouched = i == touchedIndex;
@@ -116,8 +116,8 @@ class _AppPieChartFlState extends State<AppPieChartFl> {
       const shadows = [Shadow(color: Colors.black, blurRadius: 2)];
       return PieChartSectionData(
         color: defaultColorList[i % defaultColorList.length],
-        value: double.parse(populationDataList[i].total),
-        title: "${(double.parse(populationDataList[i].total) / total * 100).toStringAsFixed(2)}%".toString(),
+        value: populationDataList[i].total / 1.0,
+        title: "${(populationDataList[i].total / total * 100).toStringAsFixed(2)}%".toString(),
         radius: radius,
         titleStyle: TextStyle(
           fontSize: fontSize,

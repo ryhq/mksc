@@ -88,11 +88,16 @@ class _PopulationDataState extends State<PopulationDataWidget> {
                   itemBuilder: (BuildContext context, int index) {
                     var data = filteredPopulationData[index];
                     return Card(
-                      elevation: 3,
-                      shape: const  RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8))
+                      elevation: 0,
+                      color: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: const  BorderRadius.all(Radius.circular(8)),
+                        side: BorderSide(
+                          color: Theme.of(context).colorScheme.primary,
+                        )
                       ),
                       child: ListTile(
+                        tileColor: Colors.transparent,
                         title: Text(
                           "${data.item[0].toUpperCase()}${data.item.replaceFirst(RegExp(data.item[0]), '',)}",
                           style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -102,7 +107,7 @@ class _PopulationDataState extends State<PopulationDataWidget> {
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                         trailing: Text(
-                          data.total,
+                          data.total.toString(),
                           style: Theme.of(context).textTheme.headlineSmall,
                         ),
                       ),
