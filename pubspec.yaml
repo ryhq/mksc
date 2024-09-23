@@ -61,6 +61,7 @@ dependencies:
   fl_chart: ^0.69.0
   permission_handler: ^11.3.1
   share_plus: ^10.0.2
+  fluttertoast: ^8.2.8
 
 flutter_launcher_icons:
   android: "launcher_icon"
@@ -107,6 +108,8 @@ flutter:
   assets:
     - assets/logo/MKSC_Logo.jpg
     - assets/fonts/roboto/
+    - assets/icons/
+    - assets/logo/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

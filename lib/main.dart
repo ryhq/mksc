@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:mksc/provider/camp_provider.dart';
 import 'package:mksc/provider/data_provider.dart';
+import 'package:mksc/provider/greeting_provider.dart';
+import 'package:mksc/provider/menu_provider.dart';
+import 'package:mksc/provider/menu_type_provider.dart';
 import 'package:mksc/provider/theme_provider.dart';
 import 'package:mksc/view/home/mksc_home.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +20,14 @@ void main(List<String> args) async {
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         // Data Provider
         ChangeNotifierProvider(create: (_) => DataProvider()),
+        // Greeting Provider
+        ChangeNotifierProvider(create: (_) => GreetingProvider()),
+        // Camp Provider
+        ChangeNotifierProvider(create: (_) => CampProvider()),
+        // Menu Type Provider
+        ChangeNotifierProvider(create: (_) => MenuTypeProvider()),
+        // Menu Provider
+        ChangeNotifierProvider(create: (_) => MenuProvider()),
       ],
       child: const MKSC(),
     )
