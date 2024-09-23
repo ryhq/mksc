@@ -15,8 +15,8 @@ class AuthenticationServices {
     String categoryTitle, 
     BuildContext context, 
     {
-      required TextEditingController emailController,
-      required TextEditingController passwordCodeController
+      required String email,
+      required String passwordCode
     }
   ) async {
     List<ConnectivityResult> connectivityResult = await Connectivity().checkConnectivity();
@@ -29,8 +29,8 @@ class AuthenticationServices {
     }
     
     Map<String, dynamic> authenticationCredential = {
-      "email": emailController.text,
-      "password": passwordCodeController.text
+      "email": email,
+      "password": passwordCode
     };
 
     debugPrint("Authentication Credential $authenticationCredential");
@@ -43,14 +43,14 @@ class AuthenticationServices {
         body: json.encode(authenticationCredential),
       );
 
-      debugPrint("Authentication Credential JSON ${json.encode(authenticationCredential)}");
-      debugPrint("Response status code ${response.statusCode}");
-      debugPrint("Response body ${response.body}");
-      debugPrint("Response bodyBytes ${response.bodyBytes}");
-      debugPrint("Response contentLength ${response.contentLength}");
-      debugPrint("Response isRedirect ${response.isRedirect}");
-      debugPrint("Response persistentConnection ${response.persistentConnection}");
-      debugPrint("Response reasonPhrase ${response.reasonPhrase}");
+      // debugPrint("Authentication Credential JSON ${json.encode(authenticationCredential)}");
+      // debugPrint("Response status code ${response.statusCode}");
+      // debugPrint("Response body ${response.body}");
+      // debugPrint("Response bodyBytes ${response.bodyBytes}");
+      // debugPrint("Response contentLength ${response.contentLength}");
+      // debugPrint("Response isRedirect ${response.isRedirect}");
+      // debugPrint("Response persistentConnection ${response.persistentConnection}");
+      // debugPrint("Response reasonPhrase ${response.reasonPhrase}");
       
       if (response.statusCode == 200) {
         debugPrint("\n\n\nLogin successful...\n\n\n");
@@ -61,8 +61,13 @@ class AuthenticationServices {
         debugPrint("\n\n\n ️‍🔥️‍🔥️‍🔥️‍🔥 Received Token ${receivedToken.token}\n\n\n");
         
         TokenStorage tokenStorage = TokenStorage();
+        
+        debugPrint("\n\n\n ️‍🔥️‍🔥️‍🔥️‍🔥 Saving Token  with $categoryTitle as key : ${receivedToken.token}\n\n\n");
 
-        await tokenStorage.saveToken(receivedToken.token); // Saving the token
+        await tokenStorage.saveToken(
+          tokenKey: categoryTitle, 
+          token: receivedToken.token
+        ); // Saving the token
 
         if (!context.mounted) {
           return;

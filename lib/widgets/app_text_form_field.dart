@@ -50,8 +50,6 @@ class _AppTextFormFieldState extends State<AppTextFormField> {
   Widget build(BuildContext context) {
     return TextFormField(
       focusNode: _focusNode,
-      // minLines: 1,
-      // maxLines: 3,
       controller: widget.textEditingController,
       onChanged: widget.onChanged,
       validator: widget.validator,
