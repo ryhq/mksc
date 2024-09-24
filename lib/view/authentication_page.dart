@@ -10,16 +10,15 @@ import 'package:mksc/widgets/ball_pulse_indicator.dart';
 import 'package:mksc/widgets/button.dart';
 import 'package:provider/provider.dart';
 
-class AddData extends StatefulWidget {
+class AuthenticationPage extends StatefulWidget {
   final String title;
-
-  const AddData({super.key, required this.title});
+  const AuthenticationPage({super.key, required this.title});
 
   @override
-  State<AddData> createState() => _AddDataState();
+  State<AuthenticationPage> createState() => _AuthenticationPageState();
 }
 
-class _AddDataState extends State<AddData> {
+class _AuthenticationPageState extends State<AuthenticationPage> {
   
   final TextEditingController passwordCodeController = TextEditingController();
 

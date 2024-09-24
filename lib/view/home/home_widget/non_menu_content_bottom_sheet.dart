@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mksc/view/add_data.dart';
+import 'package:mksc/view/authentication_page.dart';
 
 class NonMenuContentBottomSheet extends StatelessWidget {
   final String title;
@@ -13,11 +13,12 @@ class NonMenuContentBottomSheet extends StatelessWidget {
           onTap: () {
             Navigator.pop(context);
             if (title == "Laundry") {
+
             } else {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => AddData(title: title),
+                  builder: (context) => AuthenticationPage(title: title),
                 )
               );
             }
@@ -56,12 +57,12 @@ class NonMenuContentBottomSheet extends StatelessWidget {
             Navigator.pop(context);
             if (title == "Laundry") {
             } else {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AddData(title: title),
-                )
-              );
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (context) => AuthenticationPage(title: title),
+              //   )
+              // );
             }
           },
           child: Padding(

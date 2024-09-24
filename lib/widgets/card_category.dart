@@ -1,8 +1,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:mksc/provider/theme_provider.dart';
-import 'package:provider/provider.dart';
 
 class CardCategory extends StatefulWidget {
   final String title;
