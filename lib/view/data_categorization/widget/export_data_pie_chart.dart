@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mksc/model/data.dart';
+import 'package:mksc/model/chicken_house_data.dart';
 import 'package:pie_chart/pie_chart.dart';
 
 class ExportDataPieChart {
-  static PieChart exportPieChart(BuildContext context, List<Data> dataList) {
+  static PieChart exportPieChart(BuildContext context, List<ChickenHouseData> dataList) {
     return PieChart(
       dataMap: _createItemToNumberMap(dataList),
       animationDuration: const Duration(milliseconds: 0),
@@ -33,13 +33,13 @@ class ExportDataPieChart {
     );
   }
 
-  static Map<String, double> _createItemToNumberMap(List<Data> dataList){
+  static Map<String, double> _createItemToNumberMap(List<ChickenHouseData> dataList){
     Map<String, double> itemTotalMap = {};
     for (var data in dataList) {
       if (itemTotalMap.keys.contains(data.item.toLowerCase())) {
-        itemTotalMap[data.item.toLowerCase()] = (itemTotalMap[data.item.toLowerCase()]! + double.parse(data.number));
+        itemTotalMap[data.item.toLowerCase()] = (itemTotalMap[data.item.toLowerCase()]! + double.parse(data.number.toString()));
       } else {
-        itemTotalMap[data.item.toLowerCase()] = double.parse(data.number);
+        itemTotalMap[data.item.toLowerCase()] = double.parse(data.number.toString());
       }
     }
     return itemTotalMap;

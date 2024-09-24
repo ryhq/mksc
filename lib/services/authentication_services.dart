@@ -6,8 +6,9 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mksc/model/token.dart';
+import 'package:mksc/services/mksc_urls.dart';
 import 'package:mksc/storage/token_storage.dart';
-import 'package:mksc/view/data_categorization/data_categorization.dart';
+import 'package:mksc/view/chickenHouse/chicken_house_screen.dart';
 import 'package:mksc/widgets/custom_alert.dart';
 
 class AuthenticationServices {
@@ -35,7 +36,7 @@ class AuthenticationServices {
 
     debugPrint("Authentication Credential $authenticationCredential");
 
-    final Uri uri = Uri.parse("https://nethub.co.tz/demo/api/v2/auth/user");
+    final Uri uri = Uri.parse(MKSCUrls.authUrl);
     try {
       final http.Response response = await http.post(
         uri, 
@@ -72,7 +73,7 @@ class AuthenticationServices {
         if (!context.mounted) {
           return;
         }
-        Navigator.push(context, MaterialPageRoute(builder: (context) => DataCategorization(categoryTitle: categoryTitle, token: receivedToken.token,),));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => ChickenHouseScreen(categoryTitle: categoryTitle, token: receivedToken.token,),));
 
       } else if(response.statusCode == 302 && context.mounted){
         ScaffoldMessenger.of(context).showSnackBar(

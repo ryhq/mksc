@@ -30,6 +30,19 @@ class CustomAlert {
       ),
     );
   }
+  static void showAlertWidget(BuildContext context, {required String title, required Widget content, required List<Widget> actions }) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          title,
+          style: Theme.of(context).textTheme.headlineMedium
+        ),
+        content: content,
+        actions: actions
+      ),
+    );
+  }
 
   static void showCopiedText(
       BuildContext context, String title, String copiedMessage) async {

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mksc/model/data.dart';
+import 'package:mksc/model/chicken_house_data.dart';
 import 'package:pie_chart/pie_chart.dart';
 
 class ReportData extends StatefulWidget {
-  final List<Data> dataList;
+  final List<ChickenHouseData> dataList;
   final bool pieChart;
   final bool viewList;
   const ReportData({
@@ -110,7 +110,7 @@ class _ReportDataState extends State<ReportData> {
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     trailing: Text(
-                      data.number,
+                      data.number.toString(),
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ),
@@ -125,13 +125,13 @@ class _ReportDataState extends State<ReportData> {
     );
   }
 
-  Map<String, double> createItemToNumberMap(List<Data> dataList){
+  Map<String, double> createItemToNumberMap(List<ChickenHouseData> dataList){
     Map<String, double> itemTotalMap = {};
     for (var data in dataList) {
       if (itemTotalMap.keys.contains(data.item.toLowerCase())) {
-        itemTotalMap[data.item.toLowerCase()] = (itemTotalMap[data.item.toLowerCase()]! + double.parse(data.number));
+        itemTotalMap[data.item.toLowerCase()] = (itemTotalMap[data.item.toLowerCase()]! + double.parse(data.number.toString()));
       } else {
-        itemTotalMap[data.item.toLowerCase()] = double.parse(data.number);
+        itemTotalMap[data.item.toLowerCase()] = double.parse(data.number.toString());
       }
     }
     return itemTotalMap;

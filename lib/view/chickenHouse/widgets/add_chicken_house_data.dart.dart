@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:mksc/provider/data_provider.dart';
+import 'package:mksc/provider/chicken_house_data_provider.dart';
 import 'package:mksc/utils/validator_utility.dart';
 import 'package:mksc/widgets/app_text_form_field.dart';
 import 'package:mksc/widgets/ball_pulse_indicator.dart';
 import 'package:mksc/widgets/button.dart';
 import 'package:provider/provider.dart';
 
-class AddDataToCategory extends StatefulWidget {
+class AddChickenHouseData extends StatefulWidget {
   final String categoryTitle;
-  final List<String> selectedCategories;
-  const AddDataToCategory({super.key, required this.selectedCategories, required this.categoryTitle});
+  final String item;
+  final String token;
+  final String date;
+  const AddChickenHouseData({super.key, required this.categoryTitle, required this.item, required this.token, required this.date});
 
   @override
-  State<AddDataToCategory> createState() => _AddDataToCategoryState();
+  State<AddChickenHouseData> createState() => _AddChickenHouseDataState();
 }
 
-class _AddDataToCategoryState extends State<AddDataToCategory> {
+class _AddChickenHouseDataState extends State<AddChickenHouseData> {
   final TextEditingController dataController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool savingClicked = false;
@@ -23,12 +25,11 @@ class _AddDataToCategoryState extends State<AddDataToCategory> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        widget.selectedCategories.length == 1 ? 
         Column(
         crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Enter Data for ${widget.categoryTitle} - ${widget.selectedCategories[0]}",
+              "Enter Data for ${widget.categoryTitle} - ${widget.item}",
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: 21,),
@@ -40,7 +41,7 @@ class _AddDataToCategoryState extends State<AddDataToCategory> {
                 obscureText: false, 
                 textInputType: TextInputType.number,
                 textEditingController: dataController,
-                validator: (value) => ValidatorUtility.validateRequiredField(value, "Integer Quantity for ${widget.selectedCategories[0]} is required"),
+                validator: (value) => ValidatorUtility.validateRequiredField(value, "Integer Quantity for ${widget.item} is required"),
               ),
             ),
             const SizedBox(height: 21,),
@@ -58,7 +59,6 @@ class _AddDataToCategoryState extends State<AddDataToCategory> {
                   title: "Clear", 
                   onTap: () {
                     setState(() {
-                      widget.selectedCategories.clear();
                       _formKey.currentState!.reset();
                       dataController.clear();
                     });
@@ -74,13 +74,14 @@ class _AddDataToCategoryState extends State<AddDataToCategory> {
                       setState(() {
                         savingClicked = true;
                       });
-                      await Provider.of<DataProvider>(context, listen: false).saveData(
+                      await Provider.of<ChickenHouseDataProvider>(context, listen: false).saveChickenHouseData(
                         context, 
-                        item: widget.selectedCategories[0], 
-                        number: int.parse(dataController.text
-                      ));
+                        item: widget.item, 
+                        number: int.parse(dataController.text), 
+                        token: widget.token, 
+                        date: widget.date
+                      );
                       setState(() {
-                        widget.selectedCategories.clear();
                         _formKey.currentState!.reset();
                         dataController.clear();
                         savingClicked = false;
@@ -94,7 +95,7 @@ class _AddDataToCategoryState extends State<AddDataToCategory> {
             ),
             const SizedBox(height: 21,),
           ],
-        ) : const SizedBox(),
+        ),
       ],
     );
   }

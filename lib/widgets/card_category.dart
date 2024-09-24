@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:mksc/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -17,8 +18,29 @@ class CardCategory extends StatefulWidget {
 }
 
 class _CardCategoryState extends State<CardCategory> {
+  String svgUrl = "";
   @override
   Widget build(BuildContext context) {
+    if (widget.title.startsWith('cock')) {
+      setState(() {
+        svgUrl = "assets/icons/chicken_.svg";
+      });
+    }
+    if (widget.title.startsWith('hen')) {
+      setState(() {
+        svgUrl = "assets/icons/hen.svg";
+      });
+    }
+    if (widget.title.startsWith('chick')) {
+      setState(() {
+        svgUrl = "assets/icons/chick.svg";
+      });      
+    }
+    if (widget.title.startsWith('egg')) {
+      setState(() {
+        svgUrl = "assets/icons/egg.svg";
+      });         
+    }
     return GestureDetector(
       onTap: () {
         widget.onCategorySelected(widget.title);
@@ -32,12 +54,14 @@ class _CardCategoryState extends State<CardCategory> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Icon(
-                widget.isSelected ? Icons.check : widget.iconData,
-                color: widget.isSelected ? Colors.white : Theme.of(context).colorScheme.primary,
-                size: Provider.of<ThemeProvider>(context).fontSize + 7,
+              SvgPicture.asset(
+                svgUrl,
+                height: 20,
+                width: 20,
+                theme: const SvgTheme(currentColor: Colors.white),
+                color: Colors.white,
               ),
               Text(
                 widget.title,

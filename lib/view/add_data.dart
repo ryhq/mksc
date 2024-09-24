@@ -4,7 +4,7 @@ import 'package:mksc/provider/theme_provider.dart';
 import 'package:mksc/services/authentication_services.dart';
 import 'package:mksc/storage/token_storage.dart';
 import 'package:mksc/utils/validator_utility.dart';
-import 'package:mksc/view/data_categorization/data_categorization.dart';
+import 'package:mksc/view/chickenHouse/chicken_house_screen.dart';
 import 'package:mksc/widgets/app_text_form_field.dart';
 import 'package:mksc/widgets/ball_pulse_indicator.dart';
 import 'package:mksc/widgets/button.dart';
@@ -55,7 +55,7 @@ class _AddDataState extends State<AddData> {
 
   void navigate(){
     if(savedToken.isNotEmpty && context.mounted){
-      Navigator.push(context, MaterialPageRoute(builder: (context) => DataCategorization(categoryTitle: widget.title, token: savedToken,),));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => ChickenHouseScreen(categoryTitle: widget.title, token: savedToken,),));
     }
   }
 

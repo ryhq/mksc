@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:mksc/provider/camp_provider.dart';
-import 'package:mksc/provider/data_provider.dart';
+import 'package:mksc/provider/chicken_house_data_provider.dart';
 import 'package:mksc/provider/greeting_provider.dart';
 import 'package:mksc/provider/menu_provider.dart';
 import 'package:mksc/provider/menu_type_provider.dart';
@@ -18,8 +18,8 @@ void main(List<String> args) async {
       providers: [
         // Theme Provider
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        // Data Provider
-        ChangeNotifierProvider(create: (_) => DataProvider()),
+        // Chicken House Data Provider 
+        ChangeNotifierProvider(create: (_) => ChickenHouseDataProvider()),
         // Greeting Provider
         ChangeNotifierProvider(create: (_) => GreetingProvider()),
         // Camp Provider
