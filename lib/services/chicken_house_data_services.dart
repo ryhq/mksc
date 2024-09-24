@@ -149,7 +149,7 @@ class ChickenHouseDataServices {
     return ChickenHouseData.empty();
   }
 
-  static Future<ChickenHouseData> editChickenHouseData(BuildContext context, {required String item, required int number, required String token, required int id}) async{
+  static Future<ChickenHouseData> editChickenHouseData(BuildContext context, {required String item, required int number, required String token, required int id,}) async{
     
     List<ConnectivityResult> connectivityResult = await Connectivity().checkConnectivity();
 

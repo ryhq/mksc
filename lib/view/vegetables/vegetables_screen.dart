@@ -35,6 +35,7 @@ class _VegetablesScreenState extends State<VegetablesScreen> {
     });
 
     fetchVegetableData();
+    fetchTodayVegetableData(context, token: widget.token, date: dateController.text);
   }
 
   void fetchVegetableData()async{
@@ -42,14 +43,40 @@ class _VegetablesScreenState extends State<VegetablesScreen> {
       isLoading = true;
     });
 
-      await Provider.of<VegetableProvider>(context, listen: false).fetchVegetableData(context);
-
-      await Future.delayed(const Duration(seconds: 2));
+    await Provider.of<VegetableProvider>(context, listen: false).fetchVegetableData(context);
+   
+    await Future.delayed(const Duration(seconds: 2));
 
     setState(() {
       isLoading = false;
     });
+  }
 
+  void fetchTodayVegetableData(
+    BuildContext context,
+    {
+      required String token, 
+      required String date,
+    }
+  ) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    await Provider.of<VegetableProvider>(
+      context, 
+      listen: false
+    ).fetchTodayVegetableData(
+      context, 
+      token: widget.token, 
+      date: dateController.text
+    );
+
+    await Future.delayed(const Duration(seconds: 2));
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   List<Vegetable> searchKeyWord(String searchQuery, List<Vegetable> vegetableDataList){
@@ -61,7 +88,9 @@ class _VegetablesScreenState extends State<VegetablesScreen> {
   }
   @override
   Widget build(BuildContext context) {
+
     List<Vegetable> vegetableDataList = Provider.of<VegetableProvider>(context,).vegetableDataList.reversed.toList();
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -203,7 +232,7 @@ class _VegetablesScreenState extends State<VegetablesScreen> {
                     itemCount: isSearchingMode ? searchKeyWord(searchQueryController.text, vegetableDataList).length : vegetableDataList.length,
                     itemBuilder: (BuildContext context, int index) {
                       var vegetableData = isSearchingMode ? searchKeyWord(searchQueryController.text, vegetableDataList)[index] : vegetableDataList[index];
-                      return VegetableCard(vegetableData: vegetableData);
+                      return VegetableCard(vegetableData: vegetableData, token: widget.token, date: dateController.text,);
                     },
                   ),
 
@@ -228,7 +257,7 @@ class _VegetablesScreenState extends State<VegetablesScreen> {
         dateController.text = pickedDate.toString().split(' ')[0];
       });
       if(!context.mounted) return;
-      // fetchChickenHouseData(context, token: widget.token, date: dateController.text);
+      fetchTodayVegetableData(context, token: widget.token, date: dateController.text);
     }
   }
 }
