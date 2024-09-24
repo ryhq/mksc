@@ -5,6 +5,7 @@ import 'package:mksc/services/authentication_services.dart';
 import 'package:mksc/storage/token_storage.dart';
 import 'package:mksc/utils/validator_utility.dart';
 import 'package:mksc/view/chickenHouse/chicken_house_screen.dart';
+import 'package:mksc/view/vegetables/vegetables_screen.dart';
 import 'package:mksc/widgets/app_text_form_field.dart';
 import 'package:mksc/widgets/ball_pulse_indicator.dart';
 import 'package:mksc/widgets/button.dart';
@@ -45,17 +46,20 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
     savedToken = await tokenStorage.getTokenDirect(tokenKey: widget.title);
 
     if (savedToken.isNotEmpty) {
+      debugPrint("\n\n\n🪙🟡💰🥮Fetched Token for ${widget.title} is : $savedToken");
+
       navigate();
     }
   }
 
   void navigate(){
     if(savedToken.isNotEmpty && context.mounted){
+      // Navigator.pop(context);
       if (widget.title == "Chicken House") {
         Navigator.push(context, MaterialPageRoute(builder: (context) => ChickenHouseScreen(categoryTitle: widget.title, token: savedToken,),));
       }
-      if (widget.title == "Vegetable") {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ChickenHouseScreen(categoryTitle: widget.title, token: savedToken,),));
+      if (widget.title == "Vegetables") {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => VegetablesScreen(categoryTitle: widget.title, token: savedToken,),));
       }
     }
   }
@@ -68,10 +72,10 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
         code = 2288;
       });
     }
-    if (widget.title == "Laundry") {
+    if (widget.title == "Vegetables") {
       setState(() {
-        email = "laundry@laundry.com";
-        code = 2288;
+        email = "vegetable@vegetable.com";
+        code = 3388;
       });
     }
     return Scaffold(

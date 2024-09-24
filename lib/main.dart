@@ -6,6 +6,7 @@ import 'package:mksc/provider/greeting_provider.dart';
 import 'package:mksc/provider/menu_provider.dart';
 import 'package:mksc/provider/menu_type_provider.dart';
 import 'package:mksc/provider/theme_provider.dart';
+import 'package:mksc/provider/vegetable_provider.dart';
 import 'package:mksc/view/home/mksc_home.dart';
 import 'package:provider/provider.dart';
 
@@ -28,6 +29,8 @@ void main(List<String> args) async {
         ChangeNotifierProvider(create: (_) => MenuTypeProvider()),
         // Menu Provider
         ChangeNotifierProvider(create: (_) => MenuProvider()),
+        // Vegetable Provider
+        ChangeNotifierProvider(create: (_) => VegetableProvider()),
       ],
       child: const MKSC(),
     )

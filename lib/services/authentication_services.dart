@@ -9,6 +9,7 @@ import 'package:mksc/model/token.dart';
 import 'package:mksc/services/mksc_urls.dart';
 import 'package:mksc/storage/token_storage.dart';
 import 'package:mksc/view/chickenHouse/chicken_house_screen.dart';
+import 'package:mksc/view/vegetables/vegetables_screen.dart';
 import 'package:mksc/widgets/custom_alert.dart';
 
 class AuthenticationServices {
@@ -43,15 +44,6 @@ class AuthenticationServices {
         headers: {'Content-Type': 'application/json'},
         body: json.encode(authenticationCredential),
       );
-
-      // debugPrint("Authentication Credential JSON ${json.encode(authenticationCredential)}");
-      // debugPrint("Response status code ${response.statusCode}");
-      // debugPrint("Response body ${response.body}");
-      // debugPrint("Response bodyBytes ${response.bodyBytes}");
-      // debugPrint("Response contentLength ${response.contentLength}");
-      // debugPrint("Response isRedirect ${response.isRedirect}");
-      // debugPrint("Response persistentConnection ${response.persistentConnection}");
-      // debugPrint("Response reasonPhrase ${response.reasonPhrase}");
       
       if (response.statusCode == 200) {
         debugPrint("\n\n\nLogin successful...\n\n\n");
@@ -73,7 +65,12 @@ class AuthenticationServices {
         if (!context.mounted) {
           return;
         }
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ChickenHouseScreen(categoryTitle: categoryTitle, token: receivedToken.token,),));
+
+        if (receivedToken.token.isEmpty) {
+          return;
+        }else{
+          _navigate(categoryTitle, receivedToken.token, context);
+        }
 
       } else if(response.statusCode == 302 && context.mounted){
         ScaffoldMessenger.of(context).showSnackBar(
@@ -120,6 +117,19 @@ class AuthenticationServices {
         );
       }
       rethrow;
+    }
+  }
+
+  
+
+  static void _navigate(String categoryTitle, String token, BuildContext context){
+    if(token.isNotEmpty && context.mounted){
+      if (categoryTitle == "Chicken House") {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => ChickenHouseScreen(categoryTitle: categoryTitle, token: token,),));
+      }
+      if (categoryTitle == "Vegetables") {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => VegetablesScreen(categoryTitle: categoryTitle, token: token,),));
+      }
     }
   }
 }

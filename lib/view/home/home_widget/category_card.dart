@@ -22,7 +22,7 @@ class _CategoryCardState extends State<CategoryCard> {
         if (
           widget.title == "Chicken House" || 
           widget.title == "Menu" || 
-          widget.title == "Vegetable" || 
+          widget.title == "Vegetables" || 
           widget.title == "Laundry"
         ) {
           showModalBottomSheet(
