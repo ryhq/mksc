@@ -148,88 +148,88 @@ class _ChickenHouseScreenState extends State<ChickenHouseScreen> {
                   ),
             
                   const SizedBox(height: 21,),
-            
-                  if(!noCategoryLeft)...[
-                    Text(
-                      "Please select Category",
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
+                  Text(
+                    "Please select Category",
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
 
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.13,
-                        child: GridView.builder(
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 4, 
-                            crossAxisSpacing: MediaQuery.of(context).orientation == Orientation.portrait ? 10.0 : 5.0,
-                            mainAxisSpacing: MediaQuery.of(context).orientation == Orientation.portrait ? 10.0 : 5.0, 
-                            childAspectRatio : MediaQuery.of(context).orientation == Orientation.portrait ? 
-                                MediaQuery.of(context).size.width / (MediaQuery.of(context).size.height / 8) : 
-                                MediaQuery.of(context).size.width / (MediaQuery.of(context).size.height / 2),
-                          ),
-                          itemCount: chickenHouseCategories.length,
-                          itemBuilder: (BuildContext context, int index) {
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.13,
+                      child: GridView.builder(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 4, 
+                          crossAxisSpacing: MediaQuery.of(context).orientation == Orientation.portrait ? 10.0 : 5.0,
+                          mainAxisSpacing: MediaQuery.of(context).orientation == Orientation.portrait ? 10.0 : 5.0, 
+                          childAspectRatio : MediaQuery.of(context).orientation == Orientation.portrait ? 
+                              MediaQuery.of(context).size.width / (MediaQuery.of(context).size.height / 8) : 
+                              MediaQuery.of(context).size.width / (MediaQuery.of(context).size.height / 2),
+                        ),
+                        itemCount: chickenHouseCategories.length,
+                        itemBuilder: (BuildContext context, int index) {
 
-                            final category = chickenHouseCategories[index];
-    
-                            // Check if the category name exists in chickenHouseDataList
-                            final isDisabled = chickenHouseDataList.any((data) => data.item == category.name);
+                          final category = chickenHouseCategories[index];
+  
+                          // Check if the category name exists in chickenHouseDataList
+                          final isDisabled = chickenHouseDataList.any((data) => data.item == category.name);
 
-                            final isSelected = selectedCategory == category;
-                            
-                            return GestureDetector(
-                              onTap: isDisabled ? null : () {
-                                setState(() {
-                                  if(selectedCategory != null && selectedCategory == category){
-                                    selectedCategory = null;
-                                  }else {
-                                    selectedCategory = category;
-                                  }
-                                });
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: isDisabled ? Colors.grey : Theme.of(context).colorScheme.primary, 
-                                    width: isDisabled ? 1.0 : isSelected ? 2.0 : 0.5
-                                  ),
-                                  borderRadius: isDisabled ? BorderRadius.circular(32.0) : BorderRadius.circular(8.0),
-                                  color: Theme.of(context).colorScheme.secondary
+                          final isSelected = selectedCategory == category;
+                          
+                          return GestureDetector(
+                            onTap: isDisabled ? null : () {
+                              setState(() {
+                                if(selectedCategory != null && selectedCategory == category){
+                                  selectedCategory = null;
+                                }else {
+                                  selectedCategory = category;
+                                }
+                              });
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: isDisabled ? Colors.grey : Theme.of(context).colorScheme.primary, 
+                                  width: isDisabled ? 1.0 : isSelected ? 2.0 : 0.5
                                 ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      Padding(
-                                        padding: const EdgeInsets.only(right: 18.0),
-                                        child: SvgPicture.asset(
-                                          chickenHouseCategories[index].svgicon,
-                                          height: 20,
-                                          width: 20,
-                                          color: isDisabled ? Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.primary,
-                                        ),
+                                borderRadius: isDisabled ? BorderRadius.circular(32.0) : BorderRadius.circular(8.0),
+                                color: Theme.of(context).colorScheme.secondary
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Padding(
+                                      padding: const EdgeInsets.only(right: 18.0),
+                                      child: SvgPicture.asset(
+                                        chickenHouseCategories[index].svgicon,
+                                        height: 20,
+                                        width: 20,
+                                        color: isDisabled ? Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.primary,
                                       ),
-                                      const SizedBox(height: 18.0),
-                                      Text(
-                                        category.name,
-                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                          decoration: isDisabled ? TextDecoration.lineThrough : null
-                                        ),
+                                    ),
+                                    const SizedBox(height: 18.0),
+                                    Text(
+                                      category.name,
+                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                        decoration: isDisabled ? TextDecoration.lineThrough : null
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            );
-                          },
-                        ),
+                            ),
+                          );
+                        },
                       ),
                     ),
+                  ),
 
-                    const SizedBox(height: 21,),
+                  const SizedBox(height: 21,),
+                  
+                  if(!noCategoryLeft)...[
 
                     if(selectedCategory != null)...[
 

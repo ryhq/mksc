@@ -40,21 +40,23 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
 
   void checkTokenPresence() async{
 
-    debugPrint("\n\n\n Saved Token.....");
-
     TokenStorage tokenStorage = TokenStorage();
 
     savedToken = await tokenStorage.getTokenDirect(tokenKey: widget.title);
 
-    debugPrint("\n\n\n 🔥️‍🔥️‍🔥️‍🔥 Saved Token : $savedToken");
-
-    navigate();
-
+    if (savedToken.isNotEmpty) {
+      navigate();
+    }
   }
 
   void navigate(){
     if(savedToken.isNotEmpty && context.mounted){
-      Navigator.push(context, MaterialPageRoute(builder: (context) => ChickenHouseScreen(categoryTitle: widget.title, token: savedToken,),));
+      if (widget.title == "Chicken House") {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => ChickenHouseScreen(categoryTitle: widget.title, token: savedToken,),));
+      }
+      if (widget.title == "Vegetable") {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => ChickenHouseScreen(categoryTitle: widget.title, token: savedToken,),));
+      }
     }
   }
 
