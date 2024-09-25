@@ -4,9 +4,11 @@ import 'package:mksc/model/laundry_data.dart';
 import 'package:mksc/model/laundry_machine.dart';
 import 'package:mksc/provider/laundry_machine_provider.dart';
 import 'package:mksc/provider/theme_provider.dart';
+import 'package:mksc/utils/validator_utility.dart';
 import 'package:mksc/view/laundry/widgets/laundry_data_card.dart';
 import 'package:mksc/widgets/app_text_form_field.dart';
 import 'package:mksc/widgets/ball_pulse_indicator.dart';
+import 'package:mksc/widgets/button.dart';
 import 'package:provider/provider.dart';
 
 class LaundryScreen extends StatefulWidget {
@@ -35,7 +37,13 @@ class _LaundryScreenState extends State<LaundryScreen> {
 
   LaundryMachine? selectedLaundryMachine;
 
-  bool noLaundryMachineLeft = false;
+  bool noLaundryMachineLeft = false;  
+  
+  final TextEditingController dataController = TextEditingController();
+  
+  final _formKey = GlobalKey<FormState>();
+  
+  bool savingClicked = false;
 
   @override
   void initState() {
@@ -209,7 +217,90 @@ class _LaundryScreenState extends State<LaundryScreen> {
 
                   if(!noLaundryMachineLeft)...[
                     if(selectedLaundryMachine != null)...[
-
+                      // AddLaundryData(
+                      //   categoryTitle: widget.categoryTitle, 
+                      //   token: widget.token, 
+                      //   date: dateController.text, 
+                      //   camp: widget.camp, 
+                      //   machineType: selectedLaundryMachine!.machineType
+                      // ),
+                      Column(
+                        children: [
+                          Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Enter Data for ${widget.categoryTitle} - ${selectedLaundryMachine!.machineType}",
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                              const SizedBox(height: 21,),
+                              Form(
+                                key: _formKey,
+                                child: AppTextFormField(
+                                  hintText: "123", 
+                                  iconData: Icons.numbers, 
+                                  obscureText: false, 
+                                  textInputType: TextInputType.number,
+                                  textEditingController: dataController,
+                                  validator: (value) => ValidatorUtility.validateRequiredField(value, "Integer Quantity for ${selectedLaundryMachine!.machineType} circle is required"),
+                                ),
+                              ),
+                              const SizedBox(height: 21,),
+                              GridView(
+                                physics: const BouncingScrollPhysics(),
+                                shrinkWrap: true,
+                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 3, // For landscape mode, show 4 items per row,
+                                  mainAxisSpacing: 5.0,
+                                  crossAxisSpacing: 5.0,
+                                  childAspectRatio: 3.0
+                                ),
+                                children: [
+                                  Button(
+                                    title: "Clear", 
+                                    onTap: () {
+                                      setState(() {
+                                        _formKey.currentState!.reset();
+                                        dataController.clear();
+                                      });
+                                    },
+                                    danger: true,
+                                    vibrate: false,
+                                  ),
+                                  savingClicked ? const BallPulseIndicator() :
+                                  Button(
+                                    title: "Save", 
+                                    onTap: () async{
+                                      if (_formKey.currentState!.validate()) {
+                                        setState(() {
+                                          savingClicked = true;
+                                        });
+                                        await Provider.of<LaundryMachineProvider>(context, listen: false).saveLaundryDataByDate(
+                                          context, 
+                                          camp: widget.camp, 
+                                          circle: dataController.text, 
+                                          token: widget.token, 
+                                          machineType: selectedLaundryMachine!.machineType, 
+                                          date: dateController.text
+                                        );
+                                        setState(() {
+                                          _formKey.currentState!.reset();
+                                          dataController.clear();
+                                          savingClicked = false;
+                                          selectedLaundryMachine = null;
+                                        });
+                                      }
+                                    },
+                                    danger: false,
+                                    vibrate: false,
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 21,),
+                            ],
+                          ),
+                        ],
+                      )
                     ]
                   ],
             
@@ -265,6 +356,7 @@ class _LaundryScreenState extends State<LaundryScreen> {
                         laundryData: laundryData, 
                         date: dateController.text,
                         token: widget.token,
+                        camp: widget.camp,
                       );
                     },
                   )
@@ -287,6 +379,7 @@ class _LaundryScreenState extends State<LaundryScreen> {
     if (pickedDate != null) {
       setState(() {
         dateTime = pickedDate;
+        selectedLaundryMachine = null;
         dateController.text = pickedDate.toString().split(' ')[0];
       });
       if(!context.mounted) return;

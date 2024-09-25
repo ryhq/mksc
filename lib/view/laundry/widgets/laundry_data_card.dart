@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:mksc/model/laundry_data.dart';
+import 'package:mksc/provider/laundry_machine_provider.dart';
+import 'package:mksc/provider/theme_provider.dart';
 import 'package:mksc/utils/validator_utility.dart';
 import 'package:mksc/widgets/app_text_form_field.dart';
 import 'package:mksc/widgets/custom_alert.dart';
+import 'package:provider/provider.dart';
 
 class LaundryDataCard extends StatefulWidget {
-  const LaundryDataCard({super.key, required this.laundryData, required this.date, required this.token});
+  const LaundryDataCard({super.key, required this.laundryData, required this.date, required this.token, required this.camp});
 
   final LaundryData laundryData;
   final String date;
   final String token;
+  final String camp;
 
   @override
   State<LaundryDataCard> createState() => _LaundryDataCardState();
@@ -41,7 +45,7 @@ class _LaundryDataCardState extends State<LaundryDataCard> {
                   editingController.text = value;
                 });
               },
-              validator: (value) => ValidatorUtility.validateRequiredField(value, "${widget.laundryData.circle} quantity is required."),
+              validator: (value) => ValidatorUtility.validateRequiredField(value, "Quantity is required."),
             ),
           ), 
           actions: [
@@ -73,13 +77,14 @@ class _LaundryDataCardState extends State<LaundryDataCard> {
               onPressed: () async{
                 if (_formKey.currentState!.validate()) {
                   Navigator.of(context).pop();
-                  // await Provider.of<ChickenHouseDataProvider>(context, listen: false).editChickenHouseData(
-                  //   context, 
-                  //   item: widget.chickenHouseData.item, 
-                  //   number: int.parse(editingController.text), 
-                  //   token: widget.token, 
-                  //   id: widget.chickenHouseData.id
-                  // );
+                  await Provider.of<LaundryMachineProvider>(context, listen: false).editLaundryDataByDate(
+                    context,
+                    camp: widget.camp,
+                    circle: editingController.text,
+                    machineType: widget.laundryData.machineType, 
+                    token: widget.token, 
+                    id: widget.laundryData.id
+                  );
                 }
               },
             ),
@@ -104,13 +109,28 @@ class _LaundryDataCardState extends State<LaundryDataCard> {
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
           subtitle: Text(
-            "${widget.laundryData.machineType} with ${widget.laundryData.circle} circles",
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+            widget.laundryData.machineType,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontStyle: FontStyle.italic),
           ),
-          trailing: Text(
-            widget.laundryData.day,
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
+          trailing: RichText(
+            text: TextSpan(
+              children: [
+                WidgetSpan(
+                  child: Text(
+                    widget.laundryData.circle,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  )
+                ),
+                WidgetSpan(
+                  child: Icon(
+                    Icons.replay_circle_filled_outlined,
+                    color: Theme.of(context).colorScheme.primary,
+                    size: Provider.of<ThemeProvider>(context).fontSize,
+                  )
+                ),
+              ]
+            )
+          )
         ),
       ),
     );

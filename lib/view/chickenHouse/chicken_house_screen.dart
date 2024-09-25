@@ -5,10 +5,11 @@ import 'package:mksc/model/chicken_house_data.dart';
 import 'package:mksc/model/item_category.dart';
 import 'package:mksc/provider/chicken_house_data_provider.dart';
 import 'package:mksc/provider/theme_provider.dart';
-import 'package:mksc/view/chickenHouse/widgets/add_chicken_house_data.dart.dart';
+import 'package:mksc/utils/validator_utility.dart';
 import 'package:mksc/view/chickenHouse/widgets/chicken_house_data_card.dart';
 import 'package:mksc/widgets/app_text_form_field.dart';
 import 'package:mksc/widgets/ball_pulse_indicator.dart';
+import 'package:mksc/widgets/button.dart';
 import 'package:provider/provider.dart';
 
 class ChickenHouseScreen extends StatefulWidget {
@@ -41,7 +42,13 @@ class _ChickenHouseScreenState extends State<ChickenHouseScreen> {
     ItemCategory(svgicon: 'assets/icons/egg.svg', name: 'Eggs'),
   ];
 
-  ItemCategory? selectedCategory;
+  ItemCategory? selectedCategory;  
+  
+  final TextEditingController dataController = TextEditingController();
+  
+  final _formKey = GlobalKey<FormState>();
+  
+  bool savingClicked = false;
 
   @override
   void initState() {
@@ -233,13 +240,85 @@ class _ChickenHouseScreenState extends State<ChickenHouseScreen> {
 
                     if(selectedCategory != null)...[
 
-                      AddChickenHouseData(
-                        item: selectedCategory!.name, 
-                        categoryTitle: widget.categoryTitle,
-                        date: dateController.text,
-                        token: widget.token,
-                      ),
-                    
+                      // AddChickenHouseData(
+                      //   item: selectedCategory!.name, 
+                      //   categoryTitle: widget.categoryTitle,
+                      //   date: dateController.text,
+                      //   token: widget.token,
+                      // ),
+
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Enter Data for ${widget.categoryTitle} - ${selectedCategory!.name}",
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                          const SizedBox(height: 21,),
+                          Form(
+                            key: _formKey,
+                            child: AppTextFormField(
+                              hintText: "123", 
+                              iconData: Icons.numbers, 
+                              obscureText: false, 
+                              textInputType: TextInputType.number,
+                              textEditingController: dataController,
+                              validator: (value) => ValidatorUtility.validateRequiredField(value, "Integer Quantity for ${selectedCategory!.name} is required"),
+                            ),
+                          ),
+                          const SizedBox(height: 21,),
+                          GridView(
+                            physics: const BouncingScrollPhysics(),
+                            shrinkWrap: true,
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 3, // For landscape mode, show 4 items per row,
+                              mainAxisSpacing: 5.0,
+                              crossAxisSpacing: 5.0,
+                              childAspectRatio: 3.0
+                            ),
+                            children: [
+                              Button(
+                                title: "Clear", 
+                                onTap: () {
+                                  setState(() {
+                                    _formKey.currentState!.reset();
+                                    dataController.clear();
+                                  });
+                                },
+                                danger: true,
+                                vibrate: false,
+                              ),
+                              savingClicked ? const BallPulseIndicator() :
+                              Button(
+                                title: "Save", 
+                                onTap: () async{
+                                  if (_formKey.currentState!.validate()) {
+                                    setState(() {
+                                      savingClicked = true;
+                                    });
+                                    await Provider.of<ChickenHouseDataProvider>(context, listen: false).saveChickenHouseData(
+                                      context, 
+                                      item: selectedCategory!.name, 
+                                      number: int.parse(dataController.text), 
+                                      token: widget.token, 
+                                      date: dateController.text
+                                    );
+                                    setState(() {
+                                      _formKey.currentState!.reset();
+                                      dataController.clear();
+                                      savingClicked = false;
+                                      selectedCategory = null;
+                                    });
+                                  }
+                                },
+                                danger: false,
+                                vibrate: false,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 21,),
+                        ],
+                      )                    
                     ],
                   ],
             
