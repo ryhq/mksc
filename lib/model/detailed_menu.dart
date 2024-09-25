@@ -36,4 +36,14 @@ class DetailedMenu {
       'otherDishesFromSelectedMenu': otherDishesFromSelectedMenu.map((otherDish) => otherDish.toJson()).toList(),
     };
   }
+
+  static DetailedMenu empty(){
+    return DetailedMenu(
+      dish: Dish.empty(), 
+      portions: List<Portion>.empty(), 
+      image: "", 
+      video: "", 
+      otherDishesFromSelectedMenu: List<OtherDish>.empty()
+    );
+  }
 }

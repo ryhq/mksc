@@ -36,4 +36,15 @@ class Dish {
       'isCopied': isCopied,
     };
   }
+
+  static Dish empty() {
+    return Dish(
+      id: 0,
+      menuId: 0,
+      tableware: "",
+      recipe: "",
+      utensils: "",
+      isCopied: 0,
+    );
+  }
 }

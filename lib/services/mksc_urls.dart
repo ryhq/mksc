@@ -7,7 +7,7 @@ class MKSCUrls {
   static String getcampurl = "https://development.mkscportal.co.tz/api/v2/camps";
   static String getcamptypeurl = "https://development.mkscportal.co.tz/api/v2/menu_type_by_camp_name/";
   static String getMenurl = "https://development.mkscportal.co.tz/api/v2/menu_by_day_type_camp";
-  static String getMenutetails = "https://development.mkscportal.co.tz/api/v2/menu_details";
+  static String getMenuDetailed = "https://development.mkscportal.co.tz/api/v2/menu_details";
   static String getVideoURL = "https://development.mkscportal.co.tz/api/v2/dish_video";
   static String vegetableUrl = "https://development.mkscportal.co.tz/api/v2/vegetable-list";
   static String todayVegetableUrl = "https://development.mkscportal.co.tz/api/v2/vegetable-today";

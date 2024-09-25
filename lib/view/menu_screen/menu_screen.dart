@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mksc/model/detailed_menu.dart';
 import 'package:mksc/model/menu.dart';
+import 'package:mksc/provider/menu_provider.dart';
 import 'package:mksc/provider/theme_provider.dart';
+import 'package:mksc/view/menu_screen/menu_video_screen.dart';
 import 'package:mksc/view/menu_screen/portion_configuration.dart';
 import 'package:mksc/view/menu_screen/recipe_part.dart';
 import 'package:provider/provider.dart';
@@ -17,9 +20,9 @@ class MenuScreen extends StatefulWidget {
 class _MenuScreenState extends State<MenuScreen> {
   @override
   Widget build(BuildContext context) {
-    debugPrint("\n\n\nMenu id ${widget.menu.id}");
-    debugPrint("\n\n\nMenu menuName ${widget.menu.menuName}");
-    debugPrint("\n\n\nMenu camp ${widget.menu.camp}");
+
+    DetailedMenu detailedMenu = Provider.of<MenuProvider>(context, listen: true).detailedMenu;
+
     return Scaffold(
       body: DefaultTabController(
         length: 2, 
@@ -67,10 +70,8 @@ class _MenuScreenState extends State<MenuScreen> {
             centerTitle: true,
             backgroundColor: Theme.of(context).colorScheme.primary
           ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              
-            },
+          floatingActionButton: detailedMenu.video.isEmpty ? null : FloatingActionButton(
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => MenuVideoScreen(detailedMenu: detailedMenu),)),
             tooltip: "Video",
             shape: const OvalBorder(eccentricity: 1, side: BorderSide.none),
             backgroundColor: Theme.of(context).colorScheme.primary,

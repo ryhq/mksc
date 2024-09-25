@@ -20,4 +20,11 @@ class OtherDish {
       'dishName': dishName,
     };
   }
+
+  static OtherDish empty() {
+    return OtherDish(
+      id: 0,
+      dishName: "",
+    );
+  }
 }
