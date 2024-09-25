@@ -19,6 +19,6 @@ class MKSCUrls {
   static String machineSize = "https://development.mkscportal.co.tz/api/v2/laundryMachine";
   static String storeLaundryDataUrl = "https://development.mkscportal.co.tz/api/v2/laundryData";
   static String getLaundryTodayDataUrl = "https://development.mkscportal.co.tz/api/v2/laundryData/today";
-  static String updateLaundryDataUrl = "https://development.mkscportal.co.tz/api/v2/laundryData/";
+  static String updateLaundryDataUrl = "https://development.mkscportal.co.tz/api/v2/laundryData";
   static String laundryDataDate = "https://development.mkscportal.co.tz/api/v2/laundryDataDate";
 }

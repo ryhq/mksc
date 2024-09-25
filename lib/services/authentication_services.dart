@@ -9,6 +9,7 @@ import 'package:mksc/model/token.dart';
 import 'package:mksc/services/mksc_urls.dart';
 import 'package:mksc/storage/token_storage.dart';
 import 'package:mksc/view/chickenHouse/chicken_house_screen.dart';
+import 'package:mksc/view/laundry/laundry_screen.dart';
 import 'package:mksc/view/vegetables/vegetables_screen.dart';
 import 'package:mksc/widgets/custom_alert.dart';
 
@@ -46,30 +47,64 @@ class AuthenticationServices {
       );
       
       if (response.statusCode == 200) {
-        debugPrint("\n\n\nLogin successful...\n\n\n");
 
-        final Map<String, dynamic> responseData = json.decode(response.body);
-        final Token receivedToken = Token.fromJson(responseData);
+        if (categoryTitle == "Laundry") {
+
+          final Map<String, dynamic> responseData = json.decode(response.body);
+
+          String token = responseData['token'];
+
+          String camp = responseData['camp'];
         
-        debugPrint("\n\n\n ️‍🔥️‍🔥️‍🔥️‍🔥 Received Token ${receivedToken.token}\n\n\n");
-        
-        TokenStorage tokenStorage = TokenStorage();
-        
-        debugPrint("\n\n\n ️‍🔥️‍🔥️‍🔥️‍🔥 Saving Token  with $categoryTitle as key : ${receivedToken.token}\n\n\n");
+          debugPrint("\n\n\n ️‍🔥️‍🔥️‍🔥️‍🔥 Received token $token\n\n\n");
 
-        await tokenStorage.saveToken(
-          tokenKey: categoryTitle, 
-          token: receivedToken.token
-        ); // Saving the token
+          debugPrint("\n\n\n ️‍🔥️‍🔥️‍🔥️‍🔥 Received camp $camp\n\n\n");
+          
+          TokenStorage tokenStorage = TokenStorage();
+          
+          await tokenStorage.saveToken(
+            tokenKey: categoryTitle, 
+            token: token
+          );
 
-        if (!context.mounted) {
-          return;
-        }
+          if (!context.mounted) {
+            return;
+          }
 
-        if (receivedToken.token.isEmpty) {
-          return;
-        }else{
-          _navigate(categoryTitle, receivedToken.token, context);
+          if (token.isEmpty) {
+            return;
+          }else{
+            _navigate(categoryTitle : categoryTitle, token : token, context, camp: camp);
+          }
+
+        } else {
+
+          debugPrint("\n\n\nLogin successful...\n\n\n");
+
+          final Map<String, dynamic> responseData = json.decode(response.body);
+          final Token receivedToken = Token.fromJson(responseData);
+          
+          debugPrint("\n\n\n ️‍🔥️‍🔥️‍🔥️‍🔥 Received Token ${receivedToken.token}\n\n\n");
+          
+          TokenStorage tokenStorage = TokenStorage();
+          
+          debugPrint("\n\n\n ️‍🔥️‍🔥️‍🔥️‍🔥 Saving Token  with $categoryTitle as key : ${receivedToken.token}\n\n\n");
+
+          await tokenStorage.saveToken(
+            tokenKey: categoryTitle, 
+            token: receivedToken.token
+          ); // Saving the token
+
+          if (!context.mounted) {
+            return;
+          }
+
+          if (receivedToken.token.isEmpty) {
+            return;
+          }else{
+            _navigate(categoryTitle : categoryTitle, token : receivedToken.token, context);
+          }
+
         }
 
       } else if(response.statusCode == 302 && context.mounted){
@@ -122,13 +157,16 @@ class AuthenticationServices {
 
   
 
-  static void _navigate(String categoryTitle, String token, BuildContext context){
+  static void _navigate(BuildContext context, {required String categoryTitle, required String token, String? camp,}){
     if(token.isNotEmpty && context.mounted){
       if (categoryTitle == "Chicken House") {
         Navigator.push(context, MaterialPageRoute(builder: (context) => ChickenHouseScreen(categoryTitle: categoryTitle, token: token,),));
       }
       if (categoryTitle == "Vegetables") {
         Navigator.push(context, MaterialPageRoute(builder: (context) => VegetablesScreen(categoryTitle: categoryTitle, token: token,),));
+      }
+      if (categoryTitle == "Laundry") {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => LaundryScreen(categoryTitle: categoryTitle, token: token, camp: camp!,),));
       }
     }
   }

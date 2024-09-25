@@ -1,47 +1,41 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:mksc/model/chicken_house_data.dart';
-import 'package:mksc/model/item_category.dart';
-import 'package:mksc/provider/chicken_house_data_provider.dart';
+import 'package:mksc/model/laundry_data.dart';
+import 'package:mksc/model/laundry_machine.dart';
+import 'package:mksc/provider/laundry_machine_provider.dart';
 import 'package:mksc/provider/theme_provider.dart';
-import 'package:mksc/view/chickenHouse/widgets/add_chicken_house_data.dart.dart';
-import 'package:mksc/view/chickenHouse/widgets/chicken_house_data_card.dart';
+import 'package:mksc/view/laundry/widgets/laundry_data_card.dart';
 import 'package:mksc/widgets/app_text_form_field.dart';
 import 'package:mksc/widgets/ball_pulse_indicator.dart';
 import 'package:provider/provider.dart';
 
-class ChickenHouseScreen extends StatefulWidget {
+class LaundryScreen extends StatefulWidget {
 
   final String token;
 
   final String categoryTitle;
 
+  final String camp;
 
-  const ChickenHouseScreen({super.key, required this.token, required this.categoryTitle});
+  const LaundryScreen({super.key, required this.token, required this.categoryTitle, required this.camp});
 
   @override
-  State<ChickenHouseScreen> createState() => _ChickenHouseScreenState();
+  State<LaundryScreen> createState() => _LaundryScreenState();
 }
 
-class _ChickenHouseScreenState extends State<ChickenHouseScreen> {
+class _LaundryScreenState extends State<LaundryScreen> {
 
   TextEditingController dateController = TextEditingController();
 
   DateTime dateTime = DateTime.now();
 
-  bool isFetchingChickenHouseData = false;
+  bool isFetchLaundryMachines = false;
 
-  bool noCategoryLeft = false;
+  bool isFetchingLaundryData = false;
 
-  final List<ItemCategory> chickenHouseCategories = [
-    ItemCategory(svgicon: 'assets/icons/chicken_.svg', name: 'Cock'),
-    ItemCategory(svgicon: 'assets/icons/hen.svg', name: 'Hen'),
-    ItemCategory(svgicon: 'assets/icons/chick.svg', name: 'Chick'),
-    ItemCategory(svgicon: 'assets/icons/egg.svg', name: 'Eggs'),
-  ];
+  LaundryMachine? selectedLaundryMachine;
 
-  ItemCategory? selectedCategory;
+  bool noLaundryMachineLeft = false;
 
   @override
   void initState() {
@@ -49,32 +43,18 @@ class _ChickenHouseScreenState extends State<ChickenHouseScreen> {
     setState(() {
       dateController.text = DateTime.now().toString().split(' ')[0];
     });
-    fetchChickenHouseData(context, token: widget.token, date: dateController.text);
-  }
 
-  void fetchChickenHouseData(
-    BuildContext context, 
-    {
-      required String token, 
-      required String date,
-    }
-  ) async{
-    setState(() {
-      isFetchingChickenHouseData = true;
-    });
-    await Provider.of<ChickenHouseDataProvider>(context, listen: false).fetchChickenHouseData(context, token: token, date: date);
-    setState(() {
-      isFetchingChickenHouseData = false;
-    });
+    fetchLaundryMachines();
+    fetchLaundryDataByDate(context, token: widget.token, date: dateController.text);
   }
 
   @override
   Widget build(BuildContext context) {
-    List<ChickenHouseData> chickenHouseDataList =  Provider.of<ChickenHouseDataProvider>(context, listen: true).chickenHouseDataList;
-    
-    // Check if all categories are disabled
-    noCategoryLeft = chickenHouseCategories.every((category) => 
-      chickenHouseDataList.any((data) => data.item == category.name)
+    List<LaundryMachine> laundryMachineList = Provider.of<LaundryMachineProvider>(context).laundryMachineList;
+    List<LaundryData> laundryDataList = Provider.of<LaundryMachineProvider>(context).laundryDataList;
+
+    noLaundryMachineLeft = laundryMachineList.every((machine) =>
+      laundryDataList.any((data) => data.machineType == machine.machineType)  
     );
 
     return SafeArea(
@@ -148,8 +128,9 @@ class _ChickenHouseScreenState extends State<ChickenHouseScreen> {
                   ),
             
                   const SizedBox(height: 21,),
+                  
                   Text(
-                    "Please select Category",
+                    "Please select laundry machine at ${widget.camp}.",
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
 
@@ -166,23 +147,22 @@ class _ChickenHouseScreenState extends State<ChickenHouseScreen> {
                               MediaQuery.of(context).size.width / (MediaQuery.of(context).size.height / 8) : 
                               MediaQuery.of(context).size.width / (MediaQuery.of(context).size.height / 2),
                         ),
-                        itemCount: chickenHouseCategories.length,
+                        itemCount: laundryMachineList.length,
                         itemBuilder: (BuildContext context, int index) {
 
-                          final category = chickenHouseCategories[index];
-  
-                          // Check if the category name exists in chickenHouseDataList
-                          final isDisabled = chickenHouseDataList.any((data) => data.item == category.name);
+                          final laundryMachine = laundryMachineList[index];
+                          
+                          final isDisabled = laundryDataList.any((data) => data.machineType == laundryMachine.machineType);
 
-                          final isSelected = selectedCategory == category;
+                          final isSelected = selectedLaundryMachine == laundryMachine;
                           
                           return GestureDetector(
                             onTap: isDisabled ? null : () {
                               setState(() {
-                                if(selectedCategory != null && selectedCategory == category){
-                                  selectedCategory = null;
+                                if(selectedLaundryMachine != null && selectedLaundryMachine == laundryMachine){
+                                  selectedLaundryMachine = null;
                                 }else {
-                                  selectedCategory = category;
+                                  selectedLaundryMachine = laundryMachine;
                                 }
                               });
                             },
@@ -203,16 +183,14 @@ class _ChickenHouseScreenState extends State<ChickenHouseScreen> {
                                   children: <Widget>[
                                     Padding(
                                       padding: const EdgeInsets.only(right: 18.0),
-                                      child: SvgPicture.asset(
-                                        chickenHouseCategories[index].svgicon,
-                                        height: 20,
-                                        width: 20,
+                                      child: Icon(
+                                        Icons.local_laundry_service_outlined,
                                         color: isDisabled ? Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.primary,
-                                      ),
+                                      )
                                     ),
                                     const SizedBox(height: 18.0),
                                     Text(
-                                      category.name,
+                                      laundryMachine.machineType,
                                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                         decoration: isDisabled ? TextDecoration.lineThrough : null
                                       ),
@@ -228,32 +206,24 @@ class _ChickenHouseScreenState extends State<ChickenHouseScreen> {
                   ),
 
                   const SizedBox(height: 21,),
-                  
-                  if(!noCategoryLeft)...[
 
-                    if(selectedCategory != null)...[
+                  if(!noLaundryMachineLeft)...[
+                    if(selectedLaundryMachine != null)...[
 
-                      AddChickenHouseData(
-                        item: selectedCategory!.name, 
-                        categoryTitle: widget.categoryTitle,
-                        date: dateController.text,
-                        token: widget.token,
-                      ),
-                    
-                    ],
+                    ]
                   ],
             
                   Text(
-                    dateController.text == DateTime.now().toString().split(' ')[0] ? "Today's Data"
-                    : "Chicken House Data on ${dateController.text}",
+                    dateController.text == DateTime.now().toString().split(' ')[0] ? "Today's Laundry Data"
+                    : "Laundry Data on ${dateController.text}",
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
 
                   const SizedBox(height: 21,),
 
-                  isFetchingChickenHouseData ? const BallPulseIndicator() :
-                  
-                  chickenHouseDataList.isEmpty ? 
+                  isFetchingLaundryData ? const BallPulseIndicator() :
+
+                  laundryDataList.isEmpty ? 
 
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.5,
@@ -263,14 +233,14 @@ class _ChickenHouseScreenState extends State<ChickenHouseScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          "Sorry, no chicken house data available on ${dateController.text}",
+                          "Sorry, no laundry data available on ${dateController.text}",
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontStyle: FontStyle.italic),
                         ),
                         IconButton(
                           onPressed: () {
                             if(!context.mounted) return;
-                            fetchChickenHouseData(context, token: widget.token, date: dateController.text);
+                            fetchLaundryDataByDate(context, token: widget.token, date: dateController.text);
                           }, 
                           icon: Icon(
                             Icons.refresh,
@@ -281,28 +251,29 @@ class _ChickenHouseScreenState extends State<ChickenHouseScreen> {
                       ],
                     ),
                   )
+
                   :
+
                   ListView.builder(
                     physics: const BouncingScrollPhysics(),
                     shrinkWrap: true,
                     reverse: true,
-                    itemCount: chickenHouseDataList.length,
+                    itemCount: laundryDataList.length,
                     itemBuilder: (BuildContext context, int index) {
-                      var chickenHouseData = chickenHouseDataList[index];
-                      return ChickenHouseDataCard(
-                        chickenHouseData: chickenHouseData, 
+                      var laundryData = laundryDataList[index];
+                      return LaundryDataCard(
+                        laundryData: laundryData, 
                         date: dateController.text,
                         token: widget.token,
                       );
                     },
-                  ),
-            
+                  )
                 ],
               ),
             ),
           ),
         ),
-      )
+      ),
     );
   }
 
@@ -319,7 +290,33 @@ class _ChickenHouseScreenState extends State<ChickenHouseScreen> {
         dateController.text = pickedDate.toString().split(' ')[0];
       });
       if(!context.mounted) return;
-      fetchChickenHouseData(context, token: widget.token, date: dateController.text);
+      fetchLaundryDataByDate(context, token: widget.token, date: dateController.text);
     }
+  }
+
+  void fetchLaundryMachines() async{
+    setState(() {
+      isFetchLaundryMachines = true;
+    });
+    await Provider.of<LaundryMachineProvider>(context, listen: false).fetchLaundryMachines(camp: widget.camp);
+    setState(() {
+      isFetchLaundryMachines = false;
+    });
+  }
+
+  void fetchLaundryDataByDate(
+    BuildContext context, 
+    {
+      required String token, 
+      required String date,
+    }
+  ) async{
+    setState(() {
+      isFetchingLaundryData = true;
+    });
+    await Provider.of<LaundryMachineProvider>(context, listen: false).getLaundryDataByDate(camp: widget.camp, date: date);
+    setState(() {
+      isFetchingLaundryData = false;
+    });
   }
 }

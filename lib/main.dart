@@ -3,6 +3,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:mksc/provider/camp_provider.dart';
 import 'package:mksc/provider/chicken_house_data_provider.dart';
 import 'package:mksc/provider/greeting_provider.dart';
+import 'package:mksc/provider/laundry_machine_provider.dart';
 import 'package:mksc/provider/menu_provider.dart';
 import 'package:mksc/provider/menu_type_provider.dart';
 import 'package:mksc/provider/theme_provider.dart';
@@ -31,6 +32,8 @@ void main(List<String> args) async {
         ChangeNotifierProvider(create: (_) => MenuProvider()),
         // Vegetable Provider
         ChangeNotifierProvider(create: (_) => VegetableProvider()),
+        // Laundry Machine Provider
+        ChangeNotifierProvider(create: (_) => LaundryMachineProvider()),
       ],
       child: const MKSC(),
     )

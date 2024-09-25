@@ -36,6 +36,14 @@ class _MenuContentBottomSheetState extends State<MenuContentBottomSheet> {
 
   Menu realSelectedMenu = Menu.empty();
 
+  final GlobalKey<PopupMenuButtonState<Camp>> _popupCampMenuKey = GlobalKey<PopupMenuButtonState<Camp>>();
+
+  final GlobalKey<PopupMenuButtonState<MenuType>> _popupMenuTypeKey = GlobalKey<PopupMenuButtonState<MenuType>>();
+
+  final GlobalKey<PopupMenuButtonState<String>> _popupDayKey = GlobalKey<PopupMenuButtonState<String>>();
+
+  final GlobalKey<PopupMenuButtonState<Menu>> _popupMenuKey = GlobalKey<PopupMenuButtonState<Menu>>();
+
   List<String> daysOfWeek = [
     'Sunday',
     'Monday',
@@ -90,6 +98,7 @@ class _MenuContentBottomSheetState extends State<MenuContentBottomSheet> {
                     ),
                     selectedCamp.isNotEmpty ? const SizedBox() :
                     PopupMenuButton<Camp>(
+                      key: _popupCampMenuKey,
                       enabled: selectedCamp.isEmpty,
                       onSelected: (Camp camp) {
                         setState(() {
@@ -117,12 +126,15 @@ class _MenuContentBottomSheetState extends State<MenuContentBottomSheet> {
                   ],
                 ),
                 contentPadding: const EdgeInsets.all(0.0),
+                onTap: () {
+                  _popupCampMenuKey.currentState?.showButtonMenu();
+                },
               )
             ),
           ),
         ),
 
-        // Select camp
+        // Select Menu type
 
         if(selectedCamp.isNotEmpty)...[
           Padding(
@@ -158,6 +170,7 @@ class _MenuContentBottomSheetState extends State<MenuContentBottomSheet> {
                       ),
                       selectedMenuTypePerCamp.isNotEmpty ? const SizedBox() :
                       PopupMenuButton<MenuType>(
+                        key: _popupMenuTypeKey,
                         onSelected: (MenuType menu) {
                           setState(() {
                             selectedMenuTypePerCamp = menu.type;
@@ -187,6 +200,9 @@ class _MenuContentBottomSheetState extends State<MenuContentBottomSheet> {
                     ],
                   ),
                   contentPadding: const EdgeInsets.all(0.0),
+                  onTap: () {
+                    _popupMenuTypeKey.currentState?.showButtonMenu();
+                  },
                 )
               ),
             ),
@@ -224,6 +240,7 @@ class _MenuContentBottomSheetState extends State<MenuContentBottomSheet> {
                       ),
                       selectedDay.isNotEmpty ? const SizedBox() :
                       PopupMenuButton<String>(
+                        key: _popupDayKey,
                         onSelected: (String day) {
                           setState(() {
                             selectedDay = day;
@@ -250,6 +267,9 @@ class _MenuContentBottomSheetState extends State<MenuContentBottomSheet> {
                     ],
                   ),
                   contentPadding: const EdgeInsets.all(0.0),
+                  onTap: () {
+                    _popupDayKey.currentState?.showButtonMenu();
+                  },
                 )
               ),
             ),
@@ -289,6 +309,7 @@ class _MenuContentBottomSheetState extends State<MenuContentBottomSheet> {
 
                       selectedMenu.isNotEmpty ? const SizedBox() :
                       PopupMenuButton<Menu>(
+                        key: _popupMenuKey,
                         onSelected: (Menu menu) {
                           setState(() {
                             selectedMenu = menu.menuName;
@@ -315,6 +336,9 @@ class _MenuContentBottomSheetState extends State<MenuContentBottomSheet> {
                     ],
                   ),
                   contentPadding: const EdgeInsets.all(0.0),
+                  onTap: () {
+                    _popupMenuKey.currentState?.showButtonMenu();
+                  },
                 )
               ),
             ),

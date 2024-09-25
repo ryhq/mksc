@@ -12,16 +12,12 @@ class NonMenuContentBottomSheet extends StatelessWidget {
         GestureDetector(
           onTap: () {
             Navigator.pop(context);
-            if (title == "Laundry") {
-
-            } else {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AuthenticationPage(title: title),
-                )
-              );
-            }
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AuthenticationPage(title: title),
+              )
+            );
           },
           child: Padding(
             padding: const EdgeInsets.only(left: 8.0, right: 8.0),

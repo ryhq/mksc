@@ -17,6 +17,9 @@ class MenuScreen extends StatefulWidget {
 class _MenuScreenState extends State<MenuScreen> {
   @override
   Widget build(BuildContext context) {
+    debugPrint("\n\n\nMenu id ${widget.menu.id}");
+    debugPrint("\n\n\nMenu menuName ${widget.menu.menuName}");
+    debugPrint("\n\n\nMenu camp ${widget.menu.camp}");
     return Scaffold(
       body: DefaultTabController(
         length: 2, 
