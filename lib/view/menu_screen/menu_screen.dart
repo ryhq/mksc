@@ -71,7 +71,9 @@ class _MenuScreenState extends State<MenuScreen> {
             backgroundColor: Theme.of(context).colorScheme.primary
           ),
           floatingActionButton: detailedMenu.video.isEmpty ? null : FloatingActionButton(
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => MenuVideoScreen(detailedMenu: detailedMenu),)),
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => VideoScreen(detailedMenu: detailedMenu),));
+            },
             tooltip: "Video",
             shape: const OvalBorder(eccentricity: 1, side: BorderSide.none),
             backgroundColor: Theme.of(context).colorScheme.primary,

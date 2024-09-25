@@ -174,161 +174,184 @@ class _PortionConfigurationState extends State<PortionConfiguration> {
                 ],
               ),
     
-              Table(
-                border: TableBorder.all(
-                  color: Theme.of(context).colorScheme.primary,
-                  width: 1.5,
-                  borderRadius: BorderRadius.circular(3),
+              Card(
+                elevation: 12.0,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(28.0)),
                 ),
-                columnWidths: const {
-                  0: FlexColumnWidth(2),
-                  1: FlexColumnWidth(1),
-                },
-    
-                children: [
-                  TableRow(
-                    decoration: BoxDecoration(
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.all(Radius.circular(21.0)),
+                  child: Table(
+                    border: TableBorder.all(
                       color: Theme.of(context).colorScheme.primary,
+                      width: 1.5,
+                      borderRadius: BorderRadius.circular(3),
                     ),
+                    columnWidths: const {
+                      0: FlexColumnWidth(2),
+                      1: FlexColumnWidth(1),
+                    },
+                      
                     children: [
-                      TableCell(
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                            child: Text(
-                              'Product Name',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.surface
-                              )
+                      TableRow(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        children: [
+                          TableCell(
+                            child: Center(
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+                                child: Text(
+                                  'Product Name',
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(context).colorScheme.surface
+                                  )
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                      TableCell(
-                        child: Center(
-                          child: Padding(
-                            padding:const  EdgeInsets.only(top: 10.0, bottom: 10.0),
-                            child: Text(
-                              'Unit Needed',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.surface
-                              )
+                          TableCell(
+                            child: Center(
+                              child: Padding(
+                                padding:const  EdgeInsets.only(top: 10.0, bottom: 10.0),
+                                child: Text(
+                                  'Unit Needed',
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(context).colorScheme.surface
+                                  )
+                                ),
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
-                    ],
-                  ),
-
-                  for(int index = 0; index < portionList.length ; index++)...[
-                    TableRow(
-                      decoration: BoxDecoration(
-                        color: index % 2 == 0 ? Theme.of(context).colorScheme.primary.withAlpha(70) : null,
-                      ),
-                      children: [
-                        TableCell(
-                          child: Center(
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    portionList[index].productName,
+                  
+                      for(int index = 0; index < portionList.length ; index++)...[
+                        TableRow(
+                          decoration: BoxDecoration(
+                            color: index % 2 == 0 ? Theme.of(context).colorScheme.primary.withAlpha(70) : null,
+                          ),
+                          children: [
+                            TableCell(
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        portionList[index].productName,
+                                        style: Theme.of(context).textTheme.bodyMedium
+                                      ),
+                                      if(portionList[index].extraDetails != null)...[
+                                        Text(
+                                          "(${portionList[index].extraDetails!})",
+                                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.primary)
+                                        ),
+                                      ]
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            TableCell(
+                              child: Center(
+                                child: Padding(
+                                  padding:const  EdgeInsets.only(top: 10.0, bottom: 10.0),
+                                  child: Text(
+                                    portionList[index].multiply == 1 ?
+                                    "${(double.parse(portionList[index].unitNeeded) * paxCount).toStringAsFixed(2)} ${portionList[index].unit}" 
+                                    :
+                                    "${double.parse(portionList[index].unitNeeded).toStringAsFixed(2)} ${portionList[index].unit}",
                                     style: Theme.of(context).textTheme.bodyMedium
                                   ),
-                                  if(portionList[index].extraDetails != null)...[
-                                    Text(
-                                      "(${portionList[index].extraDetails!})",
-                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.primary)
-                                    ),
-                                  ]
-                                ],
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                        TableCell(
-                          child: Center(
-                            child: Padding(
-                              padding:const  EdgeInsets.only(top: 10.0, bottom: 10.0),
-                              child: Text(
-                                portionList[index].multiply == 1 ?
-                                "${(double.parse(portionList[index].unitNeeded) * paxCount).toStringAsFixed(2)} ${portionList[index].unit}" 
-                                :
-                                "${double.parse(portionList[index].unitNeeded).toStringAsFixed(2)} ${portionList[index].unit}",
-                                style: Theme.of(context).textTheme.bodyMedium
-                              ),
-                            ),
-                          ),
+                          ],
                         ),
                       ],
-                    ),
-                  ],
-
-    
-                  // for(var portion in portionList)...[
-                  //   TableRow(
-                  //     children: [
-                  //       TableCell(
-                  //         child: Center(
-                  //           child: Padding(
-                  //             padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                  //             child: Column(
-                  //               children: [
-                  //                 Text(
-                  //                   portion.productName,
-                  //                   style: Theme.of(context).textTheme.bodyMedium
-                  //                 ),
-                  //                 if(portion.extraDetails != null)...[
-                  //                   Text(
-                  //                     "(${portion.extraDetails!})",
-                  //                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.primary)
-                  //                   ),
-                  //                 ]
-                  //               ],
-                  //             ),
-                  //           ),
-                  //         ),
-                  //       ),
-                  //       TableCell(
-                  //         child: Center(
-                  //           child: Padding(
-                  //             padding:const  EdgeInsets.only(top: 10.0, bottom: 10.0),
-                  //             child: Text(
-                  //               portion.multiply == 1 ?
-                  //               "${(double.parse(portion.unitNeeded) * paxCount).toStringAsFixed(2)} ${portion.unit}" 
-                  //               :
-                  //               "${double.parse(portion.unitNeeded).toStringAsFixed(2)} ${portion.unit}",
-                  //               style: Theme.of(context).textTheme.bodyMedium
-                  //             ),
-                  //           ),
-                  //         ),
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ],
-                ],
+                  
+                      
+                      // for(var portion in portionList)...[
+                      //   TableRow(
+                      //     children: [
+                      //       TableCell(
+                      //         child: Center(
+                      //           child: Padding(
+                      //             padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+                      //             child: Column(
+                      //               children: [
+                      //                 Text(
+                      //                   portion.productName,
+                      //                   style: Theme.of(context).textTheme.bodyMedium
+                      //                 ),
+                      //                 if(portion.extraDetails != null)...[
+                      //                   Text(
+                      //                     "(${portion.extraDetails!})",
+                      //                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.primary)
+                      //                   ),
+                      //                 ]
+                      //               ],
+                      //             ),
+                      //           ),
+                      //         ),
+                      //       ),
+                      //       TableCell(
+                      //         child: Center(
+                      //           child: Padding(
+                      //             padding:const  EdgeInsets.only(top: 10.0, bottom: 10.0),
+                      //             child: Text(
+                      //               portion.multiply == 1 ?
+                      //               "${(double.parse(portion.unitNeeded) * paxCount).toStringAsFixed(2)} ${portion.unit}" 
+                      //               :
+                      //               "${double.parse(portion.unitNeeded).toStringAsFixed(2)} ${portion.unit}",
+                      //               style: Theme.of(context).textTheme.bodyMedium
+                      //             ),
+                      //           ),
+                      //         ),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ],
+                    ],
+                  ),
+                ),
               ),
               if (detailedMenu.image.isNotEmpty) ...[
+                const SizedBox(height: 8.0,),
+
                 Text(
                   "Dish Image",
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 0.0),
-                  child: Container(
-                    constraints: BoxConstraints(
-                      minHeight: 300,
-                      minWidth: MediaQuery.of(context).size.width,
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Card(
+                    elevation: 12.0,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(21.0)),
                     ),
-                    padding: const EdgeInsets.all(16.0),
-                    child: Image.network(
-                      width: MediaQuery.of(context).size.width,
-                      height: 350,
-                      detailedMenu.image,
-                      fit: BoxFit.cover,
+                    child: Container(
+                      constraints: BoxConstraints(
+                        minHeight: 300,
+                        minWidth: MediaQuery.of(context).size.width,
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.all(Radius.circular(21.0)),
+                        color: Theme.of(context).colorScheme.surface,
+                      ),
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.all(Radius.circular(21.0)),
+                        child: Image.network(
+                          width: MediaQuery.of(context).size.width,
+                          height: 350,
+                          detailedMenu.image,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
                   ),
                 ),

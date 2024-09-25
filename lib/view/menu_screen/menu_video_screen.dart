@@ -6,15 +6,16 @@ import 'package:mksc/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-class MenuVideoScreen extends StatefulWidget {
+
+class VideoScreen extends StatefulWidget {
   final DetailedMenu detailedMenu;
-  const MenuVideoScreen({super.key, required this.detailedMenu});
+  const VideoScreen({super.key, required this.detailedMenu});
 
   @override
-  State<MenuVideoScreen> createState() => _MenuVideoScreenState();
+  State<VideoScreen> createState() => _VideoScreenState();
 }
 
-class _MenuVideoScreenState extends State<MenuVideoScreen> {
+class _VideoScreenState extends State<VideoScreen> {
   late YoutubePlayerController _youtubeController;
 
   @override
