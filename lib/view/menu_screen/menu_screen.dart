@@ -44,7 +44,7 @@ class _MenuScreenState extends State<MenuScreen> {
               },
             ),
             title: Text(
-              "${widget.menu.camp}\n${widget.menu.menuName}",
+              "Menu",
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white),
             ),
             bottom: TabBar(
