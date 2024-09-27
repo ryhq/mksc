@@ -397,20 +397,15 @@ class _PortionConfigurationState extends State<PortionConfiguration> {
       ),
     );
   }
+
+  
   void fetchDetailedMenu() async{
     setState(() {
       isFetchDetailedMenu = true;
     });
-
-    if (
-      Provider.of<MenuProvider>(context, listen: true).detailedMenu.dish.id.toString().isEmpty
-    ) {
       
-      await Provider.of<MenuProvider>(context, listen: false).fetchDetailedMenu(context, id: widget.menu.id);
+    await Provider.of<MenuProvider>(context, listen: false).fetchDetailedMenu(context, id: widget.menu.id);
     
-    }
-    
-
     setState(() {
       isFetchDetailedMenu = false;
     });
