@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mksc/model/detailed_menu.dart';
 import 'package:mksc/model/menu.dart';
 import 'package:mksc/model/other_dish.dart';
@@ -21,6 +22,8 @@ class PortionConfiguration extends StatefulWidget {
 
 class _PortionConfigurationState extends State<PortionConfiguration> {
   bool isFetchDetailedMenu = false;
+
+  TextEditingController paxController = TextEditingController();
 
   bool isUpdateDetailedMenu = false;
 
@@ -54,8 +57,9 @@ class _PortionConfigurationState extends State<PortionConfiguration> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+
             Text(
-              "Select a dish",
+              selectedDish.dishName.isEmpty ? "Select a Dish" : "Selected Dish",
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
     
@@ -75,44 +79,34 @@ class _PortionConfigurationState extends State<PortionConfiguration> {
                   padding: const EdgeInsets.only(left: 10.0, right: 10),
                   child: ListTile(
                     title: Text(
-                      selectedDish.id.toString().isEmpty ? "Select Dish" : "Selected Dish",
+                      selectedDish.dishName.isEmpty ? "Tap Here" : selectedDish.dishName,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          selectedDish.id.toString().isEmpty ? "" : selectedDish.dishName,
-                          style: selectedDish.id.toString().isEmpty ? Theme.of(context).textTheme.labelMedium : Theme.of(context).textTheme.bodyMedium!.copyWith(fontStyle: FontStyle.italic)
-                        ),
-    
-                        PopupMenuButton<OtherDish>(
-                          key: _popupDishKey,
-                          onSelected: (OtherDish otherDish) {
-                            setState(() {
-                              selectedDish = otherDish;
-                              paxCount = 1; // Reset pax count
-                            });
-                            getUpdatedMenuDetails(dishId: otherDish.id);
-                          },
-                          icon: Icon(
-                            Icons.arrow_drop_down,
-                            color: Theme.of(context).colorScheme.primary,
-                            size: Provider.of<ThemeProvider>(context).fontSize + 7,
-                          ),
-                          itemBuilder: (context) {
-                            return otherDishList.map((otherDish) {
-                              return PopupMenuItem<OtherDish>(
-                                value: otherDish,
-                                child: Text(
-                                  otherDish.dishName,
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                              );
-                            }).toList();
-                          },
-                        ),
-                      ],
+                    trailing: PopupMenuButton<OtherDish>(
+                      key: _popupDishKey,
+                      onSelected: (OtherDish otherDish) {
+                        setState(() {
+                          selectedDish = otherDish;
+                          paxCount = 1; // Reset pax count
+                        });
+                        getUpdatedMenuDetails(dishId: otherDish.id);
+                      },
+                      icon: Icon(
+                        Icons.arrow_drop_down,
+                        color: Theme.of(context).colorScheme.primary,
+                        size: Provider.of<ThemeProvider>(context).fontSize + 7,
+                      ),
+                      itemBuilder: (context) {
+                        return otherDishList.map((otherDish) {
+                          return PopupMenuItem<OtherDish>(
+                            value: otherDish,
+                            child: Text(
+                              otherDish.dishName,
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                          );
+                        }).toList();
+                      },
                     ),
                     contentPadding: const EdgeInsets.all(0.0),
                     onTap: () {
@@ -123,135 +117,111 @@ class _PortionConfigurationState extends State<PortionConfiguration> {
               ),
             ),
     
-            if(isUpdateDetailedMenu)...[
-              const BallPulseIndicator()
-            ]else...[
-              // Table
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
+            if(selectedDish.dishName.isNotEmpty)...[  
+              
+              if(isUpdateDetailedMenu)...[
+                const BallPulseIndicator()
+              ]else...[
+                // Table
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Text(
                     "Portions Configurations",
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
                   ),
-                  Row(
-                    children: [
-                      Text(
-                        "Number of pax",
-                        style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      IconButton(
-                        icon: Icon(
-                          Icons.remove,
-                          size: 15,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                        onPressed: () {
-                          if (paxCount > 1) {
-                            updatePax(paxCount - 1);
-                          }
-                        },
-                      ),
-                      Text(
-                        '$paxCount',
-                        style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold)
-                      ),
-                      IconButton(
-                        icon: Icon(
-                          Icons.add,
-                          size: 15,
-                          color: Theme.of(context).colorScheme.primary
-                        ),
-                        onPressed: () {
-                          if (paxCount < 10) {
-                            updatePax(paxCount + 1);
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-    
-              Card(
-                elevation: 12.0,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(28.0)),
                 ),
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.all(Radius.circular(21.0)),
-                  child: Table(
-                    border: TableBorder.all(
-                      color: Theme.of(context).colorScheme.primary,
-                      width: 1.5,
-                      borderRadius: BorderRadius.circular(3),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      "Number of Pax",
+                      style: Theme.of(context).textTheme.labelLarge,
                     ),
-                    columnWidths: const {
-                      0: FlexColumnWidth(2),
-                      1: FlexColumnWidth(1),
-                    },
-                      
-                    children: [
-                      TableRow(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                        children: [
-                          TableCell(
-                            child: Center(
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                                child: Text(
-                                  'Product Name',
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).colorScheme.surface
-                                  )
-                                ),
-                              ),
-                            ),
-                          ),
-                          TableCell(
-                            child: Center(
-                              child: Padding(
-                                padding:const  EdgeInsets.only(top: 10.0, bottom: 10.0),
-                                child: Text(
-                                  'Unit Needed',
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).colorScheme.surface
-                                  )
-                                ),
-                              ),
-                            ),
-                          ),
+                    Expanded(
+                      child: TextFormField(
+                        controller: paxController,
+                        keyboardType: const TextInputType.numberWithOptions(decimal: false, signed: false),
+                        textAlign: TextAlign.right,
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.digitsOnly,
                         ],
+                        onChanged: (String value) {
+                          // Check if the input is a positive integer
+                          if (value.isNotEmpty && int.tryParse(value) != null && int.parse(value) >= 0) {
+                            if (int.parse(value) <= 9999) {
+                              setState(() {
+                                updatePax(int.parse(value));
+                              });
+                            }else{
+                              // Clear the input if it is invalid
+                              paxController.clear();
+                              updatePax(1);
+                            }
+                          } else {
+                            // Clear the input if it is invalid
+                            paxController.clear();
+                            updatePax(1);
+                          }
+                        },
+                        style: Theme.of(context).textTheme.labelLarge,
+                        decoration: InputDecoration(
+                          enabledBorder: const UnderlineInputBorder(borderSide: BorderSide.none),
+                          focusedBorder: const UnderlineInputBorder(borderSide: BorderSide.none),
+                          hintText: "123",
+                          hintStyle: Theme.of(context).textTheme.labelLarge,
+                          hintTextDirection: TextDirection.rtl,
+                          suffixIcon: paxController.text.toString().isNotEmpty ? IconButton(
+                            onPressed: () {
+                              setState(() {
+                                paxController.clear();
+                                updatePax(1);
+                              });
+                            },
+                            icon: Icon(
+                              Icons.cancel,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ) : null,
+                        ),
                       ),
-                  
-                      for(int index = 0; index < portionList.length ; index++)...[
+                    ),
+                  ],
+                ),
+      
+                Card(
+                  elevation: 12.0,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(28.0)),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.all(Radius.circular(21.0)),
+                    child: Table(
+                      border: TableBorder.all(
+                        color: Theme.of(context).colorScheme.primary,
+                        width: 1.5,
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                      columnWidths: const {
+                        0: FlexColumnWidth(2),
+                        1: FlexColumnWidth(1),
+                      },
+                        
+                      children: [
                         TableRow(
                           decoration: BoxDecoration(
-                            color: index % 2 == 0 ? Theme.of(context).colorScheme.primary.withAlpha(70) : null,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                           children: [
                             TableCell(
                               child: Center(
                                 child: Padding(
                                   padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        portionList[index].productName,
-                                        style: Theme.of(context).textTheme.bodyMedium
-                                      ),
-                                      if(portionList[index].extraDetails != null)...[
-                                        Text(
-                                          "(${portionList[index].extraDetails!})",
-                                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.primary)
-                                        ),
-                                      ]
-                                    ],
+                                  child: Text(
+                                    'Product Name',
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(context).colorScheme.surface
+                                    )
                                   ),
                                 ),
                               ),
@@ -261,101 +231,166 @@ class _PortionConfigurationState extends State<PortionConfiguration> {
                                 child: Padding(
                                   padding:const  EdgeInsets.only(top: 10.0, bottom: 10.0),
                                   child: Text(
-                                    portionList[index].multiply == 1 ?
-                                    "${(double.parse(portionList[index].unitNeeded) * paxCount).toStringAsFixed(2)} ${portionList[index].unit}" 
-                                    :
-                                    "${double.parse(portionList[index].unitNeeded).toStringAsFixed(2)} ${portionList[index].unit}",
-                                    style: Theme.of(context).textTheme.bodyMedium
+                                    'Unit Needed',
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(context).colorScheme.surface
+                                    )
                                   ),
                                 ),
                               ),
                             ),
                           ],
                         ),
+                    
+                        for(int index = 0; index < portionList.length ; index++)...[
+                          TableRow(
+                            decoration: BoxDecoration(
+                              color: index % 2 == 0 ? Theme.of(context).colorScheme.primary.withAlpha(70) : null,
+                            ),
+                            children: [
+                              TableCell(
+                                child: Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          portionList[index].productName,
+                                          style: Theme.of(context).textTheme.bodyMedium
+                                        ),
+                                        if(portionList[index].extraDetails != null)...[
+                                          Text(
+                                            "(${portionList[index].extraDetails!})",
+                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.primary)
+                                          ),
+                                        ]
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              TableCell(
+                                child: Center(
+                                  child: Padding(
+                                    padding:const  EdgeInsets.only(top: 10.0, bottom: 10.0),
+                                    child: Text(
+                                      portionList[index].multiply == 1 ?
+                                      "${(double.parse(portionList[index].unitNeeded) * paxCount).toStringAsFixed(2)} ${portionList[index].unit}" 
+                                      :
+                                      "${double.parse(portionList[index].unitNeeded).toStringAsFixed(2)} ${portionList[index].unit}",
+                                      style: Theme.of(context).textTheme.bodyMedium
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                    
+                        
+                        // for(var portion in portionList)...[
+                        //   TableRow(
+                        //     children: [
+                        //       TableCell(
+                        //         child: Center(
+                        //           child: Padding(
+                        //             padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+                        //             child: Column(
+                        //               children: [
+                        //                 Text(
+                        //                   portion.productName,
+                        //                   style: Theme.of(context).textTheme.bodyMedium
+                        //                 ),
+                        //                 if(portion.extraDetails != null)...[
+                        //                   Text(
+                        //                     "(${portion.extraDetails!})",
+                        //                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.primary)
+                        //                   ),
+                        //                 ]
+                        //               ],
+                        //             ),
+                        //           ),
+                        //         ),
+                        //       ),
+                        //       TableCell(
+                        //         child: Center(
+                        //           child: Padding(
+                        //             padding:const  EdgeInsets.only(top: 10.0, bottom: 10.0),
+                        //             child: Text(
+                        //               portion.multiply == 1 ?
+                        //               "${(double.parse(portion.unitNeeded) * paxCount).toStringAsFixed(2)} ${portion.unit}" 
+                        //               :
+                        //               "${double.parse(portion.unitNeeded).toStringAsFixed(2)} ${portion.unit}",
+                        //               style: Theme.of(context).textTheme.bodyMedium
+                        //             ),
+                        //           ),
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ],
                       ],
-                  
-                      
-                      // for(var portion in portionList)...[
-                      //   TableRow(
-                      //     children: [
-                      //       TableCell(
-                      //         child: Center(
-                      //           child: Padding(
-                      //             padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                      //             child: Column(
-                      //               children: [
-                      //                 Text(
-                      //                   portion.productName,
-                      //                   style: Theme.of(context).textTheme.bodyMedium
-                      //                 ),
-                      //                 if(portion.extraDetails != null)...[
-                      //                   Text(
-                      //                     "(${portion.extraDetails!})",
-                      //                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.primary)
-                      //                   ),
-                      //                 ]
-                      //               ],
-                      //             ),
-                      //           ),
-                      //         ),
-                      //       ),
-                      //       TableCell(
-                      //         child: Center(
-                      //           child: Padding(
-                      //             padding:const  EdgeInsets.only(top: 10.0, bottom: 10.0),
-                      //             child: Text(
-                      //               portion.multiply == 1 ?
-                      //               "${(double.parse(portion.unitNeeded) * paxCount).toStringAsFixed(2)} ${portion.unit}" 
-                      //               :
-                      //               "${double.parse(portion.unitNeeded).toStringAsFixed(2)} ${portion.unit}",
-                      //               style: Theme.of(context).textTheme.bodyMedium
-                      //             ),
-                      //           ),
-                      //         ),
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ],
-                    ],
+                    ),
                   ),
                 ),
-              ),
-              if (detailedMenu.image.isNotEmpty) ...[
-                const SizedBox(height: 8.0,),
+                if (detailedMenu.image.isNotEmpty) ...[
+                  const SizedBox(height: 8.0,),
 
-                Text(
-                  "Dish Image",
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Card(
-                    elevation: 12.0,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(21.0)),
-                    ),
-                    child: Container(
-                      constraints: BoxConstraints(
-                        minHeight: 300,
-                        minWidth: MediaQuery.of(context).size.width,
+                  Text(
+                    "Dish Image",
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Card(
+                      elevation: 12.0,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(21.0)),
                       ),
-                      decoration: BoxDecoration(
-                        borderRadius: const BorderRadius.all(Radius.circular(21.0)),
-                        color: Theme.of(context).colorScheme.surface,
-                      ),
-                      child: ClipRRect(
-                        borderRadius: const BorderRadius.all(Radius.circular(21.0)),
-                        child: Image.network(
-                          width: MediaQuery.of(context).size.width,
-                          height: 350,
-                          detailedMenu.image,
-                          fit: BoxFit.cover,
+                      child: Container(
+                        constraints: BoxConstraints(
+                          minHeight: 300,
+                          minWidth: MediaQuery.of(context).size.width,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.all(Radius.circular(21.0)),
+                          color: Theme.of(context).colorScheme.surface,
+                        ),
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.all(Radius.circular(21.0)),
+                          child: Image.network(
+                            width: MediaQuery.of(context).size.width,
+                            height: 350,
+                            detailedMenu.image,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                     ),
                   ),
+                ],
+              ]
+            ]else...[
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: Center(
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.hourglass_empty,
+                        color: Theme.of(context).colorScheme.error,
+                        size: Provider.of<ThemeProvider>(context).fontSize + 84,
+                      ),
+
+                      Text(
+                        "Please select a dish of your choice",
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.error),
+                      ),
+                    ],
+                  ),
                 ),
-              ],
+              )
             ]
           ],
         ),
@@ -366,8 +401,15 @@ class _PortionConfigurationState extends State<PortionConfiguration> {
     setState(() {
       isFetchDetailedMenu = true;
     });
+
+    if (
+      Provider.of<MenuProvider>(context, listen: true).detailedMenu.dish.id.toString().isEmpty
+    ) {
+      
+      await Provider.of<MenuProvider>(context, listen: false).fetchDetailedMenu(context, id: widget.menu.id);
     
-    await Provider.of<MenuProvider>(context, listen: false).fetchDetailedMenu(context, id: widget.menu.id);
+    }
+    
 
     setState(() {
       isFetchDetailedMenu = false;
