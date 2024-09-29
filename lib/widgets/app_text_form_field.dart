@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class AppTextFormField extends StatefulWidget {
   final String hintText;
@@ -9,6 +10,7 @@ class AppTextFormField extends StatefulWidget {
   final Function(String)? onChanged;
   final String? Function(String?)? validator;
   final TextEditingController? textEditingController;
+  final List<TextInputFormatter>? inputFormatters;
   const AppTextFormField({
     super.key,
     required this.hintText,
@@ -19,6 +21,7 @@ class AppTextFormField extends StatefulWidget {
     this.readOnly = false,
     this.onChanged,
     this.validator,
+    this.inputFormatters
   });
 
   @override
@@ -57,6 +60,7 @@ class _AppTextFormFieldState extends State<AppTextFormField> {
       keyboardType: widget.textInputType,
       textInputAction: TextInputAction.done,
       obscureText: showPassword ? false : widget.obscureText,
+      inputFormatters: widget.inputFormatters,
       decoration: InputDecoration(
         errorMaxLines: 3,
         errorStyle: Theme.of(context).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.error),

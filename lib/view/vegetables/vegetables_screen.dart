@@ -3,12 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:mksc/model/vegetable.dart';
 import 'package:mksc/provider/theme_provider.dart';
 import 'package:mksc/provider/vegetable_provider.dart';
+import 'package:mksc/storage/token_storage.dart';
+import 'package:mksc/view/home/mksc_home.dart';
 import 'package:mksc/view/vegetables/widget/vegetable_card.dart';
 import 'package:mksc/widgets/app_text_form_field.dart';
 import 'package:mksc/widgets/shimmer_widgets.dart';
 import 'package:provider/provider.dart';
 
 class VegetablesScreen extends StatefulWidget {
+
   final String token;
 
   final String categoryTitle;
@@ -16,12 +19,13 @@ class VegetablesScreen extends StatefulWidget {
   const VegetablesScreen({super.key, required this.token, required this.categoryTitle});
 
   @override
+  
   State<VegetablesScreen> createState() => _VegetablesScreenState();
 }
 
 class _VegetablesScreenState extends State<VegetablesScreen> {
-  TextEditingController dateController = TextEditingController(); // searchQuery
-  TextEditingController searchQueryController = TextEditingController(); // searchQuery
+  TextEditingController dateController = TextEditingController(); 
+  TextEditingController searchQueryController = TextEditingController(); 
   DateTime dateTime = DateTime.now();
   bool isLoading = false;
 
@@ -35,16 +39,17 @@ class _VegetablesScreenState extends State<VegetablesScreen> {
     });
 
     fetchVegetableData();
-    fetchTodayVegetableData(context, token: widget.token, date: dateController.text);
   }
 
-  void fetchVegetableData()async{
+  void fetchVegetableData() async {
     setState(() {
       isLoading = true;
     });
 
     await Provider.of<VegetableProvider>(context, listen: false).fetchVegetableData(context);
-   
+
+    await fetchTodayVegetableData(context, token: widget.token, date: dateController.text);
+
     await Future.delayed(const Duration(seconds: 2));
 
     setState(() {
@@ -52,25 +57,16 @@ class _VegetablesScreenState extends State<VegetablesScreen> {
     });
   }
 
-  void fetchTodayVegetableData(
-    BuildContext context,
-    {
-      required String token, 
-      required String date,
-    }
-  ) async {
+  Future<void> fetchTodayVegetableData(
+    BuildContext context, {
+    required String token,
+    required String date,
+  }) async {
     setState(() {
       isLoading = true;
     });
 
-    await Provider.of<VegetableProvider>(
-      context, 
-      listen: false
-    ).fetchTodayVegetableData(
-      context, 
-      token: widget.token, 
-      date: dateController.text
-    );
+    await Provider.of<VegetableProvider>(context, listen: false).fetchTodayVegetableData(context, token: widget.token, date: dateController.text);
 
     await Future.delayed(const Duration(seconds: 2));
 
@@ -79,13 +75,13 @@ class _VegetablesScreenState extends State<VegetablesScreen> {
     });
   }
 
-  List<Vegetable> searchKeyWord(String searchQuery, List<Vegetable> vegetableDataList){
-    List<Vegetable> result = vegetableDataList.where((data){
-      return data.name.toLowerCase().contains(searchQuery.toLowerCase());
+  List<Vegetable> searchKeyWord(String searchQuery, List<Vegetable> vegetableDataList) {
+    List<Vegetable> result = vegetableDataList.where((data) {
+      return data.name.toLowerCase().startsWith(searchQuery.toLowerCase());
     }).toList();
-
     return result;
   }
+
   @override
   Widget build(BuildContext context) {
 
@@ -99,10 +95,10 @@ class _VegetablesScreenState extends State<VegetablesScreen> {
               return GestureDetector(
                 onTap: () => Navigator.pop(context),
                 child: Padding(
-                  padding: const EdgeInsets.all(3.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: Icon(
                     CupertinoIcons.back,
-                    color:isSearchingMode ? Theme.of(context).colorScheme.primary : Colors.white,
+                    color: isSearchingMode ? Theme.of(context).colorScheme.primary : Colors.white,
                     size: Provider.of<ThemeProvider>(context).fontSize + 7,
                   ),
                 ),
@@ -110,11 +106,10 @@ class _VegetablesScreenState extends State<VegetablesScreen> {
             },
           ),
           title: isSearchingMode ? 
-
           AppTextFormField(
-            hintText: "Search in ${widget.categoryTitle}", 
-            iconData: Icons.search, 
-            obscureText: false, 
+            hintText: "Search in ${widget.categoryTitle}",
+            iconData: Icons.search,
+            obscureText: false,
             textInputType: TextInputType.text,
             onChanged: (String searchQuery) {
               setState(() {
@@ -122,14 +117,35 @@ class _VegetablesScreenState extends State<VegetablesScreen> {
               });
             },
           )
-          :
+          : 
           Text(
             widget.categoryTitle,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white),
           ),
-
           actions: [
-            vegetableDataList.isNotEmpty ?
+            IconButton(
+              tooltip: 'Logout ${widget.categoryTitle}',
+              onPressed: () async{
+
+                TokenStorage tokenStorage = TokenStorage();
+
+                await tokenStorage.deleteToken(tokenKey: widget.categoryTitle);
+
+                Navigator.pushAndRemoveUntil(
+                  context, 
+                  MaterialPageRoute(builder: (context) => const MKSCHome(),), 
+                  (Route<dynamic> route) => false
+                );
+
+
+              },
+              icon: Icon(
+                Icons.logout,
+                color: isSearchingMode ? Theme.of(context).colorScheme.primary : Colors.white,
+                size: Provider.of<ThemeProvider>(context).fontSize + 7,
+              )
+            ),
+            vegetableDataList.isNotEmpty ? 
             IconButton(
               tooltip: 'Search',
               onPressed: () {
@@ -137,9 +153,9 @@ class _VegetablesScreenState extends State<VegetablesScreen> {
                   isSearchingMode = !isSearchingMode;
                   searchQueryController.clear();
                 });
-              }, 
+              },
               icon: Icon(
-                isSearchingMode ? Icons.cancel : Icons.search ,
+                isSearchingMode ? Icons.cancel : Icons.search,
                 color: isSearchingMode ? Theme.of(context).colorScheme.primary : Colors.white,
                 size: Provider.of<ThemeProvider>(context).fontSize + 7,
               )
@@ -173,42 +189,36 @@ class _VegetablesScreenState extends State<VegetablesScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
                   Text(
                     "Welcome to ${widget.categoryTitle} Data Management",
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
-                  
                   const SizedBox(height: 21,),
-                  
-                  if(!isSearchingMode)...[
+                  if (!isSearchingMode) ...[
                     Text(
                       "Filter by date",
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
-                    
                     const SizedBox(height: 21,),
-
                     GestureDetector(
                       onTap: () => _selectDateTime(context),
                       child: AbsorbPointer(
                         child: AppTextFormField(
-                          hintText: "yyyy-mm-dd", 
-                          iconData: Icons.date_range, 
-                          obscureText: false, 
+                          hintText: "yyyy-mm-dd",
+                          iconData: Icons.date_range,
+                          obscureText: false,
                           textInputType: TextInputType.number,
                           textEditingController: dateController,
                         ),
                       ),
                     ),
-                    
-                    const SizedBox(height: 21,),
+                    const SizedBox(
+                      height: 21,
+                    ),
                   ],
-
-                  isLoading ? ShimmerWidgets(totalShimmers: vegetableDataList.isEmpty ? 3 : vegetableDataList.length) :
-
-                  searchKeyWord(searchQueryController.text, vegetableDataList).isEmpty ?
-
+                  isLoading ? ShimmerWidgets(totalShimmers: vegetableDataList.isEmpty ? 3 : vegetableDataList.length)
+                  : 
+                  searchKeyWord( searchQueryController.text, vegetableDataList).isEmpty ? 
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.5,
                     width: MediaQuery.of(context).size.width,
@@ -223,8 +233,8 @@ class _VegetablesScreenState extends State<VegetablesScreen> {
                         ),
                       ],
                     ),
-                  ) :
-                  
+                  )
+                  : 
                   ListView.builder(
                     physics: const BouncingScrollPhysics(),
                     shrinkWrap: true,
@@ -232,10 +242,13 @@ class _VegetablesScreenState extends State<VegetablesScreen> {
                     itemCount: isSearchingMode ? searchKeyWord(searchQueryController.text, vegetableDataList).length : vegetableDataList.length,
                     itemBuilder: (BuildContext context, int index) {
                       var vegetableData = isSearchingMode ? searchKeyWord(searchQueryController.text, vegetableDataList)[index] : vegetableDataList[index];
-                      return VegetableCard(vegetableData: vegetableData, token: widget.token, date: dateController.text,);
+                      return VegetableCard(
+                        vegetableData: vegetableData,
+                        token: widget.token,
+                        date: dateController.text,
+                      );
                     },
                   ),
-
                 ],
               ),
             ),
@@ -244,11 +257,12 @@ class _VegetablesScreenState extends State<VegetablesScreen> {
       )
     );
   }
+
   Future<void> _selectDateTime(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
+      firstDate: DateTime.now().subtract(const Duration(days: 7)),
       lastDate: DateTime.now(),
     );
     if (pickedDate != null) {
@@ -256,7 +270,7 @@ class _VegetablesScreenState extends State<VegetablesScreen> {
         dateTime = pickedDate;
         dateController.text = pickedDate.toString().split(' ')[0];
       });
-      if(!context.mounted) return;
+      if (!context.mounted) return;
       fetchTodayVegetableData(context, token: widget.token, date: dateController.text);
     }
   }

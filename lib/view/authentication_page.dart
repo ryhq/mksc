@@ -21,11 +21,10 @@ class AuthenticationPage extends StatefulWidget {
 }
 
 class _AuthenticationPageState extends State<AuthenticationPage> {
-  
   final TextEditingController passwordCodeController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
-  
+
   bool _continueClicked = false;
 
   String email = "";
@@ -40,30 +39,52 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
     widget.title == "Laundry" ? null : checkTokenPresence();
   }
 
-  void checkTokenPresence() async{
-
+  void checkTokenPresence() async {
     TokenStorage tokenStorage = TokenStorage();
 
     savedToken = await tokenStorage.getTokenDirect(tokenKey: widget.title);
 
     if (savedToken.isNotEmpty) {
-      debugPrint("\n\n\n🪙🟡💰🥮Fetched Token for ${widget.title} is : $savedToken");
+      debugPrint(
+          "\n\n\n🪙🟡💰🥮Fetched Token for ${widget.title} is : $savedToken");
 
       navigate();
     }
   }
 
-  void navigate(){
-    if(savedToken.isNotEmpty && context.mounted){
-      // Navigator.pop(context);
+  void navigate() {
+    if (savedToken.isNotEmpty && context.mounted) {
+      Navigator.pop(context);
       if (widget.title == "Chicken House") {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ChickenHouseScreen(categoryTitle: widget.title, token: savedToken,),));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChickenHouseScreen(
+                categoryTitle: widget.title,
+                token: savedToken,
+              ),
+            ));
       }
       if (widget.title == "Vegetables") {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => VegetablesScreen(categoryTitle: widget.title, token: savedToken,),));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VegetablesScreen(
+                categoryTitle: widget.title,
+                token: savedToken,
+              ),
+            ));
       }
       if (widget.title == "Laundry") {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => LaundryScreen(categoryTitle: widget.title, token: savedToken, camp: "", ),));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => LaundryScreen(
+                categoryTitle: widget.title,
+                token: savedToken,
+                camp: "",
+              ),
+            ));
       }
     }
   }
@@ -95,7 +116,7 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
             return GestureDetector(
               onTap: () => Navigator.pop(context),
               child: Padding(
-                padding: const EdgeInsets.all(3.0),
+                padding: const EdgeInsets.all(8.0),
                 child: Icon(
                   CupertinoIcons.back,
                   color: Colors.white,
@@ -107,7 +128,10 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
         ),
         title: Text(
           widget.title,
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white),
+          style: Theme.of(context)
+              .textTheme
+              .headlineSmall
+              ?.copyWith(color: Colors.white),
         ),
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -165,7 +189,8 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                             return "Invalid Code for ${widget.title}";
                           }
                         }
-                        return ValidatorUtility.validateRequiredField(value, "Code number for ${widget.title} is Required!");
+                        return ValidatorUtility.validateRequiredField(value,
+                            "Code number for ${widget.title} is Required!");
                       },
                     ),
                   ],
@@ -174,11 +199,12 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
               const SizedBox(
                 height: 21,
               ),
-              _continueClicked ? const BallPulseIndicator() : 
-              Button(
-                title: "Continue...",
-                onTap: () => authenticate(),
-              ),
+              _continueClicked
+                  ? const BallPulseIndicator()
+                  : Button(
+                      title: "Continue...",
+                      onTap: () => authenticate(),
+                    ),
               const SizedBox(
                 height: 21,
               ),
@@ -195,7 +221,8 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
         _continueClicked = true;
       });
 
-      await AuthenticationServices.authenticate(widget.title, context, email: email, passwordCode: passwordCodeController.text);
+      await AuthenticationServices.authenticate(widget.title, context,
+          email: email, passwordCode: passwordCodeController.text);
 
       setState(() {
         _continueClicked = false;

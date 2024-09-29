@@ -42,7 +42,7 @@ class _InputDataPageState extends State<InputDataPage> {
             return GestureDetector(
               onTap: () => Navigator.pop(context),
               child: Padding(
-                padding: const EdgeInsets.all(3.0),
+                padding: const EdgeInsets.all(8.0),
                 child: Icon(
                   CupertinoIcons.back,
                   color: Theme.of(context).colorScheme.primary,

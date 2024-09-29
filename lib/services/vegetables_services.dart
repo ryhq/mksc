@@ -28,8 +28,8 @@ class VegetablesServices {
         },
       );
 
-      debugPrint("\n\n\nResponse status code ${response.statusCode}");
-      debugPrint("\n\n\nResponse body ${response.body}");
+      // debugPrint("\n\n\nResponse status code ${response.statusCode}");
+      // debugPrint("\n\n\nResponse body ${response.body}");
 
       if (response.statusCode == 200) {
 
