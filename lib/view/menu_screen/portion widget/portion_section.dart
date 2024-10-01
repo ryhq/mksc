@@ -181,49 +181,6 @@ class _PortionSectionState extends State<PortionSection> {
                     ],
                   ),
                 ],
-            
-                
-                // for(var portion in portionList)...[
-                //   TableRow(
-                //     children: [
-                //       TableCell(
-                //         child: Center(
-                //           child: Padding(
-                //             padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                //             child: Column(
-                //               children: [
-                //                 Text(
-                //                   portion.productName,
-                //                   style: Theme.of(context).textTheme.bodyMedium
-                //                 ),
-                //                 if(portion.extraDetails != null)...[
-                //                   Text(
-                //                     "(${portion.extraDetails!})",
-                //                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.primary)
-                //                   ),
-                //                 ]
-                //               ],
-                //             ),
-                //           ),
-                //         ),
-                //       ),
-                //       TableCell(
-                //         child: Center(
-                //           child: Padding(
-                //             padding:const  EdgeInsets.only(top: 10.0, bottom: 10.0),
-                //             child: Text(
-                //               portion.multiply == 1 ?
-                //               "${(double.parse(portion.unitNeeded) * paxCount).toStringAsFixed(2)} ${portion.unit}" 
-                //               :
-                //               "${double.parse(portion.unitNeeded).toStringAsFixed(2)} ${portion.unit}",
-                //               style: Theme.of(context).textTheme.bodyMedium
-                //             ),
-                //           ),
-                //         ),
-                //       ),
-                //     ],
-                //   ),
-                // ],
               ],
             ),
           ),

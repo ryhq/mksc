@@ -3,6 +3,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:mksc/model/detailed_menu.dart';
 import 'package:mksc/model/menu.dart';
 import 'package:mksc/provider/menu_provider.dart';
+import 'package:mksc/utils/color_utility.dart';
 import 'package:provider/provider.dart';
 
 class RecipePart extends StatefulWidget {
@@ -36,51 +37,24 @@ class _RecipeState extends State<RecipePart> {
                 "Recipe Details",
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Html(
-                  data: detailedMenu.dish.recipe,
-                  style: {
-                    'body': Style(color: Color.fromARGB(255, 132, 130, 130),),
-                  },
+              Container(
+                decoration: BoxDecoration(
+                  color: ColorUtils.calculateSecondaryColor(primaryColor: Theme.of(context).colorScheme.primary),
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Html(
+                    data: detailedMenu.dish.recipe,
+                    style: {
+                      'body': Style(color: Color.fromARGB(255, 132, 130, 130),),
+                    },
+                  ),
                 ),
               ),
-              
-              // Padding(
-              //   padding: const EdgeInsets.all(8.0),
-              //   child: Container(
-              //     constraints: BoxConstraints(
-              //       minHeight: 200,
-              //       minWidth: MediaQuery.of(context).size.width,
-              //     ),
-              //     decoration: BoxDecoration(
-              //       gradient: const LinearGradient(
-              //         begin: Alignment.topLeft,
-              //         end: Alignment.bottomRight,
-              //         colors: [
-              //           Color.fromARGB(255, 227, 230, 233),
-              //           Color.fromARGB(255, 196, 216, 233),
-              //         ],
-              //       ),
-              //       borderRadius: BorderRadius.circular(5),
-              //     ),
-              //     child: Column(
-              //       crossAxisAlignment: CrossAxisAlignment.start,
-              //       children: [
-              //         Padding(
-              //           padding: const EdgeInsets.all(8.0),
-              //           child: Html(
-              //             data: detailedMenu.dish.recipe,
-              //             style: {
-              //               'body': Style(color: Color.fromARGB(255, 132, 130, 130)),
-              //             },
-              //           ),
-              //         ),
-              //       ],
-              //     ),
-              //   ),
-              // ),
             ],
+                
+            const SizedBox(height: 12.0,),
 
             if(detailedMenu.dish.tableware.toString().isNotEmpty)...[
             
@@ -89,50 +63,24 @@ class _RecipeState extends State<RecipePart> {
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
 
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Html(
-                  data: detailedMenu.dish.tableware,
-                  style: {
-                    'body': Style(color: Color.fromARGB(255, 132, 130, 130)),
-                  },
+              Container(
+                decoration: BoxDecoration(
+                  color: ColorUtils.calculateSecondaryColor(primaryColor: Theme.of(context).colorScheme.primary),
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Html(
+                    data: detailedMenu.dish.tableware,
+                    style: {
+                      'body': Style(color: Color.fromARGB(255, 132, 130, 130)),
+                    },
+                  ),
                 ),
               ),
-              // Padding(
-              //   padding: const EdgeInsets.all(8.0),
-              //   child: Container(
-              //     constraints: BoxConstraints(
-              //       minHeight: 200,
-              //       minWidth: MediaQuery.of(context).size.width,
-              //     ),
-              //     decoration: BoxDecoration(
-              //       gradient: const LinearGradient(
-              //         begin: Alignment.topLeft,
-              //         end: Alignment.bottomRight,
-              //         colors: [
-              //           Color.fromARGB(255, 227, 230, 233),
-              //           Color.fromARGB(255, 196, 216, 233),
-              //         ],
-              //       ),
-              //       borderRadius: BorderRadius.circular(5),
-              //     ),
-              //     child: Column(
-              //       crossAxisAlignment: CrossAxisAlignment.start,
-              //       children: [
-              //         Padding(
-              //           padding: const EdgeInsets.all(8.0),
-              //           child: Html(
-              //             data: detailedMenu.dish.tableware,
-              //             style: {
-              //               'body': Style(color: Color.fromARGB(255, 132, 130, 130)),
-              //             },
-              //           ),
-              //         ),
-              //       ],
-              //     ),
-              //   ),
-              // ),
             ],
+                
+            const SizedBox(height: 12.0,),
 
             if(detailedMenu.dish.tableware.toString().isNotEmpty)...[
             
@@ -140,50 +88,21 @@ class _RecipeState extends State<RecipePart> {
                 "Utensils",
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Html(
-                  data: detailedMenu.dish.utensils,
-                  style: {
-                    'body': Style(color: Color.fromARGB(255, 132, 130, 130)),
-                  },
+              Container(
+                decoration: BoxDecoration(
+                  color: ColorUtils.calculateSecondaryColor(primaryColor: Theme.of(context).colorScheme.primary),
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Html(
+                    data: detailedMenu.dish.utensils,
+                    style: {
+                      'body': Style(color: Color.fromARGB(255, 132, 130, 130)),
+                    },
+                  ),
                 ),
               ),
-            
-              // Padding(
-              //   padding: const EdgeInsets.all(8.0),
-              //   child: Container(
-              //     constraints: BoxConstraints(
-              //       minHeight: 200,
-              //       minWidth: MediaQuery.of(context).size.width,
-              //     ),
-              //     decoration: BoxDecoration(
-              //       gradient: const LinearGradient(
-              //         begin: Alignment.topLeft,
-              //         end: Alignment.bottomRight,
-              //         colors: [
-              //           Color.fromARGB(255, 227, 230, 233),
-              //           Color.fromARGB(255, 196, 216, 233),
-              //         ],
-              //       ),
-              //       borderRadius: BorderRadius.circular(5),
-              //     ),
-              //     child: Column(
-              //       crossAxisAlignment: CrossAxisAlignment.start,
-              //       children: [
-              //         Padding(
-              //           padding: const EdgeInsets.all(8.0),
-              //           child: Html(
-              //             data: detailedMenu.dish.utensils,
-              //             style: {
-              //               'body': Style(color: Color.fromARGB(255, 132, 130, 130)),
-              //             },
-              //           ),
-              //         ),
-              //       ],
-              //     ),
-              //   ),
-              // ),
             ],
       
           ],

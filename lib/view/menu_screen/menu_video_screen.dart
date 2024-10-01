@@ -42,7 +42,7 @@ class _VideoScreenState extends State<VideoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: MediaQuery.of(context).orientation ==Orientation.portrait ? AppBar(
         automaticallyImplyLeading: true,
         leading: Builder(
           builder: (context) {
@@ -68,10 +68,17 @@ class _VideoScreenState extends State<VideoScreen> {
         ),
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.primary
-      ),
+      ) : null,
       body: YoutubePlayer(
         controller: _youtubeController,
         showVideoProgressIndicator: true,
+        progressIndicatorColor: Theme.of(context).colorScheme.primary,
+        progressColors: ProgressBarColors(
+          handleColor: Theme.of(context).colorScheme.primary,
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          playedColor: Theme.of(context).colorScheme.primary,
+          bufferedColor: Theme.of(context).colorScheme.primary
+        ),
       ),
     );
   }

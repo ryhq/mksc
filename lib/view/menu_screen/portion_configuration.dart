@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mksc/model/detailed_menu.dart';
 import 'package:mksc/model/menu.dart';
 import 'package:mksc/model/other_dish.dart';
@@ -97,10 +98,22 @@ class _PortionConfigurationState extends State<PortionConfiguration> {
                           setState(() {
                             paxCount = 1; // Reset pax count
                           });
-                          Provider.of<MenuProvider>(context, listen: false).setSelectedDish(
-                            selectedDish: otherDish
-                          );
-                          getUpdatedMenuDetails(dishId: otherDish.id);
+                          if (selectedDish.dishName == otherDish.dishName) {
+                            Fluttertoast.showToast(
+                              msg: "Please select different dish.",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIosWeb: 1,
+                              backgroundColor: Theme.of(context).colorScheme.primary,
+                              textColor: Colors.white,
+                              fontSize: 16.0
+                            );  
+                          } else {
+                            Provider.of<MenuProvider>(context, listen: false).setSelectedDish(
+                              selectedDish: otherDish
+                            );
+                            getUpdatedMenuDetails(dishId: otherDish.id);
+                          }
                         },
                         icon: Icon(
                           Icons.arrow_drop_down,

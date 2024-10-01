@@ -39,13 +39,17 @@ class _DishImageSectionState extends State<DishImageSection> {
                 insetPadding: const EdgeInsets.all(21),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(21.0),
-                  child: PhotoView(
-                    minScale: PhotoViewComputedScale.contained,
-                    maxScale: PhotoViewComputedScale.covered * 2,
-                    imageProvider: NetworkImage(detailedMenu.image,),
-                    heroAttributes: PhotoViewHeroAttributes(tag: detailedMenu.image),
-                    backgroundDecoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.9)
+                  child: SizedBox(
+                    height: 300,
+                    width: MediaQuery.of(context).size.width,
+                    child: PhotoView(
+                      minScale: PhotoViewComputedScale.contained,
+                      maxScale: PhotoViewComputedScale.covered * 2,
+                      imageProvider: NetworkImage(detailedMenu.image,),
+                      heroAttributes: PhotoViewHeroAttributes(tag: detailedMenu.image),
+                      backgroundDecoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.9)
+                      ),
                     ),
                   ),
                 ),
