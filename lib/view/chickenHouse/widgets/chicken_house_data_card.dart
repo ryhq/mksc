@@ -51,12 +51,15 @@ class _ChickenHouseDataCardState extends State<ChickenHouseDataCard> {
         onTap: () {
           if (isFocused) {
             _focusNode.unfocus();
+          } else{
+            _focusNode.requestFocus(); 
+          }
+          if(!savingState){
+            debugPrint("\n\n\nEdit controller...${widget.chickenHouseData.number}");
             setState(() {
               ediMode = !ediMode;
               editingController.text = widget.chickenHouseData.number.toString();
             });
-          }else{
-            _focusNode.requestFocus(); 
           }
         },
         child: AbsorbPointer(

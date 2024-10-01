@@ -27,6 +27,8 @@ class _RecipeState extends State<RecipePart> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+                
+            const SizedBox(height: 12.0,),
 
             if(detailedMenu.dish.recipe.toString().isNotEmpty)...[
             

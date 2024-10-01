@@ -160,12 +160,15 @@ class AuthenticationServices {
   static void _navigate(BuildContext context, {required String categoryTitle, required String token, String? camp,}){
     if(token.isNotEmpty && context.mounted){
       if (categoryTitle == "Chicken House") {
+        Navigator.pop(context); // This ensures the authentication can be removed after navigation
         Navigator.push(context, MaterialPageRoute(builder: (context) => ChickenHouseScreen(categoryTitle: categoryTitle, token: token,),));
       }
       if (categoryTitle == "Vegetables") {
+        Navigator.pop(context); // This ensures the authentication can be removed after navigation
         Navigator.push(context, MaterialPageRoute(builder: (context) => VegetablesScreen(categoryTitle: categoryTitle, token: token,),));
       }
       if (categoryTitle == "Laundry") {
+        Navigator.pop(context); // This ensures the authentication can be removed after navigation
         Navigator.push(context, MaterialPageRoute(builder: (context) => LaundryScreen(categoryTitle: categoryTitle, token: token, camp: camp!,),));
       }
     }

@@ -45,9 +45,7 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
     savedToken = await tokenStorage.getTokenDirect(tokenKey: widget.title);
 
     if (savedToken.isNotEmpty) {
-      debugPrint(
-          "\n\n\n🪙🟡💰🥮Fetched Token for ${widget.title} is : $savedToken");
-
+      debugPrint("\n\n\n🪙🟡💰🥮Fetched Token for ${widget.title} is : $savedToken");
       navigate();
     }
   }
