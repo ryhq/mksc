@@ -19,6 +19,10 @@ class ThemeProvider with ChangeNotifier {
   // Getter for the current font size
   double get fontSize => _fontSize;
 
+  bool _isLoading = true;
+  
+  bool get isLoading => _isLoading;
+
   // Setter for theme data which also notifies listeners about the change
   set setThemeData(ThemeData themeData) {
     _themeData = themeData;
@@ -58,10 +62,15 @@ class ThemeProvider with ChangeNotifier {
     String primaryColor = themeColor.primaryColor.replaceAll("#", "");
     if(primaryColor.length == 6) {
       primaryColor = 'FF$primaryColor';
-      setPrimaryColor(Color(int.parse(primaryColor, radix: 16)));
+      try {
+        setPrimaryColor(Color(int.parse(primaryColor, radix: 16)));
+      } catch (e) {
+        debugPrint("\n\n\n👉👉👉👉👉Invalid color value from network");
+      }
     }
-
-    debugPrint("\n\n\n👉👉👉👉👉Primary Color set : $primaryColor");
+    await _savePreferences();
+    await _loadPreferences();
+    debugPrint("\n\n\n👉👉👉👉👉Primary Color set : ${primaryColor.toUpperCase()}");
   }
 
   void resetToFactoryDefaults() {
@@ -201,6 +210,7 @@ class ThemeProvider with ChangeNotifier {
     bool isDark = prefs.getBool('isDarkMode') ?? false;
     _themeData = isDark ? _darkMode : _lightMode;
     primaryColor = Color(prefs.getInt('primaryColor') ?? primaryColor.value);
+    _isLoading = false;
     notifyListeners();
   }
 
