@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mksc/model/theme_color.dart';
+import 'package:mksc/services/theme_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemeProvider with ChangeNotifier {
@@ -7,10 +9,6 @@ class ThemeProvider with ChangeNotifier {
   double _fontSize = 14.0;
 
   Color primaryColor = const Color(0xff569CEA);
-
-  ThemeProvider() {
-    _loadPreferences();
-  }
 
   // Getter for the current theme data
   ThemeData get themeData => _buildThemeData();
@@ -47,7 +45,23 @@ class ThemeProvider with ChangeNotifier {
     primaryColor = color;
     // _buildThemeData();
     _savePreferences(); // Save the new color to preferences
+    _buildThemeData();
     notifyListeners();
+  }
+
+  ThemeProvider() {
+    _loadPreferences();
+  }
+
+  Future<void> setPrimaryColorFromNet() async{
+    ThemeColor themeColor = await ThemeServices.getAppPrimaryColor();
+    String primaryColor = themeColor.primaryColor.replaceAll("#", "");
+    if(primaryColor.length == 6) {
+      primaryColor = 'FF$primaryColor';
+      setPrimaryColor(Color(int.parse(primaryColor, radix: 16)));
+    }
+
+    debugPrint("\n\n\n👉👉👉👉👉Primary Color set : $primaryColor");
   }
 
   void resetToFactoryDefaults() {
@@ -186,7 +200,7 @@ class ThemeProvider with ChangeNotifier {
     _fontSize = prefs.getDouble('fontSize') ?? 14.0;
     bool isDark = prefs.getBool('isDarkMode') ?? false;
     _themeData = isDark ? _darkMode : _lightMode;
-    primaryColor = Color(prefs.getInt('primaryColor') ?? 0xff569CEA);
+    primaryColor = Color(prefs.getInt('primaryColor') ?? primaryColor.value);
     notifyListeners();
   }
 

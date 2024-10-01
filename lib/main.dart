@@ -13,6 +13,8 @@ import 'package:provider/provider.dart';
 
 void main(List<String> args) async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  ThemeProvider themeProvider = ThemeProvider();
+  await themeProvider.setPrimaryColorFromNet();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   FlutterNativeSplash.remove(); 
   runApp(

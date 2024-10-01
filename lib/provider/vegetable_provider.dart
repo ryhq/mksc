@@ -4,6 +4,7 @@ import 'package:mksc/services/vegetables_services.dart';
 import 'package:mksc/widgets/custom_alert.dart';
 
 class VegetableProvider with ChangeNotifier{
+  
   List<Vegetable> _vegetableDataList = [];
 
   List<Vegetable> _todayVegetableDataList = [];
@@ -93,14 +94,19 @@ class VegetableProvider with ChangeNotifier{
       final vegetable = _vegetableDataList[i];
 
       for (var index = 0; index < _todayVegetableDataList.length; index++) {
-        if (_todayVegetableDataList[index].name == vegetable.name) {
+        // debugPrint("\n\n\n 🔥️‍🔥️‍🔥️‍🔥 VegetableData today : \n\tName ${_todayVegetableDataList[index].name} ");
+        if (
+          // _todayVegetableDataList[index].name.toLowerCase() == vegetable.name.toLowerCase()
+          // _todayVegetableDataList[index].name.toUpperCase() == vegetable.name.toUpperCase() ||
+          _todayVegetableDataList[index].name == vegetable.name
+        ) {
           _vegetableDataList[i] = vegetable.copyWith(
             tempId: _todayVegetableDataList[index].tempId,
             camp: _todayVegetableDataList[index].camp,
             number: _todayVegetableDataList[index].number,
             unit: _todayVegetableDataList[index].unit,
           );
-          debugPrint("\n\n\n 🔥️‍🔥️‍🔥️‍🔥 Edited vegetableData : \n\tCamp ${_vegetableDataList[i].camp} name ${_vegetableDataList[i].name} number${_vegetableDataList[i].number}");
+          // debugPrint("\n\n\n 🔥️‍🔥️‍🔥️‍🔥 Edited vegetableData : \n\tCamp ${_vegetableDataList[i].camp} name ${_vegetableDataList[i].name} number${_vegetableDataList[i].number}");
         }
       }
     }

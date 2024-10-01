@@ -37,16 +37,20 @@ class _InputDataPageState extends State<InputDataPage> {
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: true,
         leading: Builder(
           builder: (context) {
             return GestureDetector(
               onTap: () => Navigator.pop(context),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Icon(
-                  CupertinoIcons.back,
-                  color: Theme.of(context).colorScheme.primary,
-                  size: Provider.of<ThemeProvider>(context).fontSize + 7,
+              child: Container(
+                color: Colors.transparent,
+                child: Padding(
+                  padding: const EdgeInsets.all(21.0),
+                  child: Icon(
+                    CupertinoIcons.back,
+                    color: Colors.white,
+                    size: Provider.of<ThemeProvider>(context).fontSize + 7,
+                  ),
                 ),
               ),
             );

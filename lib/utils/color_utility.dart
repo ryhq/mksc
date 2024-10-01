@@ -43,9 +43,9 @@ class ColorUtils {
 
   static Color calculateSecondaryColor({required Color primaryColor}){
     HSLColor hslColor = HSLColor.fromColor(primaryColor);
-    double newHue = (hslColor.hue + 30) % 360;
+    double newHue = (hslColor.hue + 0) % 360;
     HSLColor secondaryHSLColor = hslColor.withHue(newHue);
     Color secondaryColor = secondaryHSLColor.toColor();
-    return secondaryColor;
+    return secondaryColor.withAlpha(45);
   }
 }

@@ -3,10 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:mksc/model/vegetable.dart';
 import 'package:mksc/provider/theme_provider.dart';
 import 'package:mksc/provider/vegetable_provider.dart';
-import 'package:mksc/storage/token_storage.dart';
-import 'package:mksc/view/home/mksc_home.dart';
 import 'package:mksc/view/vegetables/widget/vegetable_card.dart';
 import 'package:mksc/widgets/app_text_form_field.dart';
+import 'package:mksc/widgets/log_out_action_button.dart';
 import 'package:mksc/widgets/shimmer_widgets.dart';
 import 'package:provider/provider.dart';
 
@@ -90,16 +89,20 @@ class _VegetablesScreenState extends State<VegetablesScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: true,
           leading: Builder(
             builder: (context) {
               return GestureDetector(
                 onTap: () => Navigator.pop(context),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Icon(
-                    CupertinoIcons.back,
-                    color: isSearchingMode ? Theme.of(context).colorScheme.primary : Colors.white,
-                    size: Provider.of<ThemeProvider>(context).fontSize + 7,
+                child: Container(
+                  color: Colors.transparent,
+                  child: Padding(
+                    padding: const EdgeInsets.all(21.0),
+                    child: Icon(
+                      CupertinoIcons.back,
+                      color: isSearchingMode ? Theme.of(context).colorScheme.primary : Colors.white,
+                      size: Provider.of<ThemeProvider>(context).fontSize + 7,
+                    ),
                   ),
                 ),
               );
@@ -123,28 +126,6 @@ class _VegetablesScreenState extends State<VegetablesScreen> {
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white),
           ),
           actions: [
-            IconButton(
-              tooltip: 'Logout ${widget.categoryTitle}',
-              onPressed: () async{
-
-                TokenStorage tokenStorage = TokenStorage();
-
-                await tokenStorage.deleteToken(tokenKey: widget.categoryTitle);
-
-                Navigator.pushAndRemoveUntil(
-                  context, 
-                  MaterialPageRoute(builder: (context) => const MKSCHome(),), 
-                  (Route<dynamic> route) => false
-                );
-
-
-              },
-              icon: Icon(
-                Icons.logout,
-                color: isSearchingMode ? Theme.of(context).colorScheme.primary : Colors.white,
-                size: Provider.of<ThemeProvider>(context).fontSize + 7,
-              )
-            ),
             vegetableDataList.isNotEmpty ? 
             IconButton(
               tooltip: 'Search',
@@ -159,7 +140,8 @@ class _VegetablesScreenState extends State<VegetablesScreen> {
                 color: isSearchingMode ? Theme.of(context).colorScheme.primary : Colors.white,
                 size: Provider.of<ThemeProvider>(context).fontSize + 7,
               )
-            ) : const SizedBox()
+            ) : const SizedBox(),
+            LogOutActionButton(categoryTitle: widget.categoryTitle),
           ],
           centerTitle: isSearchingMode ? false : true,
           backgroundColor: isSearchingMode ? Theme.of(context).colorScheme.surface : Theme.of(context).colorScheme.primary,
@@ -173,11 +155,11 @@ class _VegetablesScreenState extends State<VegetablesScreen> {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Colors.blue[100]!,
+                // Colors.blue[100]!,
                 Colors.grey[50]!,
                 Colors.white,
                 Colors.grey[50]!,
-                Colors.blue[100]!,
+                // Colors.blue[100]!,
               ],
             ),
           ),

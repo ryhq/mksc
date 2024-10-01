@@ -10,23 +10,22 @@ import 'package:provider/provider.dart';
 class VegetableEditOrAddBottomSheet extends StatefulWidget {
   final Vegetable vegetable;
   final bool edit;
-  const VegetableEditOrAddBottomSheet({super.key, required this.vegetable, required this.edit});
+  const VegetableEditOrAddBottomSheet(
+      {super.key, required this.vegetable, required this.edit});
 
   @override
-  State<VegetableEditOrAddBottomSheet> createState() => _VegetableEditOrAddBottomSheetState();
+  State<VegetableEditOrAddBottomSheet> createState() =>
+      _VegetableEditOrAddBottomSheetState();
 }
 
-class _VegetableEditOrAddBottomSheetState extends State<VegetableEditOrAddBottomSheet> {
-
+class _VegetableEditOrAddBottomSheetState
+    extends State<VegetableEditOrAddBottomSheet> {
   String selectedUnit = "Kg";
 
-  List<String> units = [
-    "Kg",
-    "gram",
-    "units"
-  ];
+  List<String> units = ["Kg", "gram", "units"];
 
-  final GlobalKey<PopupMenuButtonState<String>> _selectUnitKey = GlobalKey<PopupMenuButtonState<String>>();
+  final GlobalKey<PopupMenuButtonState<String>> _selectUnitKey =
+      GlobalKey<PopupMenuButtonState<String>>();
 
   TextEditingController editingController = TextEditingController();
 
@@ -34,9 +33,9 @@ class _VegetableEditOrAddBottomSheetState extends State<VegetableEditOrAddBottom
   Widget build(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.9,
-      decoration: const BoxDecoration(
-        color: Color.fromRGBO(218, 242, 250, 1),
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(25),
           topRight: Radius.circular(25),
         ),
@@ -50,9 +49,10 @@ class _VegetableEditOrAddBottomSheetState extends State<VegetableEditOrAddBottom
           child: Column(
             children: [
               Text(
-                widget.edit ?  "Edit ${widget.vegetable.name}." : "Add ${widget.vegetable.name}.",
-                style: Theme.of(context).textTheme.headlineMedium
-              ),
+                  widget.edit
+                      ? "Edit ${widget.vegetable.name}."
+                      : "Add ${widget.vegetable.name}.",
+                  style: Theme.of(context).textTheme.headlineMedium),
               Padding(
                 padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                 child: Card(
@@ -66,72 +66,83 @@ class _VegetableEditOrAddBottomSheetState extends State<VegetableEditOrAddBottom
                     ),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 10.0, right: 10),
-                    child: ListTile(
-                      title: Text(
-                        selectedUnit.isEmpty ? "Select Unit" : "Selected Unit",
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            selectedUnit.isEmpty ? "" : selectedUnit,
-                            style: selectedUnit.isEmpty ? Theme.of(context).textTheme.labelMedium : Theme.of(context).textTheme.bodyMedium!.copyWith(fontStyle: FontStyle.italic)
-                          ),
-                          // selectedUnit.isNotEmpty ? const SizedBox() :
-                          PopupMenuButton<String>(
-                            key: _selectUnitKey,
-                            enabled: selectedUnit.isEmpty,
-                            onSelected: (String unit) {
-                              setState(() {
-                                selectedUnit = unit;
-                              });
-                            },
-                            icon: Icon(
-                              Icons.arrow_drop_down,
-                              color: Theme.of(context).colorScheme.primary,
-                              size: Provider.of<ThemeProvider>(context).fontSize + 7,
+                      padding: const EdgeInsets.only(left: 10.0, right: 10),
+                      child: ListTile(
+                        title: Text(
+                          selectedUnit.isEmpty
+                              ? "Select Unit"
+                              : "Selected Unit",
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(selectedUnit.isEmpty ? "" : selectedUnit,
+                                style: selectedUnit.isEmpty
+                                    ? Theme.of(context).textTheme.labelMedium
+                                    : Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .copyWith(fontStyle: FontStyle.italic)),
+                            // selectedUnit.isNotEmpty ? const SizedBox() :
+                            PopupMenuButton<String>(
+                              key: _selectUnitKey,
+                              enabled: selectedUnit.isEmpty,
+                              onSelected: (String unit) {
+                                setState(() {
+                                  selectedUnit = unit;
+                                });
+                              },
+                              icon: Icon(
+                                Icons.arrow_drop_down,
+                                color: Theme.of(context).colorScheme.primary,
+                                size: Provider.of<ThemeProvider>(context)
+                                        .fontSize +
+                                    7,
+                              ),
+                              itemBuilder: (context) {
+                                return units.map((unit) {
+                                  return PopupMenuItem<String>(
+                                    value: unit,
+                                    child: Text(
+                                      unit,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium,
+                                    ),
+                                  );
+                                }).toList();
+                              },
                             ),
-                            itemBuilder: (context) {
-                              return units.map((unit) {
-                                return PopupMenuItem<String>(
-                                  value: unit,
-                                  child: Text(
-                                    unit,
-                                    style: Theme.of(context).textTheme.bodyMedium,
-                                  ),
-                                );
-                              }).toList();
-                            },
-                          ),
-                        ],
-                      ),
-                      contentPadding: const EdgeInsets.all(0.0),
-                      onTap: () {
-                        _selectUnitKey.currentState?.showButtonMenu();
-                      },
-                    )
-                  ),
+                          ],
+                        ),
+                        contentPadding: const EdgeInsets.all(0.0),
+                        onTap: () {
+                          _selectUnitKey.currentState?.showButtonMenu();
+                        },
+                      )),
                 ),
               ),
               AppTextFormField(
-                hintText: "####", 
-                iconData: Icons.add, 
-                obscureText: false, 
-                textInputType: const TextInputType.numberWithOptions(decimal: false, signed: true),
+                hintText: "####",
+                iconData: Icons.add,
+                obscureText: false,
+                textInputType: const TextInputType.numberWithOptions(
+                    decimal: false, signed: true),
                 textEditingController: editingController,
                 inputFormatters: <TextInputFormatter>[
                   FilteringTextInputFormatter.digitsOnly,
                 ],
                 onChanged: (value) {
                   // Check if the input is a positive integer
-                  if (value.isNotEmpty && int.tryParse(value) != null && int.parse(value) >= 0) {
+                  if (value.isNotEmpty &&
+                      int.tryParse(value) != null &&
+                      int.parse(value) >= 0) {
                     if (int.parse(value) <= 99999999) {
                       setState(() {
                         editingController.text = value;
                       });
-                    }else{
+                    } else {
                       // Clear the input if it is invalid
                       editingController.clear();
                     }
@@ -140,17 +151,18 @@ class _VegetableEditOrAddBottomSheetState extends State<VegetableEditOrAddBottom
                     editingController.clear();
                   }
                 },
-                validator: (value) => ValidatorUtility.validateRequiredField(value, "${widget.vegetable.name} quantity is required."),
+                validator: (value) => ValidatorUtility.validateRequiredField(
+                    value, "${widget.vegetable.name} quantity is required."),
               ),
-              if(selectedUnit.isNotEmpty)...[
+              if (selectedUnit.isNotEmpty) ...[
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Button(
-                    title: "Save", 
+                    title: "Save",
                     danger: false,
                     onTap: () {
                       setState(() {
-                        selectedUnit = "";          
+                        selectedUnit = "";
                       });
                       Navigator.pop(context);
                     },

@@ -4,8 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:mksc/model/vegetable.dart';
 import 'package:mksc/provider/theme_provider.dart';
 import 'package:mksc/provider/vegetable_provider.dart';
+import 'package:mksc/utils/color_utility.dart';
 import 'package:mksc/utils/validator_utility.dart';
-import 'package:mksc/view/vegetables/widget/vegetable_edit_or_add_bottom_sheet.dart';
 import 'package:mksc/widgets/ball_pulse_indicator.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
@@ -35,8 +35,13 @@ class _VegetableCardState extends State<VegetableCard> {
   bool savingState = false;
 
   bool editMode = false;
+  
+  bool addMode = false;
 
   String selectedUnit = "";
+
+  final _formKey = GlobalKey<FormState>();
+
 
   List<String> units = [
     "Kg",         // Kilogram
@@ -65,6 +70,7 @@ class _VegetableCardState extends State<VegetableCard> {
     _focusNode.dispose(); // Dispose of the focus node to avoid memory leaks
     super.dispose();
   }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +90,16 @@ class _VegetableCardState extends State<VegetableCard> {
             child: Stack(
               children: [
                 Opacity(
-                  opacity: isFocused && !editMode ? 0.3 : isFocused && editMode ? 0.7 : 1,
+                  opacity: editMode ?
+                  (
+                    (isFocused && !editMode) ? 0.3 : 
+                    (isFocused && !editMode) ? 0.7 :
+                    1
+                  ) : (
+                    (isFocused && !addMode) ? 0.3 : 
+                    (isFocused && !addMode) ? 0.7 :
+                    1
+                  ),
                   child: Card(
                     elevation: 3,
                     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(21.0))),
@@ -99,7 +114,9 @@ class _VegetableCardState extends State<VegetableCard> {
                           colors: [
                             Colors.white,
                             Colors.grey[50]!,
-                            Colors.blue[100]!,
+                            ColorUtils.calculateSecondaryColor(primaryColor: Theme.of(context).colorScheme.primary),
+
+                            // Colors.blue[100]!,
                           ],
                         ),
                       ),
@@ -208,39 +225,42 @@ class _VegetableCardState extends State<VegetableCard> {
                                     style: Theme.of(context).textTheme.headlineSmall,
                                   ),
                                   const SizedBox(height: 10,),
-                        
+                                                    
                                   if(widget.vegetableData.number!.isNotEmpty)...[
                                     
-                                    if(editMode && isFocused)...[
-
-                                      TextFormField(
-                                        controller: editingController,
-                                        autofocus: true,
-                                        inputFormatters: <TextInputFormatter>[
-                                          FilteringTextInputFormatter.digitsOnly,
-                                        ],
-                                        keyboardType: const TextInputType.numberWithOptions(decimal: false, signed: true),
-                                        onChanged: (value) {
-                                          // Check if the input is a positive integer
-                                          if (value.isNotEmpty && int.tryParse(value) != null && int.parse(value) >= 0) {
-                                            if (int.parse(value) <= 99999999) {
-                                              setState(() {
-                                                editingController.text = value;
-                                              });
-                                            }else{
+                                    if((editMode && isFocused))...[
+                                                          
+                                      Form(
+                                        key: _formKey,
+                                        child: TextFormField(
+                                          controller: editingController,
+                                          autofocus: true,
+                                          inputFormatters: <TextInputFormatter>[
+                                            FilteringTextInputFormatter.digitsOnly,
+                                          ],
+                                          keyboardType: const TextInputType.numberWithOptions(decimal: false, signed: true),
+                                          onChanged: (value) {
+                                            // Check if the input is a positive integer
+                                            if (value.isNotEmpty && int.tryParse(value) != null && int.parse(value) >= 0) {
+                                              if (int.parse(value) <= 99999999) {
+                                                setState(() {
+                                                  editingController.text = value;
+                                                });
+                                              }else{
+                                                // Clear the input if it is invalid
+                                                editingController.clear();
+                                              }
+                                            } else {
                                               // Clear the input if it is invalid
                                               editingController.clear();
                                             }
-                                          } else {
-                                            // Clear the input if it is invalid
-                                            editingController.clear();
-                                          }
-                                        },
-                                        validator: (value) => ValidatorUtility.validateRequiredField(value, "${widget.vegetableData.name} quantity is required."),
+                                          },
+                                          validator: (value) => ValidatorUtility.validateRequiredField(value, "${widget.vegetableData.name} quantity is required."),
+                                        ),
                                       ),
-
+                                                          
                                       const SizedBox(height: 10),
-
+                                                          
                                       SizedBox(
                                         height: 50.0, // Adjust height as needed
                                         child: ListView.builder(
@@ -276,32 +296,82 @@ class _VegetableCardState extends State<VegetableCard> {
                                           },
                                         ),
                                       ),
-                                      
-                                      // Radio buttons for unit selection
-                                      // SingleChildScrollView(
-                                      //   child: Column(
-                                      //     children: units.map((unit) {
-                                      //       return RadioListTile<String>(
-                                      //         title: Text(unit),
-                                      //         value: unit,
-                                      //         groupValue: selectedUnit,
-                                      //         onChanged: (String? value) {
-                                      //           setState(() {
-                                      //             selectedUnit = value!;
-                                      //           });
-                                      //         },
-                                      //       );
-                                      //     }).toList(),
-                                      //   ),
-                                      // ),
                                     ]else...[
                                       Text(
                                         "${widget.vegetableData.number!} ${widget.vegetableData.unit!}",
                                         style: Theme.of(context).textTheme.titleMedium,
                                       ),
                                     ]
+                                  ]else...[
+                                    if((addMode && isFocused))...[
+                                      Form(
+                                        key: _formKey,
+                                        child: TextFormField(
+                                          controller: editingController,
+                                          autofocus: true,
+                                          inputFormatters: <TextInputFormatter>[
+                                            FilteringTextInputFormatter.digitsOnly,
+                                          ],
+                                          keyboardType: const TextInputType.numberWithOptions(decimal: false, signed: true),
+                                          onChanged: (value) {
+                                            // Check if the input is a positive integer
+                                            if (value.isNotEmpty && int.tryParse(value) != null && int.parse(value) >= 0) {
+                                              if (int.parse(value) <= 99999999) {
+                                                setState(() {
+                                                  editingController.text = value;
+                                                });
+                                              }else{
+                                                // Clear the input if it is invalid
+                                                editingController.clear();
+                                              }
+                                            } else {
+                                              // Clear the input if it is invalid
+                                              editingController.clear();
+                                            }
+                                          },
+                                          validator: (value) => ValidatorUtility.validateRequiredField(value, "${widget.vegetableData.name} quantity is required."),
+                                        ),
+                                      ),
+                                                          
+                                      const SizedBox(height: 10),
+                                                          
+                                      SizedBox(
+                                        height: 50.0, // Adjust height as needed
+                                        child: ListView.builder(
+                                          scrollDirection: Axis.horizontal,
+                                          itemCount: units.length,
+                                          physics: const BouncingScrollPhysics(),
+                                          itemBuilder: (context, index) {
+                                            return GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  selectedUnit = units[index];
+                                                });
+                                              },
+                                              child: Container(
+                                                margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                                                padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+                                                decoration: BoxDecoration(
+                                                  color: selectedUnit == units[index] ? 
+                                                  Theme.of(context).colorScheme.primary :Colors.grey[200],
+                                                  borderRadius: BorderRadius.circular(10.0),
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    units[index],
+                                                    style: TextStyle(
+                                                      color: selectedUnit == units[index] ? Colors.white : Colors.black,
+                                                      fontWeight: selectedUnit == units[index] ? FontWeight.bold : FontWeight.normal,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ]
                                   ]
-                                
                                 ],
                               ),
                             ),
@@ -327,40 +397,64 @@ class _VegetableCardState extends State<VegetableCard> {
                   Align(
                     alignment: Alignment.bottomRight,
                     child: Container(
-                      constraints: const BoxConstraints(
-                        // minHeight: 150.0
-                      ),
-                      color: Colors.red,
-                      child: Padding(
+                      color: Colors.transparent,
+                      child: (widget.vegetableData.number!.isEmpty) ? 
+                      Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: (widget.vegetableData.number!.isEmpty) ?
-                          IconButton(
-                            tooltip: 'Add ${widget.vegetableData.name} data',
-                            onPressed: () {
-                              showModalBottomSheet(
-                                isScrollControlled: true,
-                                context: context, 
-                                builder: (BuildContext context) {
-                                  return VegetableEditOrAddBottomSheet(
-                                    edit: false,
-                                    vegetable: widget.vegetableData,
-                                  );
-                                },
+                        child: addMode ? ElevatedButton(
+                          onPressed: () async{
+                            if (_formKey.currentState!.validate() && selectedUnit.isNotEmpty) {
+                              setState(() {
+                                savingState = true;
+                              });
+                              await Provider.of<VegetableProvider>(context, listen: false).saveVegetableData(
+                                context, 
+                                token: widget.token, 
+                                number: editingController.text, 
+                                unit: selectedUnit, 
+                                date: widget.date, 
+                                item: widget.vegetableData.name
                               );
-                            }, 
-                            icon: Icon(
-                              Icons.add_circle,
-                              color: Theme.of(context).colorScheme.primary,
-                              size: Provider.of<ThemeProvider>(context).fontSize + 21,
-                            )
+                              setState(() {
+                                savingState = false;
+                                addMode = false;
+                              });
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Be sure to select unit and input valid data for ${widget.vegetableData.name}'),
+                                  backgroundColor: Theme.of(context).colorScheme.error
+                                ),
+                              );
+                            }
+                          }, 
+                          child: Text(
+                            "Save",
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.primary),
                           )
-                          
-                          :
-                        
-                          /// Edit
-                          
-                          editMode ? ElevatedButton(
-                            onPressed: () async{
+                        ) 
+                        :
+                        IconButton(
+                          tooltip: 'Add ${widget.vegetableData.name} data',
+                          onPressed: () {
+                            setState(() {
+                              editingController.text = widget.vegetableData.number!;
+                              addMode = !addMode;
+                            });
+                          }, 
+                          icon: Icon(
+                            addMode ? Icons.save : Icons.add_circle_outline_outlined,
+                            color: addMode ? Colors.green : Theme.of(context).colorScheme.primary,
+                            size: Provider.of<ThemeProvider>(context).fontSize + 21,
+                          )
+                        )
+                      )
+                      :
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: editMode ? ElevatedButton(
+                          onPressed: () async{
+                            if (_formKey.currentState!.validate() && selectedUnit.isNotEmpty) {
                               setState(() {
                                 savingState = true;
                               });
@@ -376,28 +470,36 @@ class _VegetableCardState extends State<VegetableCard> {
                                 savingState = false;
                                 editMode = false;
                               });
-                            }, 
-                            child: Text(
-                              "Update",
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.primary),
-                            )
-                          ) 
-                          :
-                          IconButton(
-                            tooltip: 'Edit ${widget.vegetableData.name} data',
-                            onPressed: () {
-                              setState(() {
-                                editingController.text = widget.vegetableData.number!;
-                                editMode = !editMode;
-                              });
-                            }, 
-                            icon: Icon(
-                              editMode ? Icons.save : Icons.edit,
-                              color: editMode ? Colors.green : Theme.of(context).colorScheme.error,
-                              size: Provider.of<ThemeProvider>(context).fontSize + 21,
-                            )
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Be sure to select unit and input valid data for ${widget.vegetableData.name}'),
+                                  backgroundColor: Theme.of(context).colorScheme.error
+                                ),
+                              );
+                            }
+                          }, 
+                          child: Text(
+                            "Update",
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.primary),
                           )
-                      ),
+                        ) 
+                        :
+                        IconButton(
+                          tooltip: 'Edit ${widget.vegetableData.name} data',
+                          onPressed: () {
+                            setState(() {
+                              editingController.text = widget.vegetableData.number!;
+                              editMode = !editMode;
+                            });
+                          }, 
+                          icon: Icon(
+                            editMode ? Icons.save : Icons.edit,
+                            color: editMode ? Colors.green : Theme.of(context).colorScheme.error,
+                            size: Provider.of<ThemeProvider>(context).fontSize + 21,
+                          )
+                        )
+                      ) 
                     ),
                   )
                 ]

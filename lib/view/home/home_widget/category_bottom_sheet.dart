@@ -10,11 +10,11 @@ class CategoryBottomSheet extends StatefulWidget {
   final String? selectedMenu;
 
   const CategoryBottomSheet({
-    super.key, 
-    this.initialSelectedCamp, 
-    this.title, 
-    this.selectedCampType, 
-    this.selectedDay, 
+    super.key,
+    this.initialSelectedCamp,
+    this.title,
+    this.selectedCampType,
+    this.selectedDay,
     this.selectedMenu
   });
 
@@ -27,9 +27,10 @@ class _CategoryBottomSheetState extends State<CategoryBottomSheet> {
   Widget build(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.9,
-      decoration: const BoxDecoration(
-        color: Color.fromRGBO(218, 242, 250, 1),
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        // Color.fromRGBO(218, 242, 250, 1),
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(25),
           topRight: Radius.circular(25),
         ),
@@ -43,9 +44,11 @@ class _CategoryBottomSheetState extends State<CategoryBottomSheet> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              if(widget.title != "Menu" && widget.title != null)...[
-                NonMenuContentBottomSheet(title: widget.title!,)
-              ] else...[
+              if (widget.title != "Menu" && widget.title != null) ...[
+                NonMenuContentBottomSheet(
+                  title: widget.title!,
+                )
+              ] else ...[
                 const MenuContentBottomSheet()
               ]
             ],

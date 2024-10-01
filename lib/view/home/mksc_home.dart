@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:mksc/provider/greeting_provider.dart';
 import 'package:mksc/view/home/home_widget/category_card.dart';
 import 'package:provider/provider.dart';
@@ -18,30 +17,6 @@ class _MKSCHomeState extends State<MKSCHome> {
     debugPrint("\n\n\nGreeting to user: $greeting");
     return Scaffold(
       backgroundColor: Colors.white,
-      floatingActionButton: FloatingActionButton(
-        shape: const OvalBorder(eccentricity: 1, side: BorderSide.none),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        onPressed: () {
-          
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(
-          //     builder: (context) => const ViewData(
-          //       title: '',
-          //     )
-          //   ),
-          // );
-          
-        },
-        tooltip: "Report",
-        child: SvgPicture.asset(
-          "assets/icons/report_02.svg",
-          height: 20,
-          width: 20,
-          theme: const SvgTheme(currentColor: Colors.white),
-          color: Colors.white,
-        ),
-      ),
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
@@ -49,13 +24,16 @@ class _MKSCHomeState extends State<MKSCHome> {
             title: LayoutBuilder(
               builder: (context, constraints) {
                 bool isCollapsed = constraints.biggest.height <= kToolbarHeight + MediaQuery.of(context).padding.top;
-                return isCollapsed ? Text(greeting, style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.white,fontWeight: FontWeight.bold,),) : const SizedBox();
+                return isCollapsed ? Text(
+                  greeting,
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith( color: Colors.white, fontWeight: FontWeight.bold,),
+                ): const SizedBox();
               },
             ),
             flexibleSpace: LayoutBuilder(
-              builder:  (context, constraints) {
+              builder: (context, constraints) {
                 bool isCollapsed = constraints.biggest.height <= kToolbarHeight + MediaQuery.of(context).padding.top;
-                return MediaQuery.of(context).orientation == Orientation.landscape ?
+                return MediaQuery.of(context).orientation == Orientation.landscape ? 
                 FlexibleSpaceBar(
                   centerTitle: false,
                   title: Padding(
@@ -65,10 +43,7 @@ class _MKSCHomeState extends State<MKSCHome> {
                         Container(
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(
-                              color: const Color.fromRGBO(218, 242, 250, 1),
-                              width: 3
-                            )
+                            border: Border.all(color: Theme.of(context).colorScheme.surface,width: 3)
                           ),
                           child: const CircleAvatar(
                             backgroundColor: Colors.white,
@@ -79,8 +54,8 @@ class _MKSCHomeState extends State<MKSCHome> {
                         Padding(
                           padding: const EdgeInsets.only(left: 12.0),
                           child: Text(
-                            greeting, 
-                            style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.white,fontWeight: FontWeight.bold,),
+                            greeting,
+                            style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.white, fontWeight: FontWeight.bold,),
                           ),
                         ),
                       ],
@@ -90,7 +65,8 @@ class _MKSCHomeState extends State<MKSCHome> {
                 : 
                 FlexibleSpaceBar(
                   centerTitle: true,
-                  title: isCollapsed ? Padding(
+                  title: isCollapsed ? 
+                  Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: Row(
                       children: [
@@ -98,20 +74,21 @@ class _MKSCHomeState extends State<MKSCHome> {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: const Color.fromRGBO(218, 242, 250, 1),
+                              color: Theme.of(context).colorScheme.surface,
                               width: 3
                             )
                           ),
                           child: const CircleAvatar(
                             backgroundColor: Colors.white,
                             radius: 15.0,
-                            backgroundImage: AssetImage('assets/logo/logo.png'),
+                            backgroundImage:
+                                AssetImage('assets/logo/logo.png'),
                           ),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(left: 12.0),
                           child: Text(
-                            greeting, 
+                            greeting,
                             style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.white,fontWeight: FontWeight.bold,),
                           ),
                         ),
@@ -125,16 +102,19 @@ class _MKSCHomeState extends State<MKSCHome> {
                       bottomRight: Radius.circular(21),
                     ),
                     child: Container(
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            Color(0xff569CEA),
-                            Color(0xff9BC5EF),
+                            Theme.of(context).colorScheme.primary,
+                            Theme.of(context).colorScheme.primary,
+                            // Theme.of(context).colorScheme.secondary,
+                            // Color(0xff569CEA),
+                            // const Color(0xff9BC5EF),
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
-                        borderRadius: BorderRadius.only(
+                        borderRadius: const BorderRadius.only(
                           bottomLeft: Radius.circular(21),
                           bottomRight: Radius.circular(21),
                         ),
@@ -150,10 +130,7 @@ class _MKSCHomeState extends State<MKSCHome> {
                               Container(
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: const Color.fromRGBO(218, 242, 250, 1),
-                                    width: 3
-                                  )
+                                  border: Border.all(color: Theme.of(context).colorScheme.surface,width: 3)
                                 ),
                                 child: const CircleAvatar(
                                   backgroundColor: Colors.white,
@@ -162,10 +139,8 @@ class _MKSCHomeState extends State<MKSCHome> {
                                 ),
                               ),
                               Text(
-                                greeting, 
-                                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                                  color: Colors.white,fontWeight: FontWeight.bold,
-                                ),
+                                greeting,
+                                style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.white,fontWeight: FontWeight.bold,),
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 8.0),
@@ -183,9 +158,7 @@ class _MKSCHomeState extends State<MKSCHome> {
                 );
               },
             ),
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular(21)),
-            ),
+            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(bottom: Radius.circular(21)),),
             expandedHeight: MediaQuery.of(context).size.height * 0.20,
             automaticallyImplyLeading: false,
             backgroundColor: Theme.of(context).colorScheme.primary,
@@ -205,29 +178,29 @@ class _MKSCHomeState extends State<MKSCHome> {
               itemBuilder: (BuildContext context, int index) {
                 return switch (index) {
                   0 => const CategoryCard(
-                    title: "Chicken House",
-                    svgicon: "assets/icons/chicken_.svg",
-                  ),
+                      title: "Chicken House",
+                      svgicon: "assets/icons/chicken_.svg",
+                    ),
                   1 => const CategoryCard(
-                    title: "Menu",
-                    svgicon: "assets/icons/menu.svg",
-                  ),
+                      title: "Menu",
+                      svgicon: "assets/icons/menu.svg",
+                    ),
                   2 => const CategoryCard(
-                    title: "Vegetables",
-                    svgicon: "assets/icons/vegetables.svg",
-                  ),
+                      title: "Vegetables",
+                      svgicon: "assets/icons/vegetables.svg",
+                    ),
                   3 => const CategoryCard(
-                    title: "Laundry",
-                    svgicon: "assets/icons/laundry.svg",
-                  ),
+                      title: "Laundry",
+                      svgicon: "assets/icons/laundry.svg",
+                    ),
                   4 => const CategoryCard(
-                    title: "Beverage",
-                    svgicon: "assets/icons/beverage.svg",
-                  ),
+                      title: "Beverage",
+                      svgicon: "assets/icons/beverage.svg",
+                    ),
                   5 => const CategoryCard(
-                    title: "Louge Room",
-                    svgicon: "assets/icons/bed.svg",
-                  ),
+                      title: "Louge Room",
+                      svgicon: "assets/icons/bed.svg",
+                    ),
                   int() => throw UnimplementedError(),
                 };
               },

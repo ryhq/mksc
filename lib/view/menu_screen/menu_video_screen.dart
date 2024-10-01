@@ -43,30 +43,32 @@ class _VideoScreenState extends State<VideoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          leading: Builder(
-            builder: (context) {
-              return GestureDetector(
-                onTap: () => Navigator.pop(context),
+        automaticallyImplyLeading: true,
+        leading: Builder(
+          builder: (context) {
+            return GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                color: Colors.transparent,
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(21.0),
                   child: Icon(
                     CupertinoIcons.back,
                     color: Colors.white,
                     size: Provider.of<ThemeProvider>(context).fontSize + 7,
                   ),
                 ),
-              );
-            },
-          ),
-          title: Text(
-            "Recipe video",
-            style: Theme.of(context)
-                .textTheme
-                .headlineSmall
-                ?.copyWith(color: Colors.white),
-          ),
-          centerTitle: true,
-          backgroundColor: Theme.of(context).colorScheme.primary),
+              ),
+            );
+          },
+        ),
+        title: Text(
+          "Recipe video",
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white),
+        ),
+        centerTitle: true,
+        backgroundColor: Theme.of(context).colorScheme.primary
+      ),
       body: YoutubePlayer(
         controller: _youtubeController,
         showVideoProgressIndicator: true,

@@ -9,6 +9,7 @@ import 'package:mksc/view/laundry/widgets/laundry_data_card.dart';
 import 'package:mksc/widgets/app_text_form_field.dart';
 import 'package:mksc/widgets/ball_pulse_indicator.dart';
 import 'package:mksc/widgets/button.dart';
+import 'package:mksc/widgets/log_out_action_button.dart';
 import 'package:provider/provider.dart';
 
 class LaundryScreen extends StatefulWidget {
@@ -18,11 +19,7 @@ class LaundryScreen extends StatefulWidget {
 
   final String camp;
 
-  const LaundryScreen(
-      {super.key,
-      required this.token,
-      required this.categoryTitle,
-      required this.camp});
+  const LaundryScreen({super.key,required this.token,required this.categoryTitle,required this.camp});
 
   @override
   State<LaundryScreen> createState() => _LaundryScreenState();
@@ -55,47 +52,47 @@ class _LaundryScreenState extends State<LaundryScreen> {
     });
 
     fetchLaundryMachines();
-    fetchLaundryDataByDate(context,
-        token: widget.token, date: dateController.text);
+    fetchLaundryDataByDate(context, token: widget.token, date: dateController.text);
   }
 
   @override
   Widget build(BuildContext context) {
-    List<LaundryMachine> laundryMachineList =
-        Provider.of<LaundryMachineProvider>(context).laundryMachineList;
-    List<LaundryData> laundryDataList =
-        Provider.of<LaundryMachineProvider>(context).laundryDataList;
+    List<LaundryMachine> laundryMachineList = Provider.of<LaundryMachineProvider>(context).laundryMachineList;
+    List<LaundryData> laundryDataList = Provider.of<LaundryMachineProvider>(context).laundryDataList;
 
-    noLaundryMachineLeft = laundryMachineList.every((machine) =>
-        laundryDataList.any((data) => data.machineType == machine.machineType));
+    noLaundryMachineLeft = laundryMachineList.every((machine) => laundryDataList.any((data) => data.machineType == machine.machineType));
 
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          leading: Builder(
-            builder: (context) {
-              return GestureDetector(
-                onTap: () => Navigator.pop(context),
+        automaticallyImplyLeading: true,
+        leading: Builder(
+          builder: (context) {
+            return GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                color: Colors.transparent,
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(21.0),
                   child: Icon(
                     CupertinoIcons.back,
                     color: Colors.white,
                     size: Provider.of<ThemeProvider>(context).fontSize + 7,
                   ),
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
+        ),
           title: Text(
             widget.categoryTitle,
-            style: Theme.of(context)
-                .textTheme
-                .headlineSmall
-                ?.copyWith(color: Colors.white),
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white),
           ),
           centerTitle: true,
           backgroundColor: Theme.of(context).colorScheme.primary,
+          actions: [
+            LogOutActionButton(categoryTitle: widget.categoryTitle),
+          ],
         ),
         backgroundColor: Theme.of(context).colorScheme.surface,
         body: Container(
@@ -106,11 +103,11 @@ class _LaundryScreenState extends State<LaundryScreen> {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Colors.blue[100]!,
+                // Colors.blue[100]!,
                 Colors.grey[50]!,
                 Colors.white,
                 Colors.grey[50]!,
-                Colors.blue[100]!,
+                // Colors.blue[100]!,
               ],
             ),
           ),

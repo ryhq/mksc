@@ -47,12 +47,14 @@ class _CategoryCardState extends State<CategoryCard> {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          gradient: const LinearGradient(
+          gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Colors.blue,
-              Color.fromARGB(255, 154, 192, 224),
+              Theme.of(context).colorScheme.primary,
+              Theme.of(context).colorScheme.primary,
+              // Colors.blue,
+              // Color.fromARGB(255, 154, 192, 224),
             ],
           ),
         ),

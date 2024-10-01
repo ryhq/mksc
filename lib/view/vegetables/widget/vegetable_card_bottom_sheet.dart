@@ -8,7 +8,6 @@ import 'package:mksc/widgets/button.dart';
 import 'package:provider/provider.dart';
 
 class VegetableCardBottomSheet extends StatefulWidget {
-
   final Vegetable vegetableData;
 
   final String token;
@@ -17,20 +16,19 @@ class VegetableCardBottomSheet extends StatefulWidget {
 
   final bool? editCard;
 
-  const VegetableCardBottomSheet({
-    super.key, 
-    required this.vegetableData, 
-    required this.token, 
-    required this.date, 
-    this.editCard = false
-  });
+  const VegetableCardBottomSheet(
+      {super.key,
+      required this.vegetableData,
+      required this.token,
+      required this.date,
+      this.editCard = false});
 
   @override
-  State<VegetableCardBottomSheet> createState() => _VegetableCardBottomSheetState();
+  State<VegetableCardBottomSheet> createState() =>
+      _VegetableCardBottomSheetState();
 }
 
 class _VegetableCardBottomSheetState extends State<VegetableCardBottomSheet> {
-
   TextEditingController editingController = TextEditingController();
 
   String selectedUnit = "Kg";
@@ -55,10 +53,10 @@ class _VegetableCardBottomSheetState extends State<VegetableCardBottomSheet> {
     // Countable units (for individual items or livestock)
     "units",
     "pieces",
-    "heads",  // for livestock like cattle, goats, sheep
+    "heads", // for livestock like cattle, goats, sheep
     "dozen",
     "bunch",
-    "tray",  // for eggs, seedlings
+    "tray", // for eggs, seedlings
 
     // Area units (for land measurement, yield per area)
     "acre",
@@ -67,9 +65,9 @@ class _VegetableCardBottomSheetState extends State<VegetableCardBottomSheet> {
     "square foot",
 
     // Other units specific to certain crops or products
-    "bale",  // for hay, cotton
+    "bale", // for hay, cotton
     "crate", // for fruits or vegetables
-    "sack",  // for potatoes, onions
+    "sack", // for potatoes, onions
     "carton", // for fruits like apples, oranges
     "bundle", // for tied crops like sugarcane, wheat
   ];
@@ -79,17 +77,19 @@ class _VegetableCardBottomSheetState extends State<VegetableCardBottomSheet> {
   @override
   void initState() {
     super.initState();
-    widget.editCard! ? editingController.text = widget.vegetableData.number! : null;
-    widget.editCard! ? selectedUnit =  widget.vegetableData.unit!  : null;
+    widget.editCard!
+        ? editingController.text = widget.vegetableData.number!
+        : null;
+    widget.editCard! ? selectedUnit = widget.vegetableData.unit! : null;
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.7,
-      decoration: const BoxDecoration(
-        color: Color.fromRGBO(218, 242, 250, 1),
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(25),
           topRight: Radius.circular(25),
         ),
@@ -105,12 +105,12 @@ class _VegetableCardBottomSheetState extends State<VegetableCardBottomSheet> {
             physics: const BouncingScrollPhysics(),
             child: Column(
               children: [
-            
                 Text(
-                  widget.editCard! ? "Edit ${widget.vegetableData.name} data" : "Add ${widget.vegetableData.name} data",
+                  widget.editCard!
+                      ? "Edit ${widget.vegetableData.name} data"
+                      : "Add ${widget.vegetableData.name} data",
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
-                
                 Padding(
                   padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                   child: Card(
@@ -127,16 +127,21 @@ class _VegetableCardBottomSheetState extends State<VegetableCardBottomSheet> {
                       padding: const EdgeInsets.only(left: 10.0, right: 10),
                       child: ListTile(
                         title: Text(
-                          selectedUnit.isEmpty ? "Select Unit" : "Selected Unit",
+                          selectedUnit.isEmpty
+                              ? "Select Unit"
+                              : "Selected Unit",
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(
-                              selectedUnit.isEmpty ? "" : selectedUnit,
-                              style: selectedUnit.isEmpty ? Theme.of(context).textTheme.labelMedium : Theme.of(context).textTheme.bodyMedium!.copyWith(fontStyle: FontStyle.italic)
-                            ),
+                            Text(selectedUnit.isEmpty ? "" : selectedUnit,
+                                style: selectedUnit.isEmpty
+                                    ? Theme.of(context).textTheme.labelMedium
+                                    : Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .copyWith(fontStyle: FontStyle.italic)),
                             PopupMenuButton<String>(
                               onSelected: (String unit) {
                                 setState(() {
@@ -146,7 +151,10 @@ class _VegetableCardBottomSheetState extends State<VegetableCardBottomSheet> {
                               icon: Icon(
                                 Icons.arrow_drop_down,
                                 color: Theme.of(context).colorScheme.primary,
-                                size: Provider.of<ThemeProvider>(context, listen: false).fontSize + 7,
+                                size: Provider.of<ThemeProvider>(context,
+                                            listen: false)
+                                        .fontSize +
+                                    7,
                               ),
                               itemBuilder: (context) {
                                 return units.map((unit) {
@@ -154,7 +162,9 @@ class _VegetableCardBottomSheetState extends State<VegetableCardBottomSheet> {
                                     value: unit,
                                     child: Text(
                                       unit,
-                                      style: Theme.of(context).textTheme.bodyMedium,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium,
                                     ),
                                   );
                                 }).toList();
@@ -164,87 +174,88 @@ class _VegetableCardBottomSheetState extends State<VegetableCardBottomSheet> {
                         ),
                         contentPadding: const EdgeInsets.all(0.0),
                       ),
-                      
                     ),
                   ),
                 ),
-
-                const SizedBox(height: 21,),
-            
+                const SizedBox(
+                  height: 21,
+                ),
                 Padding(
                   padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                   child: AppTextFormField(
-                    hintText: "####", 
-                    iconData: widget.editCard! ? Icons.edit : Icons.add, 
-                    obscureText: false, 
-                    textInputType: const TextInputType.numberWithOptions(decimal: false, signed: true),
+                    hintText: "####",
+                    iconData: widget.editCard! ? Icons.edit : Icons.add,
+                    obscureText: false,
+                    textInputType: const TextInputType.numberWithOptions(
+                        decimal: false, signed: true),
                     textEditingController: editingController,
                     onChanged: (value) {
                       setState(() {
                         editingController.text = value;
                       });
                     },
-                    validator: (value) => ValidatorUtility.validateRequiredField(value, "${widget.vegetableData.name} quantity is required."),
+                    validator: (value) => ValidatorUtility.validateRequiredField(
+                        value,
+                        "${widget.vegetableData.name} quantity is required."),
                   ),
                 ),
-
-                const SizedBox(height: 21,),
-        
-        
-                if(selectedUnit.isNotEmpty || editingController.text.isNotEmpty)...[
+                const SizedBox(
+                  height: 21,
+                ),
+                if (selectedUnit.isNotEmpty ||
+                    editingController.text.isNotEmpty) ...[
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Button(
-                      title: "Clear", 
+                      title: "Clear",
                       danger: true,
                       onTap: () {
                         setState(() {
                           selectedUnit = "";
-                          editingController.clear();           
+                          editingController.clear();
                         });
                       },
                     ),
                   )
                 ],
-
-                const SizedBox(height: 21,),
-        
-        
-                if(selectedUnit.isNotEmpty && editingController.text.isNotEmpty)...[
+                const SizedBox(
+                  height: 21,
+                ),
+                if (selectedUnit.isNotEmpty &&
+                    editingController.text.isNotEmpty) ...[
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Button(
-                      title: widget.editCard! ? "Update" :"Save", 
+                      title: widget.editCard! ? "Update" : "Save",
                       danger: false,
-                      onTap: () async{        
+                      onTap: () async {
                         if (_formKey.currentState!.validate()) {
-        
-                          widget.editCard! ?  await Provider.of<VegetableProvider>(context, listen: false).editVegetableData(
-                            context, 
-                            token: widget.token, 
-                            number: editingController.text, 
-                            unit: selectedUnit, 
-                            date: widget.date,
-                            id: widget.vegetableData.tempId!,
-                          ) 
-                          
-                          :
-                          
-                          await Provider.of<VegetableProvider>(context, listen: false).saveVegetableData(
-                            context, 
-                            token: widget.token, 
-                            number: editingController.text, 
-                            unit: selectedUnit, 
-                            date: widget.date,
-                            item: widget.vegetableData.name
-                          );
+                          widget.editCard!
+                              ? await Provider.of<VegetableProvider>(context,
+                                      listen: false)
+                                  .editVegetableData(
+                                  context,
+                                  token: widget.token,
+                                  number: editingController.text,
+                                  unit: selectedUnit,
+                                  date: widget.date,
+                                  id: widget.vegetableData.tempId!,
+                                )
+                              : await Provider.of<VegetableProvider>(context,
+                                      listen: false)
+                                  .saveVegetableData(context,
+                                      token: widget.token,
+                                      number: editingController.text,
+                                      unit: selectedUnit,
+                                      date: widget.date,
+                                      item: widget.vegetableData.name);
 
                           setState(() {
                             selectedUnit = "";
-                            editingController.clear();           
+                            editingController.clear();
                           });
-                          
-                          if(!context.mounted) return;
+
+                          if (!context.mounted) return;
                           Navigator.of(context).pop();
                         }
                       },
