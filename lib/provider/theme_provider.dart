@@ -8,7 +8,8 @@ class ThemeProvider with ChangeNotifier {
 
   double _fontSize = 14.0;
 
-  Color primaryColor = const Color(0xff569CEA);
+  // Color primaryColor = const Color(0xff569CEA);
+  Color primaryColor = const Color(0xff6b5005);
 
   // Getter for the current theme data
   ThemeData get themeData => _buildThemeData();
