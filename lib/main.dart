@@ -8,13 +8,11 @@ import 'package:mksc/provider/menu_provider.dart';
 import 'package:mksc/provider/menu_type_provider.dart';
 import 'package:mksc/provider/theme_provider.dart';
 import 'package:mksc/provider/vegetable_provider.dart';
-import 'package:mksc/view/home/mksc_home.dart';
+import 'package:mksc/view/splash_screen/splash_screen.dart';
 import 'package:provider/provider.dart';
 
 void main(List<String> args) async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  ThemeProvider themeProvider = ThemeProvider();
-  await themeProvider.setPrimaryColorFromNet();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   FlutterNativeSplash.remove(); 
   runApp(
@@ -51,7 +49,7 @@ class MKSC extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'MKSC',
       theme: Provider.of<ThemeProvider>(context).themeData,
-      home: const MKSCHome(),
+      home: const SplashScreen(),
     );
   }
 }

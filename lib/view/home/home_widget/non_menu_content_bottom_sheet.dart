@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mksc/view/authentication_page.dart';
+import 'package:mksc/view/authentication/authentication_page.dart';
 
 class NonMenuContentBottomSheet extends StatelessWidget {
   final String title;
