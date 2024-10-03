@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mksc/provider/theme_provider.dart';
 import 'package:mksc/view/home/mksc_home.dart';
 import 'package:mksc/view/splash_screen/initiatial_services.dart';
@@ -106,18 +109,35 @@ class _SplashScreenState extends State<SplashScreen> {
       connectivityResult.contains(ConnectivityResult.wifi) ||
       connectivityResult.contains(ConnectivityResult.vpn)
     ) {
-      setState(() {
-        log = "Fetching Theme...";
-      });
-      ThemeProvider themeProvider = ThemeProvider();
-      await themeProvider.setPrimaryColorFromNet().then(
-        (_){
-          debugPrint("\n\n\n👉👉👉Primary color : ${Provider.of<ThemeProvider>(context, listen: false).primaryColor}");
+      try {
+        final List<InternetAddress> lookupResults = await initiatialServices.checkInternetConnection();
+
+        if (lookupResults.isNotEmpty && lookupResults[0].address.isNotEmpty) {
           setState(() {
-            log = "Primary color : ${Provider.of<ThemeProvider>(context, listen: false).primaryColor}";
+            log = "Fetching Theme...";
           });
+          ThemeProvider themeProvider = ThemeProvider();
+          await themeProvider.setPrimaryColorFromNet().then(
+            (_){
+              debugPrint("\n\n\n👉👉👉Primary color : ${Provider.of<ThemeProvider>(context, listen: false).primaryColor}");
+              setState(() {
+                log = "Primary color : ${Provider.of<ThemeProvider>(context, listen: false).primaryColor}";
+              });
+            }
+          );
         }
-      );      
+
+      } catch (e) {
+        Fluttertoast.showToast(
+          msg: "An error occured while fetching theme. Please check you connection.",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0
+        );
+      }      
     }
 
 

@@ -29,8 +29,6 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
 
   String email = "";
 
-  int code = 0;
-
   String savedToken = "";
 
   @override
@@ -95,19 +93,16 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
     if (widget.title == "Chicken House") {
       setState(() {
         email = "chicken@chicken.com";
-        code = 2288;
       });
     }
     if (widget.title == "Vegetables") {
       setState(() {
         email = "vegetable@vegetable.com";
-        code = 3388;
       });
     }
     if (widget.title == "Laundry") {
       setState(() {
         email = "laundry@laundry.com";
-        code = 4488;
       });
     }
     return Scaffold(
@@ -187,21 +182,26 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                       obscureText: false,
                       textInputType: TextInputType.number,
                       textEditingController: passwordCodeController,
-                      validator: (value) {
-                        if (value != null || value!.isNotEmpty) {
-                          if(widget.title == "Laundry"){
-                            if (int.parse(value) != code && int.parse(value) != 5588) {
-                              return "Invalid Code for ${widget.title}";
-                            }
-                          } else if (int.parse(value) != code) {
-                            return "Invalid Code for ${widget.title}";
+                      onChanged: (value) {
+                        // Check if the input is a positive integer
+                        if (value.isNotEmpty && int.tryParse(value) != null && int.parse(value) >= 0) {
+                          if (int.parse(value) <= 9999) {
+                            setState(() {
+                              passwordCodeController.text = value;
+                            });
+                          }else{
+                            // Clear the input if it is invalid
+                            passwordCodeController.clear();
                           }
+                        } else {
+                          // Clear the input if it is invalid
+                          passwordCodeController.clear();
                         }
-                        return ValidatorUtility.validateRequiredField(
-                          value,
-                          "Code number for ${widget.title} is Required!"
-                        );
                       },
+                      validator: (value) => ValidatorUtility.validateRequiredField(
+                        value,
+                        "Code number for ${widget.title} is Required!"
+                      ),
                     ),
                   ],
                 ),
