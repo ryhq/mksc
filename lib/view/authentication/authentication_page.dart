@@ -6,6 +6,7 @@ import 'package:mksc/storage/token_storage.dart';
 import 'package:mksc/utils/validator_utility.dart';
 import 'package:mksc/view/chickenHouse/chicken_house_screen.dart';
 import 'package:mksc/view/laundry/laundry_screen.dart';
+import 'package:mksc/view/splash_screen/initiatial_services.dart';
 import 'package:mksc/view/vegetables/vegetables_screen.dart';
 import 'package:mksc/widgets/app_text_form_field.dart';
 import 'package:mksc/widgets/ball_pulse_indicator.dart';
@@ -21,11 +22,16 @@ class AuthenticationPage extends StatefulWidget {
 }
 
 class _AuthenticationPageState extends State<AuthenticationPage> {
+
+  InitiatialServices initiatialServices = InitiatialServices();
+
   final TextEditingController passwordCodeController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
   bool _continueClicked = false;
+
+  bool _internetConnection = false;
 
   String email = "";
 
@@ -35,6 +41,12 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
   void initState() {
     super.initState();
     widget.title == "Laundry" ? null : checkTokenPresence();
+    checkInternetConnectionBool();
+  }
+
+  @override
+  void dispose() {;
+    super.dispose();
   }
 
   void checkTokenPresence() async {
@@ -48,44 +60,11 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
     }
   }
 
-  void navigate() {
-    if (savedToken.isNotEmpty && context.mounted) {
-      Navigator.pop(context);
-      if (widget.title == "Chicken House") {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ChickenHouseScreen(
-              categoryTitle: widget.title,
-              token: savedToken,
-            ),
-          )
-        );
-      }
-      if (widget.title == "Vegetables") {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => VegetablesScreen(
-              categoryTitle: widget.title,
-              token: savedToken,
-            ),
-          )
-        );
-      }
-      if (widget.title == "Laundry") {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => LaundryScreen(
-              categoryTitle: widget.title,
-              token: savedToken,
-              camp: "",
-            ),
-          )
-        );
-      }
-    }
+  void checkInternetConnectionBool() async{
+    bool internetConnection = await initiatialServices.checkInternetConnectionBool();
+    setState(() {
+      _internetConnection = internetConnection;
+    });
   }
 
   @override
@@ -130,6 +109,17 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
           widget.title,
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white),
         ),
+        actions: [
+          _internetConnection ? const SizedBox() : 
+          IconButton(
+            onPressed: () => navigateNoToken(), 
+            icon: Icon(
+              Icons.nat,
+              color:Colors.white,
+              size: Provider.of<ThemeProvider>(context).fontSize + 7,
+            )
+          )
+        ],
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
@@ -153,70 +143,75 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
         ),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                "Welcome to MKSC",
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(
-                      height: 21,
-                    ),
-                    Text(
-                      "Enter code to Input Data for ${widget.title}.",
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    const SizedBox(
-                      height: 21,
-                    ),
-                    AppTextFormField(
-                      hintText: "####",
-                      iconData: Icons.code,
-                      obscureText: false,
-                      textInputType: TextInputType.number,
-                      textEditingController: passwordCodeController,
-                      onChanged: (value) {
-                        // Check if the input is a positive integer
-                        if (value.isNotEmpty && int.tryParse(value) != null && int.parse(value) >= 0) {
-                          if (int.parse(value) <= 9999) {
-                            setState(() {
-                              passwordCodeController.text = value;
-                            });
-                          }else{
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  "Welcome to MKSC",
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(
+                        height: 21,
+                      ),
+                      Text(
+                        "Enter code to Input Data for ${widget.title}.",
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      const SizedBox(
+                        height: 21,
+                      ),
+                      AppTextFormField(
+                        hintText: "####",
+                        iconData: Icons.code,
+                        obscureText: false,
+                        textInputType: TextInputType.number,
+                        textEditingController: passwordCodeController,
+                        onChanged: (value) {
+                          // Check if the input is a positive integer
+                          if (value.isNotEmpty && int.tryParse(value) != null && int.parse(value) >= 0) {
+                            if (int.parse(value) <= 9999) {
+                              setState(() {
+                                passwordCodeController.text = value;
+                              });
+                            }else{
+                              // Clear the input if it is invalid
+                              passwordCodeController.clear();
+                            }
+                          } else {
                             // Clear the input if it is invalid
                             passwordCodeController.clear();
                           }
-                        } else {
-                          // Clear the input if it is invalid
-                          passwordCodeController.clear();
-                        }
-                      },
-                      validator: (value) => ValidatorUtility.validateRequiredField(
-                        value,
-                        "Code number for ${widget.title} is Required!"
+                        },
+                        validator: (value) {
+                          return ValidatorUtility.validateRequiredField(
+                            value,
+                            "Code number for ${widget.title} is Required!"
+                          );
+                        },
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(
-                height: 21,
-              ),
-              _continueClicked ? const BallPulseIndicator() : Button(
-                title: "Continue...",
-                onTap: () => authenticate(),
-              ),
-              const SizedBox(
-                height: 21,
-              ),
-            ],
+                const SizedBox(
+                  height: 21,
+                ),
+                _continueClicked ? const BallPulseIndicator() : Button(
+                  title: "Continue...",
+                  onTap: () => authenticate(),
+                ),
+                const SizedBox(
+                  height: 21,
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -238,6 +233,83 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
       setState(() {
         _continueClicked = false;
       });
+    }
+  }
+  void navigate() {
+    if (savedToken.isNotEmpty && context.mounted) {
+      Navigator.pop(context);
+      if (widget.title == "Chicken House") {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChickenHouseScreen(
+              categoryTitle: widget.title,
+              token: savedToken,
+            ),
+          )
+        );
+      }
+      if (widget.title == "Vegetables") {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VegetablesScreen(
+              categoryTitle: widget.title,
+              token: savedToken,
+            ),
+          )
+        );
+      }
+      if (widget.title == "Laundry") {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => LaundryScreen(
+              categoryTitle: widget.title,
+              token: savedToken,
+              camp: "",
+            ),
+          )
+        );
+      }
+    }
+  }
+
+
+  void navigateNoToken() {
+    Navigator.pop(context);
+    if (widget.title == "Chicken House") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ChickenHouseScreen(
+            categoryTitle: widget.title,
+          ),
+        )
+      );
+    }
+    if (widget.title == "Vegetables") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VegetablesScreen(
+            categoryTitle: widget.title,
+            token: savedToken,
+          ),
+        )
+      );
+    }
+    if (widget.title == "Laundry") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LaundryScreen(
+            categoryTitle: widget.title,
+            token: savedToken,
+            camp: "",
+          ),
+        )
+      );
     }
   }
 }

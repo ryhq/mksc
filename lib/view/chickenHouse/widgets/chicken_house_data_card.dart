@@ -11,12 +11,12 @@ import 'package:provider/provider.dart';
 class ChickenHouseDataCard extends StatefulWidget {
   const ChickenHouseDataCard({
     super.key,
-    required this.chickenHouseData, required this.date, required this.token,
+    required this.chickenHouseData, required this.date, this.token,
   });
 
   final ChickenHouseData chickenHouseData;
   final String date;
-  final String token;
+  final String? token;
 
   @override
   State<ChickenHouseDataCard> createState() => _ChickenHouseDataCardState();
@@ -97,7 +97,7 @@ class _ChickenHouseDataCardState extends State<ChickenHouseDataCard> {
                   keyboardType: const TextInputType.numberWithOptions(decimal: false, signed: true),
                   onChanged: (value) {
                     // Check if the input is a positive integer
-                    if (value.isNotEmpty && int.tryParse(value) != null && int.parse(value) >= 0) {
+                    if (value.isNotEmpty && int.tryParse(value) != null && int.parse(value) > 0) {
                       if (int.parse(value) <= 99999999) {
                         setState(() {
                           editingController.text = value;
@@ -136,11 +136,23 @@ class _ChickenHouseDataCardState extends State<ChickenHouseDataCard> {
                     setState(() {
                       savingState = true;
                     });
+                    widget.token == null ?
+                    await Provider.of<ChickenHouseDataProvider>(context, listen: false).editChickenHouseDataFromLocal(
+                      context, 
+                      number: int.parse(editingController.text), 
+                      date: widget.date,
+                      chickenHouseData: widget.chickenHouseData
+                    ).then((_){
+                      setState(() {
+                        savingState = false;
+                      });
+                    })
+                    :
                     await Provider.of<ChickenHouseDataProvider>(context, listen: false).editChickenHouseData(
                       context, 
                       item: widget.chickenHouseData.item, 
                       number: int.parse(editingController.text), 
-                      token: widget.token, 
+                      token: widget.token!, 
                       id: widget.chickenHouseData.id
                     ).then((_){
                       setState(() {

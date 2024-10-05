@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:mksc/provider/theme_provider.dart';
+import 'package:mksc/services/chicken_house_local_data_services.dart';
 import 'package:mksc/view/home/home_widget/category_bottom_sheet.dart';
+import 'package:provider/provider.dart';
 
 class CategoryCard extends StatefulWidget {
   final String title;
@@ -14,6 +17,12 @@ class CategoryCard extends StatefulWidget {
 }
 
 class _CategoryCardState extends State<CategoryCard> {
+  bool hasLocalData = false;
+  @override
+  void initState() {
+    super.initState();
+    checkLocalData();
+  }
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -58,24 +67,56 @@ class _CategoryCardState extends State<CategoryCard> {
             ],
           ),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Stack(
           children: [
-            SvgPicture.asset(
-              widget.svgicon,
-              height: 40,
-              width: 40,
-              theme: const SvgTheme(currentColor: Colors.white),
-              color: Colors.white,
+            Align(
+              alignment: Alignment.center,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SvgPicture.asset(
+                    widget.svgicon,
+                    height: 40,
+                    width: 40,
+                    theme: const SvgTheme(currentColor: Colors.white),
+                    color: Colors.white,
+                  ),
+                  const SizedBox(height: 10.0),
+                  Text(
+                    widget.title,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 10.0),
-            Text(
-              widget.title,
-              style: const TextStyle(color: Colors.white),
-            ),
+            Align(
+              alignment: Alignment.topRight,
+              child: Opacity(
+                opacity: hasLocalData ? 1.0 : 0.0,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Icon(
+                    Icons.sync,
+                    color: Colors.white,
+                    size: Provider.of<ThemeProvider>(context).fontSize
+                  ),
+                ),
+              ),
+            )
           ],
         ),
       ),
     );
+  }
+
+  void checkLocalData() async{
+    if (widget.title == "Chicken House") {
+      bool check = await ChickenHouseLocalDataServices.fetchChickenHouseDataForCard();
+      setState(() {
+        hasLocalData = check;
+      });
+    } else {
+      
+    }
   }
 }

@@ -4,11 +4,13 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:mksc/helper/database_helper.dart';
 import 'package:mksc/provider/theme_provider.dart';
 import 'package:mksc/view/home/mksc_home.dart';
 import 'package:mksc/view/splash_screen/initiatial_services.dart';
 import 'package:mksc/widgets/app_circular_progress_indicator.dart';
 import 'package:provider/provider.dart';
+import 'package:sqflite/sqlite_api.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -76,6 +78,7 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
               Text(
                 log,
+                textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.grey,
                 )
@@ -90,7 +93,23 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void initializeApp() async{
+    setState(() {
+      log = "Initializing MKSC database...";
+    });
+    
+    await Future.delayed(const Duration(milliseconds: 700));
+    
+    Database mksc = await DatabaseHelper.database;
+    
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    setState(() {
+      log = "Database MKSC : Is Open ${mksc.isOpen} : Path ${mksc.path} : Run time Type ${mksc.runtimeType}";
+    });
+    
+
     debugPrint("\n\n\n🌐🌐🌐 Check  🛜🛜🛜 Connectivity : 📶📶📶");
+    
     setState(() {
       log = "Checking Connectivity...";
     });

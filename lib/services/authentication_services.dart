@@ -1,11 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
-
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mksc/model/token.dart';
+import 'package:mksc/services/handle_exception.dart';
 import 'package:mksc/services/mksc_urls.dart';
 import 'package:mksc/storage/token_storage.dart';
 import 'package:mksc/view/chickenHouse/chicken_house_screen.dart';
@@ -14,32 +12,24 @@ import 'package:mksc/view/vegetables/vegetables_screen.dart';
 import 'package:mksc/widgets/custom_alert.dart';
 
 class AuthenticationServices {
-  static Future<void> authenticate(
-    String categoryTitle, 
-    BuildContext context, 
-    {
-      required String email,
-      required String passwordCode
+
+  static Future<void> authenticate(String categoryTitle, BuildContext context, {required String email,required String passwordCode}) async {
+    // Check for network connection and internet access
+    bool isConnected = await HandleException.checkConnectionAndInternet(context);
+
+    if (!isConnected) {
+      return;
     }
-  ) async {
-    List<ConnectivityResult> connectivityResult = await Connectivity().checkConnectivity();
 
-    if (connectivityResult.contains(ConnectivityResult.none) && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No internet connection. Please check your connection and try again.')),
-      );
-      return; 
-    }
-    
-    Map<String, dynamic> authenticationCredential = {
-      "email": email,
-      "password": passwordCode
-    };
-
-    debugPrint("Authentication Credential $authenticationCredential");
-
-    final Uri uri = Uri.parse(MKSCUrls.authUrl);
     try {
+    
+      Map<String, dynamic> authenticationCredential = {
+        "email": email,
+        "password": passwordCode
+      };
+
+      final Uri uri = Uri.parse(MKSCUrls.authUrl);
+      
       final http.Response response = await http.post(
         uri, 
         headers: {'Content-Type': 'application/json'},
@@ -79,8 +69,6 @@ class AuthenticationServices {
 
         } else {
 
-          debugPrint("\n\n\nLogin successful...\n\n\n");
-
           final Map<String, dynamic> responseData = json.decode(response.body);
           final Token receivedToken = Token.fromJson(responseData);
           
@@ -112,46 +100,17 @@ class AuthenticationServices {
           const SnackBar(content: Text("Sorry, The requested resource has been temporarily moved to a new location"))
         );
       } else if(response.statusCode == 401 && context.mounted){
-        CustomAlert.showAlert(context, "Failed", "${json.decode(response.body)['message']}");
+        CustomAlert.showAlert(context, "Failed", "Status code : ${response.statusCode}\nMessage : ${json.decode(response.body)['message']}");
       } else {
+        debugPrint('\n\n\n🚨🚨🚨Unexpected status code: ${response.statusCode} with body: ${response.body}\n\n\n🚨🚨🚨');
         if(!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('An error occurred during login, may be invalid code...')),
+          const SnackBar(content: Text('An error occurred during login, may be invalid code...'), backgroundColor: Colors.red,),
         );        
       }
-    } on SocketException catch (_) {
-      // Handle network issues (e.g., no internet, DNS failures)
-      debugPrint("Network error: Could not resolve hostname.");
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Network error: Could not reach the server. Please check your internet connection.')),
-        );
-      }
-    } on TimeoutException catch (_) {
-      // Handle request timeout
-      debugPrint("Request timeout");
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Request timed out. Please try again later.')),
-        );
-      }
-    } on HttpException catch (_) {
-      // Handle HTTP protocol errors
-      debugPrint("HTTP error: Failed to retrieve the requested resource.");
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('HTTP error: Unable to connect to the server.')),
-        );
-      }
-    } catch (e) {
-      // Handle any other errors
-      debugPrint("Error during authentication request: $e");
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('An unexpected error occurred during authentication.')),
-        );
-      }
-      rethrow;
+    }  on Exception catch (exception) {
+      if(!context.mounted) return;
+      HandleException.handleExceptions(context: context, exception: exception, location: "");
     }
   }
 

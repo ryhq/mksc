@@ -1,11 +1,12 @@
 import 'dart:convert';
-
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:mksc/model/chicken_house_data.dart';
 import 'package:http/http.dart' as http;
+import 'package:mksc/provider/chicken_house_data_provider.dart';
+import 'package:mksc/services/handle_exception.dart';
 import 'package:mksc/services/mksc_urls.dart';
 import 'package:mksc/widgets/custom_alert.dart';
+import 'package:provider/provider.dart';
 
 class ChickenHouseDataServices {
 
@@ -16,15 +17,13 @@ class ChickenHouseDataServices {
       required String date,
     }
   ) async{    
-    List<ConnectivityResult> connectivityResult = await Connectivity().checkConnectivity();
 
-    if (connectivityResult.contains(ConnectivityResult.none) && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No internet connection. Please check your connection and try again.')),
-      );
+    // Check for network connection and internet access
+    bool isConnected = await HandleException.checkConnectionAndInternetWithToast();
+
+    if (!isConnected) {
       return List<ChickenHouseData>.empty();
     }
-
     try {
       
       final response = await http.post(
@@ -47,32 +46,23 @@ class ChickenHouseDataServices {
 
         return fetchedData;
 
-      } else if(response.statusCode == 508 && context.mounted){
-        CustomAlert.showAlert(context, "508 Error", "Resource Limit Is Reached");
-        return List<ChickenHouseData>.empty();
       } else {
+        if(!context.mounted) return List<ChickenHouseData>.empty();
+        HandleException.handleHttpError(
+          context: context, 
+          statusCode: response.statusCode, 
+          responseBody: response.body
+        );
         return List<ChickenHouseData>.empty();
       }
-    } catch (e) {
-      debugPrint("\n\n\nError fetching Population Data: $e\n\n\n");
+    } on Exception catch (exception) {
       if(!context.mounted) return List<ChickenHouseData>.empty();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('An error occurred during authentication')),
-      );
-      rethrow;        
+      HandleException.handleExceptions(context: context, exception: exception, location: "ChickenHouseDataServices.fetchChickenHouseData");
+      return List<ChickenHouseData>.empty();
     }
   }
 
   static Future<ChickenHouseData> saveChickenHouseData(BuildContext context, {required String item, required int number, required String token, required String date}) async{
-    
-    List<ConnectivityResult> connectivityResult = await Connectivity().checkConnectivity();
-
-    if (connectivityResult.contains(ConnectivityResult.none) && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No internet connection. Please check your connection and try again.')),
-      );
-      return ChickenHouseData.empty(); 
-    }
     
     Map<String, dynamic> dataJSON = {
       "item" : item,
@@ -111,7 +101,7 @@ class ChickenHouseDataServices {
 
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Saved Successfully"), backgroundColor: Colors.green,)
+                  SnackBar(content: Text("Successfully saved ${data.number} ${data.item}"), backgroundColor: Colors.green,)
                 );
               }
 
@@ -127,38 +117,56 @@ class ChickenHouseDataServices {
         } else {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Saving '$number' $item was unsuccessful:\n${response.statusCode} : ${json.decode(response.body)['error']}"), backgroundColor: Colors.red,)
+              const SnackBar(content: Text("An error occured while decoding response"), backgroundColor: Colors.orange,)
             );
           }
         }
       } else {
+
         if(!context.mounted) return ChickenHouseData.empty(); 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Saving '$number' $item was unSuccessfull:\n${response.statusCode} : ${json.decode(response.body)['error']}"), backgroundColor: Colors.red,)
+        HandleException.handleHttpError(
+          context: context, 
+          statusCode: response.statusCode, 
+          responseBody: response.body
         );
+
+        await Provider.of<ChickenHouseDataProvider>(context, listen: false).saveChickenHouseDataToLocal(
+          context,
+          item: item,
+          number: number,
+          date: date
+        );
+        CustomAlert.showAlert(context, "Support", "An error occured, currently the $item is saved locally, you may sync later.");
+
+        return ChickenHouseData.empty(); 
       }
 
-    } catch (e) {
-      debugPrint("\n\n\nError saving data: $e\n\n\n");
-      if(!context.mounted) return ChickenHouseData.empty(); 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('An error occurred during saving Chicken House Data')),
+    } on Exception catch (exception) {
+
+      if(!context.mounted) return ChickenHouseData.empty();
+      HandleException.handleExceptions(context: context, exception: exception, location: "ChickenHouseDataServices.saveChickenHouseData");
+
+      await Provider.of<ChickenHouseDataProvider>(context, listen: false).saveChickenHouseDataToLocal(
+        context,
+        item: item,
+        number: number,
+        date: date
       );
-      rethrow;        
+      CustomAlert.showAlert(context, "Support", "An error occured, currently the $item is saved locally, you may sync later.");
+      return ChickenHouseData.empty();
     }
     return ChickenHouseData.empty();
   }
 
   static Future<ChickenHouseData> editChickenHouseData(BuildContext context, {required String item, required int number, required String token, required int id,}) async{
-    
-    List<ConnectivityResult> connectivityResult = await Connectivity().checkConnectivity();
+  
+    // Check for network connection and internet access
+    bool isConnected = await HandleException.checkConnectionAndInternetWithToast();
 
-    if (connectivityResult.contains(ConnectivityResult.none) && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No internet connection. Please check your connection and try again.')),
-      );
-      return ChickenHouseData.empty(); 
+    if (!isConnected) {
+      return ChickenHouseData.empty();
     }
+    
     
     Map<String, dynamic> dataJSON = {
       "item" : item,
@@ -196,7 +204,7 @@ class ChickenHouseDataServices {
 
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Update Successfully"), backgroundColor: Colors.green,)
+                  SnackBar(content: Text("Successfully Updated ${data.item} quantity to ${data.number}"), backgroundColor: Colors.green,)
                 );
               }
 
@@ -212,24 +220,24 @@ class ChickenHouseDataServices {
         } else {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Updating '$number' $item was unsuccessful:\n${response.statusCode} : ${json.decode(response.body)['error']}"), backgroundColor: Colors.red,)
+              const SnackBar(content: Text("An error occured while decoding response"), backgroundColor: Colors.orange,)
             );
           }
         }
       } else {
-        if(!context.mounted) return ChickenHouseData.empty(); 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Updating '$number' $item was unSuccessfull:\n${response.statusCode} : ${json.decode(response.body)['error']}"), backgroundColor: Colors.red,)
-        );
-      }
 
-    } catch (e) {
-      debugPrint("\n\n\nError saving data: $e\n\n\n");
-      if(!context.mounted) return ChickenHouseData.empty(); 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('An error occurred during saving Chicken House Data')),
-      );
-      rethrow;        
+        if(!context.mounted) return ChickenHouseData.empty(); 
+        HandleException.handleHttpError(
+          context: context, 
+          statusCode: response.statusCode, 
+          responseBody: response.body
+        );
+        return ChickenHouseData.empty(); 
+      }
+    } on Exception catch (exception) {
+      if(!context.mounted) return ChickenHouseData.empty();
+      HandleException.handleExceptions(context: context, exception: exception, location: "ChickenHouseDataServices.saveChickenHouseData");
+      return ChickenHouseData.empty();
     }
     return ChickenHouseData.empty();
   }

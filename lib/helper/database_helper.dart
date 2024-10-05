@@ -20,9 +20,9 @@ class DatabaseHelper {
   // Method to initialize the database
   static Future<Database> _initDatabase() async {
     // Get the path to the databases directory and create the 'task_anchor.db' database
-    debugPrint("\n\n\nCreating database...\n\n\n");
+    debugPrint("\n\n\n📈📈📈Creating database...\n\n\n");
     String path = join(await getDatabasesPath(), 'mksc.db');
-    debugPrint("\n\n\nDatabase Path $path...\n\n\n");
+    debugPrint("\n\n\n👣👣👣Database Path $path...\n\n\n");
     // Open the database and set the version and onCreate callback
     return await openDatabase(
       path,
