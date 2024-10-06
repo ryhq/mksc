@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:mksc/view/splash_screen/initiatial_services.dart';
+import 'package:mksc/services/initiatial_services.dart';
 import 'package:mksc/widgets/custom_alert.dart';
 
 class HandleException {

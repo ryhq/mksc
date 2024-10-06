@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mksc/provider/internet_connection_provider.dart';
 import 'package:mksc/provider/theme_provider.dart';
 import 'package:mksc/services/authentication_services.dart';
 import 'package:mksc/storage/token_storage.dart';
 import 'package:mksc/utils/validator_utility.dart';
 import 'package:mksc/view/chickenHouse/chicken_house_screen.dart';
 import 'package:mksc/view/laundry/laundry_screen.dart';
-import 'package:mksc/view/splash_screen/initiatial_services.dart';
 import 'package:mksc/view/vegetables/vegetables_screen.dart';
 import 'package:mksc/widgets/app_text_form_field.dart';
 import 'package:mksc/widgets/ball_pulse_indicator.dart';
@@ -23,15 +23,11 @@ class AuthenticationPage extends StatefulWidget {
 
 class _AuthenticationPageState extends State<AuthenticationPage> {
 
-  InitiatialServices initiatialServices = InitiatialServices();
-
   final TextEditingController passwordCodeController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
   bool _continueClicked = false;
-
-  bool _internetConnection = false;
 
   String email = "";
 
@@ -41,7 +37,6 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
   void initState() {
     super.initState();
     widget.title == "Laundry" ? null : checkTokenPresence();
-    checkInternetConnectionBool();
   }
 
   @override
@@ -58,13 +53,6 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
       debugPrint("\n\n\n🪙🟡💰🥮Fetched Token for ${widget.title} is : $savedToken");
       navigate();
     }
-  }
-
-  void checkInternetConnectionBool() async{
-    bool internetConnection = await initiatialServices.checkInternetConnectionBool();
-    setState(() {
-      _internetConnection = internetConnection;
-    });
   }
 
   @override
@@ -84,6 +72,7 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
         email = "laundry@laundry.com";
       });
     }
+    bool _internetConnection = Provider.of<InternetConnectionProvider>(context).isConnected;
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
@@ -109,17 +98,6 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
           widget.title,
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white),
         ),
-        actions: [
-          _internetConnection ? const SizedBox() : 
-          IconButton(
-            onPressed: () => navigateNoToken(), 
-            icon: Icon(
-              Icons.nat,
-              color:Colors.white,
-              size: Provider.of<ThemeProvider>(context).fontSize + 7,
-            )
-          )
-        ],
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
@@ -205,7 +183,7 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                 ),
                 _continueClicked ? const BallPulseIndicator() : Button(
                   title: "Continue...",
-                  onTap: () => authenticate(),
+                  onTap: () => authenticate(internetStatus: _internetConnection),
                 ),
                 const SizedBox(
                   height: 21,
@@ -218,18 +196,22 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
     );
   }
 
-  void authenticate() async {
+  void authenticate({required bool internetStatus}) async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _continueClicked = true;
       });
-
-      await AuthenticationServices.authenticate(
-        widget.title, context,
-        email: email, 
-        passwordCode: passwordCodeController.text
-      );
-
+    
+      if (internetStatus) {
+        await AuthenticationServices.authenticate(
+          widget.title, context,
+          email: email, 
+          passwordCode: passwordCodeController.text
+        );
+      } else {
+        _navigateNoToken();
+      }
+    
       setState(() {
         _continueClicked = false;
       });
@@ -276,7 +258,7 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
   }
 
 
-  void navigateNoToken() {
+  void _navigateNoToken() {
     Navigator.pop(context);
     if (widget.title == "Chicken House") {
       Navigator.push(

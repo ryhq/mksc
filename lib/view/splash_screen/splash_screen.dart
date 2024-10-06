@@ -7,7 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mksc/helper/database_helper.dart';
 import 'package:mksc/provider/theme_provider.dart';
 import 'package:mksc/view/home/mksc_home.dart';
-import 'package:mksc/view/splash_screen/initiatial_services.dart';
+import 'package:mksc/services/initiatial_services.dart';
 import 'package:mksc/widgets/app_circular_progress_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite/sqlite_api.dart';

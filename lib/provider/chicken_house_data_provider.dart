@@ -11,11 +11,11 @@ class ChickenHouseDataProvider with ChangeNotifier {
 
   List<ChickenHouseData> _chickenHouseDataList = [];
 
-  List<ChickenHouseData> _chickenHouseDataListWhenTokenIsAvailable = [];
+  List<ChickenHouseData> _chickenHouseDataLocalList = [];
 
   List<ChickenHouseData> get chickenHouseDataList => _chickenHouseDataList;
   
-  List<ChickenHouseData> get chickenHouseDataListWhenTokenIsAvailableList => _chickenHouseDataListWhenTokenIsAvailable;
+  List<ChickenHouseData> get chickenHouseDataLocalList => _chickenHouseDataLocalList;
 
   
   Future<void> fetchChickenHouseData (
@@ -28,7 +28,8 @@ class ChickenHouseDataProvider with ChangeNotifier {
     try {
       final List<ChickenHouseData> fetchedData = await ChickenHouseDataServices.fetchChickenHouseData(context, token: token, date: date);
 
-      _chickenHouseDataListWhenTokenIsAvailable = await ChickenHouseLocalDataServices.fetchChickenHouseData(context, date: date);
+      if(!context.mounted) return;
+      _chickenHouseDataLocalList = await ChickenHouseLocalDataServices.fetchChickenHouseData(context, date: date);
       
       _chickenHouseDataList = fetchedData;
       
@@ -82,12 +83,17 @@ class ChickenHouseDataProvider with ChangeNotifier {
   ) async{
     try {
       final List<ChickenHouseData> fetchedData = await ChickenHouseLocalDataServices.fetchChickenHouseData(context, date: date);
-      _chickenHouseDataListWhenTokenIsAvailable = fetchedData;
+      _chickenHouseDataLocalList = fetchedData;
       notifyListeners();
     } catch (e) {
       if (!context.mounted) return;
       CustomAlert.showAlert(context, "Error", "Error : ${e.toString()}\n@ChickenHouseDataProvider.fetchChickenHouseDataFromLocal");      
     }
+  }
+
+  void clearChickenHouseDataList(){
+    _chickenHouseDataList.clear();
+    notifyListeners();
   }
   
   Future<void> saveChickenHouseDataToLocal(BuildContext context, {required String item, required int number, required String date}) async{
@@ -116,6 +122,20 @@ class ChickenHouseDataProvider with ChangeNotifier {
 
 
   
+  Future<void> deleteChickenHouseData(BuildContext context, {required ChickenHouseData chickenHouseData, required String date}) async{
+    try {
+      await ChickenHouseLocalDataServices.deleteChickenHouseData(context, chickenHouseData: chickenHouseData,);
+      if (!context.mounted) return;
+      fetchChickenHouseDataFromLocal(context, date: date);
+      notifyListeners();
+    } catch (e) {
+      if (!context.mounted) return;
+      CustomAlert.showAlert(context, "Error", "Failed to update chicken house data: ${e.toString()}\n@ChickenHouseDataProvider.deleteChickenHouseData");      
+    }
+  }
+
+
+  
   Future<void> uploadData(
     BuildContext context, 
     {
@@ -125,18 +145,58 @@ class ChickenHouseDataProvider with ChangeNotifier {
   ) async{
     try {
 
-      for (var data in _chickenHouseDataListWhenTokenIsAvailable) {
-        // ignore: use_build_context_synchronously
-        await ChickenHouseLocalDataServices.uploadData(
-          context, 
-          chickenHouseData: data, 
-          token: token, 
-          date: date
-        );
-        _chickenHouseDataListWhenTokenIsAvailable = await ChickenHouseLocalDataServices.fetchChickenHouseData(context, date: date);
-        notifyListeners();
+      // First fetch data from the server corresponding with the date selected
+      
+      await fetchChickenHouseData(context, token: token, date: date);
+
+      // We then upload the single local data at a time
+
+      for (var data in _chickenHouseDataLocalList) {
+
+        // If the data from the server are present
+
+        if (_chickenHouseDataList.isNotEmpty) {
+
+          for (var chickenHouseData in _chickenHouseDataList) {
+
+            // If data already exist on the server
+
+            if (data.item == chickenHouseData.item) {
+              if(!context.mounted) return;
+              CustomAlert.showAlert(
+                context, 
+                "Data Conflict", 
+                "Sorry, '${data.item}' data already exist on MKSC server, try edit the real data on '$date'."
+              );
+              return;
+            }else{
+              if(!context.mounted) return;
+              await ChickenHouseLocalDataServices.uploadData(
+                context, 
+                chickenHouseData: data, 
+                token: token, 
+                date: date
+              );
+              if(!context.mounted) return;
+              _chickenHouseDataLocalList = await ChickenHouseLocalDataServices.fetchChickenHouseData(context, date: date);
+              notifyListeners();
+            }
+          }
+        }else {
+          // If the data from the server are not present
+          if(!context.mounted) return;
+          await ChickenHouseLocalDataServices.uploadData(
+            context, 
+            chickenHouseData: data, 
+            token: token, 
+            date: date
+          );
+          if(!context.mounted) return;
+          _chickenHouseDataLocalList = await ChickenHouseLocalDataServices.fetchChickenHouseData(context, date: date);
+          notifyListeners();
+        }
       }
-      fetchChickenHouseData(context, token: token, date: date);
+      await fetchChickenHouseData(context, token: token, date: date);
       notifyListeners();
     } catch (e) {
       if (!context.mounted) return;

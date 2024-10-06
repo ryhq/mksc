@@ -73,7 +73,8 @@ class ChickenHouseLocalDataServices {
         date: date,
         token: token
       );
-      await _deleteChickenHouseData(context, chickenHouseData: chickenHouseData,);
+      if(!context.mounted) return;
+      await deleteChickenHouseData(context, chickenHouseData: chickenHouseData,);
       
       if(!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -147,7 +148,7 @@ class ChickenHouseLocalDataServices {
     }
   }
   
-  static Future<void> _deleteChickenHouseData(
+  static Future<void> deleteChickenHouseData(
     BuildContext context, 
     {
       required ChickenHouseData chickenHouseData,
@@ -164,7 +165,7 @@ class ChickenHouseLocalDataServices {
       );
     } catch (e) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error", "Error : ${e.toString()}\n@ChickenHouseLocalDataServices._deleteChickenHouseData");
+      CustomAlert.showAlert(context, "Error", "Error : ${e.toString()}\n@ChickenHouseLocalDataServices.deleteChickenHouseData");
       rethrow;        
     }
   }
