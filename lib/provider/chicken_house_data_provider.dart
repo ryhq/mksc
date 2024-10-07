@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:mksc/model/chicken_house_data.dart';
 import 'package:mksc/services/chicken_house_data_services.dart';
 import 'package:mksc/services/chicken_house_local_data_services.dart';
@@ -135,6 +136,17 @@ class ChickenHouseDataProvider with ChangeNotifier {
     }
   }
 
+  String _formatDateTime(String dateTimeString) {
+    // Parse the server response string into a DateTime object
+    DateTime dateTime = DateTime.parse(dateTimeString);
+    
+    // Create a DateFormat for the desired output format
+    DateFormat formatter = DateFormat('yyyy-MM-dd');
+    
+    // Format the DateTime object into the desired string format
+    return formatter.format(dateTime);
+  }
+
   Future<void> uploadData(BuildContext context, {required String token,}) async {
     try {
       // Check for network connection and internet access
@@ -159,9 +171,6 @@ class ChickenHouseDataProvider with ChangeNotifier {
       if (!context.mounted) return;
       List<ChickenHouseData> allLocalDataList = await ChickenHouseLocalDataServices.fetchChickenHouseAllData(context);
 
-      // Store modified list separately to avoid concurrent modification
-      List<ChickenHouseData> newLocalDataList = List.from(allLocalDataList);
-
       // Looping through the data to be uploaded allLocalDataList
 
       for (var data in allLocalDataList) {
@@ -170,13 +179,15 @@ class ChickenHouseDataProvider with ChangeNotifier {
           bool dataExists = false;
           // Looping to check if data already exist on the server.
           for (var chickenHouseData in chickenHouseData7DaysList) {
+
+            debugPrint("\n\n\n 👉👉👉 Comparing ${_formatDateTime(data.created_at!)} to ${_formatDateTime(chickenHouseData.created_at!)} : ${_formatDateTime(data.created_at!) == _formatDateTime(chickenHouseData.created_at!)}");
             // If data already exists on the server
-            if (data.item == chickenHouseData.item && data.created_at == chickenHouseData.created_at) {
+            if (data.item == chickenHouseData.item && _formatDateTime(data.created_at!) == _formatDateTime(chickenHouseData.created_at!)) {
               if (!context.mounted) return;
               CustomAlert.showAlert(
                 context,
                 "Data Conflict",
-                "Sorry, '${data.item}' data already exists on MKSC server, try editing the real data on '${chickenHouseData.created_at}'."
+                "Sorry, '${data.item}' data already exists on MKSC server, try editing the real data on '${_formatDateTime(chickenHouseData.created_at!)}'."
               );
               dataExists = true;
               break;
@@ -193,7 +204,7 @@ class ChickenHouseDataProvider with ChangeNotifier {
               date: data.created_at!.isEmpty ? "" : data.created_at!
             );
             if (!context.mounted) return;
-            newLocalDataList = await ChickenHouseLocalDataServices.fetchChickenHouseAllData(context);
+            data.created_at!.isEmpty ? null : await fetchChickenHouseDataFromLocal(context, date: data.created_at!);
             notifyListeners();
           }
         } else {
@@ -206,13 +217,10 @@ class ChickenHouseDataProvider with ChangeNotifier {
             date: data.created_at!.isEmpty ? "" : data.created_at!
           );
           if (!context.mounted) return;
-          newLocalDataList = await ChickenHouseLocalDataServices.fetchChickenHouseAllData(context);
+          data.created_at!.isEmpty ? null : await fetchChickenHouseDataFromLocal(context, date: data.created_at!);
           notifyListeners();
         }
       }
-
-      // // After loop, update the local data list
-      // _chickenHouseDataLocalList = newLocalDataList;
       notifyListeners();
     } catch (e) {
       if (!context.mounted) return;
