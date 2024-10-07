@@ -2,6 +2,7 @@ class MKSCUrls {
   static String authUrl = "https://development.mkscportal.co.tz/api/v2/auth/user";
   static String chickenUrl = "https://development.mkscportal.co.tz/api/v2/chickenHouse";
   static String chickenToDayUrl = "https://development.mkscportal.co.tz/api/v2/chickenHouseDataDate";
+  static String chicken7DaysUrl = "https://development.mkscportal.co.tz/api/v2/chickenHouse/seven_days/data";
   static String alldataurl = "https://development.mkscportal.co.tz/api/v2/chickenHouse/all";
   static String getchickendata = "https://development.mkscportal.co.tz/api/v2/chickenHouse/";
   static String getcampurl = "https://development.mkscportal.co.tz/api/v2/camps";

@@ -63,6 +63,7 @@ class _ChickenHouseScreenState extends State<ChickenHouseScreen> {
       fetchChickenHouseDataFromLocal(context, date: dateController.text);
     } else {
       fetchChickenHouseData(context, token: widget.token!, date: dateController.text);
+      syncData();
     }
   }
 
@@ -506,7 +507,6 @@ class _ChickenHouseScreenState extends State<ChickenHouseScreen> {
       });
     });
     await Future.delayed(const Duration(milliseconds: 700));
-    syncData();
   }
 
   void fetchChickenHouseDataFromLocal(
@@ -560,7 +560,7 @@ class _ChickenHouseScreenState extends State<ChickenHouseScreen> {
     await Provider.of<ChickenHouseDataProvider>(
       context, 
       listen: false
-    ).uploadData(context, token: widget.token!, date: dateController.text);
+    ).uploadData(context, token: widget.token!,);
     setState(() {
       isSyncing = false;
     });

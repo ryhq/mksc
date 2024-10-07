@@ -9,74 +9,112 @@ import 'package:provider/provider.dart';
 import 'package:sqflite/sqlite_api.dart';
 
 class ChickenHouseLocalDataServices {
-  
-  static Future<bool> fetchChickenHouseDataForCard() async{
+  static Future<bool> fetchChickenHouseDataForCard() async {
     try {
       Database mksc = await DatabaseHelper.database;
       List<Map<String, dynamic>> data = await mksc.query(
         'ChickenHouse',
       );
-      List<ChickenHouseData> list = data.map((data) => ChickenHouseData.fromJson(data)).toList();
+      List<ChickenHouseData> list =
+          data.map((data) => ChickenHouseData.fromJson(data)).toList();
       return list.isNotEmpty;
     } catch (e) {
-      return false;    
+      return false;
     }
   }
-  
+
   static Future<List<ChickenHouseData>> fetchChickenHouseData(
-    BuildContext context, 
-    {
-      required String date,
-    }
-  ) async{
+    BuildContext context, {
+    required String date,
+  }) async {
     try {
       Database mksc = await DatabaseHelper.database;
       List<Map<String, dynamic>> data = await mksc.query(
         'ChickenHouse',
-        where: 'createdAt = ? ',
-        whereArgs: [date,],
-        orderBy: 'createdAt ASC',
+        where: 'created_at = ? ',
+        whereArgs: [
+          date,
+        ],
+        orderBy: 'created_at ASC',
       );
       debugPrint("\n\n\n$data");
-      List<ChickenHouseData> list = data.map((data) => ChickenHouseData.fromJson(data)).toList();
+      List<ChickenHouseData> list =
+          data.map((data) => ChickenHouseData.fromJson(data)).toList();
       return list;
     } catch (e) {
       if (!context.mounted) return List<ChickenHouseData>.empty();
-      CustomAlert.showAlert(context, "Error", "Error : ${e.toString()}\n@ChickenHouseLocalDataServices.fetchChickenHouseData");
-      rethrow;        
+      CustomAlert.showAlert(context, "Error",
+          "Error : ${e.toString()}\n@ChickenHouseLocalDataServices.fetchChickenHouseData");
+      rethrow;
     }
   }
-  
-  static Future<void> uploadData(
-    BuildContext context, 
-    {
-      required ChickenHouseData chickenHouseData,
-      required String token,
-      required String date,
+
+  static Future<List<ChickenHouseData>> fetchChickenHouseAllData(BuildContext context) async {
+    try {
+      Database mksc = await DatabaseHelper.database;
+      _printSchema(mksc, "ChickenHouse");
+      List<Map<String, dynamic>> data = await mksc.query(
+        'ChickenHouse',
+        orderBy: 'created_at ASC',
+      );
+      List<ChickenHouseData> list = data.map((data) => ChickenHouseData.fromJson(data)).toList();
+      return list;
+    } on DatabaseException catch (e) {
+      // Handle database-specific exceptions
+      if (!context.mounted) return List<ChickenHouseData>.empty();
+      CustomAlert.showAlert(context, "Database Error", "Failed to fetch data from the database: ${e.toString()}\nPlease try again later.");
+      return List<ChickenHouseData>.empty(); // Return an empty list if an error occurs
+    } on Exception catch (e) {
+      // Handle any other types of exceptions
+      if (!context.mounted) return List<ChickenHouseData>.empty();
+      CustomAlert.showAlert(context, "Error", 
+        "An unexpected error occurred: ${e.toString()}\n@ChickenHouseLocalDataServices.fetchChickenHouseData");
+      return List<ChickenHouseData>.empty(); // Return an empty list if an error occurs
     }
-  ) async{
+
+  }
+
+  // Method to print the schema of a specific table
+  static Future<void> _printSchema(Database db, String tableName) async {
+    List<Map<String, dynamic>> result = await db.rawQuery('PRAGMA table_info($tableName);');
+    debugPrint('\n\n\nSchema for table $tableName:');
+    for (var row in result) {
+      debugPrint("\n$row\n");
+    }
+  }
+
+  static Future<void> uploadData(
+    BuildContext context, {
+    required ChickenHouseData chickenHouseData,
+    required String token,
+    required String date,
+  }) async {
     // Check for network connection and internet access
     bool isConnected = await HandleException.checkConnectionAndInternetWithToast();
 
     if (!isConnected) {
-      if(!context.mounted) return;
+      if (!context.mounted) return;
       CustomAlert.showAlert(context, "Network Error", "Sorry, you do not have active internet connection, kindly check you internet connection and try again.");
       return;
     }
 
     try {
-      if(!context.mounted) return;
-      await Provider.of<ChickenHouseDataProvider>(context, listen: false).saveChickenHouseData(
-        context,
+      if (!context.mounted) return;
+      // Uploading data  to the server
+      await Provider.of<ChickenHouseDataProvider>(context, listen: false).saveChickenHouseData(context,
         item: chickenHouseData.item,
         number: chickenHouseData.number,
         date: date,
         token: token
       );
-      if(!context.mounted) return;
-      await deleteChickenHouseData(context, chickenHouseData: chickenHouseData,);
-      
-      if(!context.mounted) return;
+      if (!context.mounted) return;
+      // After uploading we delete the data from the local storage.
+      await deleteChickenHouseData(
+        context,
+        chickenHouseData: chickenHouseData,
+      );
+
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Successfully Uploaded ${chickenHouseData.item}'),
@@ -87,47 +125,36 @@ class ChickenHouseLocalDataServices {
     } catch (e) {
       if (!context.mounted) return;
       CustomAlert.showAlert(context, "Error", "Error : ${e.toString()}\n@ChickenHouseLocalDataServices.fetchChickenHouseData");
-      rethrow;        
+      rethrow;
     }
   }
-  
-  static Future<void> saveChickenHouseData(
-    BuildContext context, 
-    {
-      required String item, 
-      required int number, 
-      required String date
-    }
-  ) async{
+
+  static Future<void> saveChickenHouseData(BuildContext context,
+      {required String item, required int number, required String date}) async {
     try {
       Database mksc = await DatabaseHelper.database;
-      await mksc.insert(
-        'ChickenHouse',
-        {
-          "item" : item,
-          "number" : number,
-          "createdAt" : date,
-        }
-      );
+      await mksc.insert('ChickenHouse', {
+        "item": item,
+        "number": number,
+        "created_at": date,
+      });
     } catch (e) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error", "Error : ${e.toString()}\n@ChickenHouseLocalDataServices.saveChickenHouseData");
-      rethrow;        
+      CustomAlert.showAlert(context, "Error",
+          "Error : ${e.toString()}\n@ChickenHouseLocalDataServices.saveChickenHouseData");
+      rethrow;
     }
   }
-  
-  static Future<void> editChickenHouseData(
-    BuildContext context, 
-    {
-      required ChickenHouseData chickenHouseData,
-      required int number, 
-    }
-  ) async{
 
+  static Future<void> editChickenHouseData(
+    BuildContext context, {
+    required ChickenHouseData chickenHouseData,
+    required int number,
+  }) async {
     Map<String, dynamic> json = {
-      "item" : chickenHouseData.item,
-      "number" : number,
-      "updatedAt" : DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
+      "item": chickenHouseData.item,
+      "number": number,
+      "updatedAt": DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
     };
 
     debugPrint("\n\n\n$json");
@@ -136,37 +163,32 @@ class ChickenHouseLocalDataServices {
       await mksc.update(
         'ChickenHouse',
         json,
-        where: 'id = ? AND createdAt = ?',
-        whereArgs: [
-          chickenHouseData.id, chickenHouseData.createdAt
-        ],
+        where: 'id = ? AND created_at = ?',
+        whereArgs: [chickenHouseData.id, chickenHouseData.created_at],
       );
     } catch (e) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error", "Error : ${e.toString()}\n@ChickenHouseLocalDataServices.editChickenHouseData");
-      rethrow;        
+      CustomAlert.showAlert(context, "Error",
+          "Error : ${e.toString()}\n@ChickenHouseLocalDataServices.editChickenHouseData");
+      rethrow;
     }
   }
-  
+
   static Future<void> deleteChickenHouseData(
-    BuildContext context, 
-    {
-      required ChickenHouseData chickenHouseData,
-    }
-  ) async{
+    BuildContext context, {
+    required ChickenHouseData chickenHouseData,
+  }) async {
     try {
       Database mksc = await DatabaseHelper.database;
       await mksc.delete(
         'ChickenHouse',
-        where: 'id = ? AND createdAt = ?',
-        whereArgs: [
-          chickenHouseData.id, chickenHouseData.createdAt
-        ],
+        where: 'id = ? AND created_at = ?',
+        whereArgs: [chickenHouseData.id, chickenHouseData.created_at],
       );
     } catch (e) {
       if (!context.mounted) return;
       CustomAlert.showAlert(context, "Error", "Error : ${e.toString()}\n@ChickenHouseLocalDataServices.deleteChickenHouseData");
-      rethrow;        
+      rethrow;
     }
   }
 }

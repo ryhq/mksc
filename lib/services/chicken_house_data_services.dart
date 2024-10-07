@@ -62,6 +62,45 @@ class ChickenHouseDataServices {
     }
   }
 
+  static Future<List<ChickenHouseData>> fetchChickenHouseData7Days(BuildContext context,) async{    
+
+    // Check for network connection and internet access
+    bool isConnected = await HandleException.checkConnectionAndInternetWithToast();
+
+    if (!isConnected) {
+      return List<ChickenHouseData>.empty();
+    }
+    try {
+      
+      final response = await http.get(Uri.parse(MKSCUrls.chicken7DaysUrl));
+
+      debugPrint("Response status code ${response.statusCode}");
+
+      if (response.statusCode == 200) {  
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        
+        final List<dynamic> dataList = responseData['data'];
+
+        final List<ChickenHouseData>  fetchedData = dataList.map((data) => ChickenHouseData.fromJson(data)).toList();
+
+        return fetchedData;
+
+      } else {
+        if(!context.mounted) return List<ChickenHouseData>.empty();
+        HandleException.handleHttpError(
+          context: context, 
+          statusCode: response.statusCode, 
+          responseBody: response.body
+        );
+        return List<ChickenHouseData>.empty();
+      }
+    } on Exception catch (exception) {
+      if(!context.mounted) return List<ChickenHouseData>.empty();
+      HandleException.handleExceptions(context: context, exception: exception, location: "ChickenHouseDataServices.fetchChickenHouseData7Days");
+      return List<ChickenHouseData>.empty();
+    }
+  }
+
   static Future<ChickenHouseData> saveChickenHouseData(BuildContext context, {required String item, required int number, required String token, required String date}) async{
     
     Map<String, dynamic> dataJSON = {

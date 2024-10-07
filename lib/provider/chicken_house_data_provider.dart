@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mksc/model/chicken_house_data.dart';
 import 'package:mksc/services/chicken_house_data_services.dart';
 import 'package:mksc/services/chicken_house_local_data_services.dart';
+import 'package:mksc/services/handle_exception.dart';
 import 'package:mksc/widgets/custom_alert.dart';
 
 
@@ -12,7 +13,7 @@ class ChickenHouseDataProvider with ChangeNotifier {
   List<ChickenHouseData> _chickenHouseDataList = [];
 
   List<ChickenHouseData> _chickenHouseDataLocalList = [];
-
+ 
   List<ChickenHouseData> get chickenHouseDataList => _chickenHouseDataList;
   
   List<ChickenHouseData> get chickenHouseDataLocalList => _chickenHouseDataLocalList;
@@ -134,73 +135,89 @@ class ChickenHouseDataProvider with ChangeNotifier {
     }
   }
 
-
-  
-  Future<void> uploadData(
-    BuildContext context, 
-    {
-      required String token,
-      required String date,
-    }
-  ) async{
+  Future<void> uploadData(BuildContext context, {required String token,}) async {
     try {
+      // Check for network connection and internet access
+      bool isConnected = await HandleException.checkConnectionAndInternetWithToast();
 
-      // First fetch data from the server corresponding with the date selected
+      if (!isConnected) {
+        if (!context.mounted) return;
+        CustomAlert.showAlert(
+          context,
+          "Network Error",
+          "Sorry, you do not have active internet connection, kindly check your internet connection and try again."
+        );
+        return;
+      }
+
+      // First fetch data from the server.
+      if (!context.mounted) return;
       
-      await fetchChickenHouseData(context, token: token, date: date);
+      List<ChickenHouseData> chickenHouseData7DaysList = await ChickenHouseDataServices.fetchChickenHouseData7Days(context);
 
-      // We then upload the single local data at a time
+      // Then, fetch data from the local storage.
+      if (!context.mounted) return;
+      List<ChickenHouseData> allLocalDataList = await ChickenHouseLocalDataServices.fetchChickenHouseAllData(context);
 
-      for (var data in _chickenHouseDataLocalList) {
+      // Store modified list separately to avoid concurrent modification
+      List<ChickenHouseData> newLocalDataList = List.from(allLocalDataList);
 
-        // If the data from the server are present
+      // Looping through the data to be uploaded allLocalDataList
 
-        if (_chickenHouseDataList.isNotEmpty) {
-
-          for (var chickenHouseData in _chickenHouseDataList) {
-
-            // If data already exist on the server
-
-            if (data.item == chickenHouseData.item) {
-              if(!context.mounted) return;
+      for (var data in allLocalDataList) {
+        // If server data exists
+        if (chickenHouseData7DaysList.isNotEmpty) {
+          bool dataExists = false;
+          // Looping to check if data already exist on the server.
+          for (var chickenHouseData in chickenHouseData7DaysList) {
+            // If data already exists on the server
+            if (data.item == chickenHouseData.item && data.created_at == chickenHouseData.created_at) {
+              if (!context.mounted) return;
               CustomAlert.showAlert(
-                context, 
-                "Data Conflict", 
-                "Sorry, '${data.item}' data already exist on MKSC server, try edit the real data on '$date'."
+                context,
+                "Data Conflict",
+                "Sorry, '${data.item}' data already exists on MKSC server, try editing the real data on '${chickenHouseData.created_at}'."
               );
-              return;
-            }else{
-              if(!context.mounted) return;
-              await ChickenHouseLocalDataServices.uploadData(
-                context, 
-                chickenHouseData: data, 
-                token: token, 
-                date: date
-              );
-              if(!context.mounted) return;
-              _chickenHouseDataLocalList = await ChickenHouseLocalDataServices.fetchChickenHouseData(context, date: date);
-              notifyListeners();
+              dataExists = true;
+              break;
             }
           }
-        }else {
-          // If the data from the server are not present
-          if(!context.mounted) return;
+
+          // If the data does not exist on the server, upload it
+          if (!dataExists) {
+            if (!context.mounted) return;
+            await ChickenHouseLocalDataServices.uploadData(
+              context,
+              chickenHouseData: data,
+              token: token,
+              date: data.created_at!.isEmpty ? "" : data.created_at!
+            );
+            if (!context.mounted) return;
+            newLocalDataList = await ChickenHouseLocalDataServices.fetchChickenHouseAllData(context);
+            notifyListeners();
+          }
+        } else {
+          // If server data is not present, upload it
+          if (!context.mounted) return;
           await ChickenHouseLocalDataServices.uploadData(
-            context, 
-            chickenHouseData: data, 
-            token: token, 
-            date: date
+            context,
+            chickenHouseData: data,
+            token: token,
+            date: data.created_at!.isEmpty ? "" : data.created_at!
           );
-          if(!context.mounted) return;
-          _chickenHouseDataLocalList = await ChickenHouseLocalDataServices.fetchChickenHouseData(context, date: date);
+          if (!context.mounted) return;
+          newLocalDataList = await ChickenHouseLocalDataServices.fetchChickenHouseAllData(context);
           notifyListeners();
         }
       }
-      await fetchChickenHouseData(context, token: token, date: date);
+
+      // // After loop, update the local data list
+      // _chickenHouseDataLocalList = newLocalDataList;
       notifyListeners();
     } catch (e) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error", "Error ${e.toString()}\n@ChickenHouseDataProvider.uploadData");      
+      CustomAlert.showAlert(context, "Error", "Error ${e.toString()}\n@ChickenHouseDataProvider.uploadData");
     }
   }
+
 }

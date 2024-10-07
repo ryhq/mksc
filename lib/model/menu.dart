@@ -9,7 +9,7 @@ class Menu {
   final int isActive;
   final int isDeleted;
   final String updatedAt;
-  final String createdAt;
+  final String created_at;
   final String? createdBy;
 
   Menu({
@@ -23,7 +23,7 @@ class Menu {
     required this.isActive,
     required this.isDeleted,
     required this.updatedAt,
-    required this.createdAt,
+    required this.created_at,
     this.createdBy,
   });
 
@@ -39,7 +39,7 @@ class Menu {
       isActive: json['is_active'] ?? 0,
       isDeleted: json['is_deleted'] ?? 0,
       updatedAt: json['updated_at'] ?? "",
-      createdAt: json['created_at'] ?? "",
+      created_at: json['created_at'] ?? "",
       createdBy: json['created_by'],
     );
   }
@@ -56,7 +56,7 @@ class Menu {
       'is_active': isActive,
       'is_deleted': isDeleted,
       'updated_at': updatedAt,
-      'created_at': createdAt,
+      'created_at': created_at,
       'created_by': createdBy,
     };
   }
@@ -72,7 +72,7 @@ class Menu {
     int? isActive,
     int? isDeleted,
     String? updatedAt,
-    String? createdAt,
+    String? created_at,
     String? createdBy,
   }) {
     return Menu(
@@ -86,7 +86,7 @@ class Menu {
       isActive: isActive ?? this.isActive,
       isDeleted: isDeleted ?? this.isDeleted,
       updatedAt: updatedAt ?? this.updatedAt,
-      createdAt: createdAt ?? this.createdAt,
+      created_at: created_at ?? this.created_at,
       createdBy: createdBy ?? this.createdBy,
     );
   }
@@ -103,7 +103,7 @@ class Menu {
       isActive: 0,
       isDeleted: 0,
       updatedAt: "",
-      createdAt: "",
+      created_at: "",
       createdBy: null,
     );
   }
