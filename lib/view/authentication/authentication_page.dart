@@ -100,6 +100,17 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
         ),
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.primary,
+        actions: [
+          _internetConnection ? const SizedBox() : 
+          IconButton(
+            onPressed: () => _navigateNoToken(), 
+            icon: Icon(
+              Icons.hdr_weak,
+              color: Colors.white,
+              size: Provider.of<ThemeProvider>(context).fontSize + 7,
+            )
+          )
+        ],
       ),
       body: Container(
         width: MediaQuery.of(context).size.width,
@@ -183,7 +194,7 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                 ),
                 _continueClicked ? const BallPulseIndicator() : Button(
                   title: "Continue...",
-                  onTap: () => authenticate(internetStatus: _internetConnection),
+                  onTap: () => authenticate(),
                 ),
                 const SizedBox(
                   height: 21,
@@ -196,27 +207,46 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
     );
   }
 
-  void authenticate({required bool internetStatus}) async {
+  void authenticate() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _continueClicked = true;
       });
     
-      if (internetStatus) {
-        await AuthenticationServices.authenticate(
-          widget.title, context,
-          email: email, 
-          passwordCode: passwordCodeController.text
-        );
-      } else {
-        _navigateNoToken();
-      }
+      await AuthenticationServices.authenticate(
+        widget.title, context,
+        email: email, 
+        passwordCode: passwordCodeController.text
+      );
     
       setState(() {
         _continueClicked = false;
       });
     }
   }
+
+  // void authenticate({required bool internetStatus}) async {
+  //   if (_formKey.currentState!.validate()) {
+  //     setState(() {
+  //       _continueClicked = true;
+  //     });
+    
+  //     if (internetStatus) {
+  //       await AuthenticationServices.authenticate(
+  //         widget.title, context,
+  //         email: email, 
+  //         passwordCode: passwordCodeController.text
+  //       );
+  //     } else {
+  //       _navigateNoToken();
+  //     }
+    
+  //     setState(() {
+  //       _continueClicked = false;
+  //     });
+  //   }
+  // }
+
   void navigate() {
     if (savedToken.isNotEmpty && context.mounted) {
       Navigator.pop(context);
