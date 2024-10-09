@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:mksc/helper/database_helper.dart';
 import 'package:mksc/model/chicken_house_data.dart';
 import 'package:mksc/provider/chicken_house_data_provider.dart';
-import 'package:mksc/provider/internet_connection_provider.dart';
 import 'package:mksc/services/handle_exception.dart';
 import 'package:mksc/services/mksc_urls.dart';
 import 'package:mksc/widgets/custom_alert.dart';
