@@ -152,15 +152,15 @@ class InitiatialServices {
       }
 
       if (lookupResults.isNotEmpty && lookupResults[0].rawAddress.isNotEmpty) {
-        Fluttertoast.showToast(
-          msg: "Internet Connection is available",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 16.0
-        ); 
+        // Fluttertoast.showToast(
+        //   msg: "Internet Connection is available",
+        //   toastLength: Toast.LENGTH_SHORT,
+        //   gravity: ToastGravity.BOTTOM,
+        //   timeInSecForIosWeb: 1,
+        //   backgroundColor: Colors.green,
+        //   textColor: Colors.white,
+        //   fontSize: 16.0
+        // ); 
         return true;
       } else {
         Fluttertoast.showToast(

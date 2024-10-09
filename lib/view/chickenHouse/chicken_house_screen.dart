@@ -62,8 +62,8 @@ class _ChickenHouseScreenState extends State<ChickenHouseScreen> {
     if (widget.token  == null) {
       fetchChickenHouseDataFromLocal(context, date: dateController.text);
     } else {
-      fetchChickenHouseData(context, token: widget.token!, date: dateController.text);
       syncData();
+      fetchChickenHouseData(context, token: widget.token!, date: dateController.text);
     }
   }
 
@@ -493,7 +493,7 @@ class _ChickenHouseScreenState extends State<ChickenHouseScreen> {
     );
   }
 
-  void fetchChickenHouseData(
+  Future<void> fetchChickenHouseData(
     BuildContext context, {
     required String token,
     required String date,
@@ -564,7 +564,8 @@ class _ChickenHouseScreenState extends State<ChickenHouseScreen> {
     setState(() {
       isSyncing = false;
     });
-
+    if (!context.mounted) return;
+    await fetchChickenHouseData(context, token: widget.token!, date: dateController.text);
     debugPrint("\n👉 Syncing state  : \t$isSyncing");
   }
 }

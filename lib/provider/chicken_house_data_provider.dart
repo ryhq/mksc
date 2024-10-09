@@ -14,11 +14,19 @@ class ChickenHouseDataProvider with ChangeNotifier {
   List<ChickenHouseData> _chickenHouseDataList = [];
 
   List<ChickenHouseData> _chickenHouseDataLocalList = [];
+
+  int _chickenHouseLocalDataStatus = 0;
  
   List<ChickenHouseData> get chickenHouseDataList => _chickenHouseDataList;
   
   List<ChickenHouseData> get chickenHouseDataLocalList => _chickenHouseDataLocalList;
 
+  int get chickenHouseLocalDataStatus => _chickenHouseLocalDataStatus;
+
+  Future<void> fetchChickenHouseDataStatus() async{
+    _chickenHouseLocalDataStatus = await ChickenHouseLocalDataServices.fetchChickenHouseDataStatus();
+    notifyListeners();
+  }
   
   Future<void> fetchChickenHouseData (
     BuildContext context, 
@@ -167,15 +175,28 @@ class ChickenHouseDataProvider with ChangeNotifier {
       
       List<ChickenHouseData> chickenHouseData7DaysList = await ChickenHouseDataServices.fetchChickenHouseData7Days(context);
 
+      debugPrint("\n\n\n👉👉👉.......................Fetched chicken House Data in past Seven (07) Days.......................\n\n\n");
+
+      for (var chick in chickenHouseData7DaysList) {
+        debugPrint("\nItem : ${chick.item} : Number${chick.number}");
+      }
+
       // Then, fetch data from the local storage.
       if (!context.mounted) return;
       List<ChickenHouseData> allLocalDataList = await ChickenHouseLocalDataServices.fetchChickenHouseAllData(context);
+
+      debugPrint("\n\n\n👉👉👉.......................All chicken House Data locally stored.......................\n\n\n");
+
+      for (var chick in allLocalDataList) {
+        debugPrint("\nItem : ${chick.item} : Number${chick.number}");
+      }
 
       // Looping through the data to be uploaded allLocalDataList
 
       for (var data in allLocalDataList) {
         // If server data exists
         if (chickenHouseData7DaysList.isNotEmpty) {
+
           bool dataExists = false;
           // Looping to check if data already exist on the server.
           for (var chickenHouseData in chickenHouseData7DaysList) {

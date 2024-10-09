@@ -2,27 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mksc/provider/theme_provider.dart';
-import 'package:mksc/services/chicken_house_local_data_services.dart';
 import 'package:mksc/view/home/home_widget/category_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
 class CategoryCard extends StatefulWidget {
   final String title;
   final String svgicon;
+  final int localData;
 
-  const CategoryCard({super.key, required this.title, required this.svgicon});
+  const CategoryCard({super.key, required this.title, required this.svgicon, required this.localData});
 
   @override
   State<CategoryCard> createState() => _CategoryCardState();
 }
 
 class _CategoryCardState extends State<CategoryCard> {
-  bool hasLocalData = false;
-  @override
-  void initState() {
-    super.initState();
-    checkLocalData();
-  }
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -92,13 +86,24 @@ class _CategoryCardState extends State<CategoryCard> {
             Align(
               alignment: Alignment.topRight,
               child: Opacity(
-                opacity: hasLocalData ? 1.0 : 0.0,
+                opacity: widget.localData > 0 ? 1.0 : 0.0,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Icon(
-                    Icons.sync,
-                    color: Colors.white,
-                    size: Provider.of<ThemeProvider>(context).fontSize
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.all(Radius.circular(21))
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(3.0),
+                      child: Text(
+                        widget.localData > 0 && widget.localData <10 ? "0${widget.localData}": "${widget.localData}",
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.white,
+                          fontSize: Provider.of<ThemeProvider>(context).fontSize * 0.754
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -107,16 +112,5 @@ class _CategoryCardState extends State<CategoryCard> {
         ),
       ),
     );
-  }
-
-  void checkLocalData() async{
-    if (widget.title == "Chicken House") {
-      bool check = await ChickenHouseLocalDataServices.fetchChickenHouseDataForCard();
-      setState(() {
-        hasLocalData = check;
-      });
-    } else {
-      
-    }
   }
 }

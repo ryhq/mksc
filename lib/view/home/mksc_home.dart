@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mksc/provider/chicken_house_data_provider.dart';
 import 'package:mksc/provider/greeting_provider.dart';
 import 'package:mksc/view/home/home_widget/category_card.dart';
 import 'package:provider/provider.dart';
@@ -12,8 +13,14 @@ class MKSCHome extends StatefulWidget {
 
 class _MKSCHomeState extends State<MKSCHome> {
   @override
+  void initState() {
+    super.initState();
+    initiateLocalDataStatus();
+  }
+  @override
   Widget build(BuildContext context) {
     String greeting = Provider.of<GreetingProvider>(context).currentGreeting;
+    int chickenHouseLocalDataQuantity = Provider.of<ChickenHouseDataProvider>(context,).chickenHouseLocalDataStatus;
     debugPrint("\n\n\nGreeting to user: $greeting");
     return Scaffold(
       backgroundColor: Colors.white,
@@ -177,29 +184,35 @@ class _MKSCHomeState extends State<MKSCHome> {
               itemCount: 6,
               itemBuilder: (BuildContext context, int index) {
                 return switch (index) {
-                  0 => const CategoryCard(
+                  0 => CategoryCard(
                       title: "Chicken House",
                       svgicon: "assets/icons/chicken_.svg",
+                      localData: chickenHouseLocalDataQuantity,
                     ),
                   1 => const CategoryCard(
                       title: "Menu",
                       svgicon: "assets/icons/menu.svg",
+                      localData: 0,
                     ),
                   2 => const CategoryCard(
                       title: "Vegetables",
                       svgicon: "assets/icons/vegetables.svg",
+                      localData: 0,
                     ),
                   3 => const CategoryCard(
                       title: "Laundry",
                       svgicon: "assets/icons/laundry.svg",
+                      localData: 0,
                     ),
                   4 => const CategoryCard(
                       title: "Beverage",
                       svgicon: "assets/icons/beverage.svg",
+                      localData: 0,
                     ),
                   5 => const CategoryCard(
                       title: "Louge Room",
                       svgicon: "assets/icons/bed.svg",
+                      localData: 0,
                     ),
                   int() => throw UnimplementedError(),
                 };
@@ -209,5 +222,9 @@ class _MKSCHomeState extends State<MKSCHome> {
         ],
       ),
     );
+  }
+
+  void initiateLocalDataStatus() async {
+    await Provider.of<ChickenHouseDataProvider>(context, listen: false).fetchChickenHouseDataStatus();
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mksc/model/chicken_house_data.dart';
 import 'package:http/http.dart' as http;
 import 'package:mksc/provider/chicken_house_data_provider.dart';
+import 'package:mksc/provider/internet_connection_provider.dart';
 import 'package:mksc/services/handle_exception.dart';
 import 'package:mksc/services/mksc_urls.dart';
 import 'package:mksc/widgets/custom_alert.dart';
@@ -103,6 +104,8 @@ class ChickenHouseDataServices {
 
   static Future<ChickenHouseData> saveChickenHouseData(BuildContext context, {required String item, required int number, required String token, required String date}) async{
     
+    bool _internetConnection = await HandleException.checkConnectionAndInternetWithToast();
+    
     Map<String, dynamic> dataJSON = {
       "item" : item,
       "number" : number,
@@ -112,86 +115,98 @@ class ChickenHouseDataServices {
 
     try {
 
-      final response = await http.post(
-        Uri.parse(MKSCUrls.chickenUrl),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: json.encode(dataJSON),
-      );
+      if (_internetConnection) { // Internet connection is available
+        
+        final response = await http.post(
+          Uri.parse(MKSCUrls.chickenUrl),
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: json.encode(dataJSON),
+        );
+        
+        if (response.statusCode == 200) {  
 
-      debugPrint("\n\n\nResponse status code ${response.statusCode}");
-      debugPrint("\n\n\nResponse body ${response.body}");
+          final responseBody = response.body;
 
-      if (response.statusCode == 200) {  
+          if (responseBody.isNotEmpty){
 
-        final responseBody = response.body;
+            try {
+              final Map<String, dynamic> responseData = json.decode(responseBody);
 
-        if (responseBody.isNotEmpty){
+              if (responseData.containsKey('data') && responseData['data'] is Map<String, dynamic>) {
+                final ChickenHouseData data = ChickenHouseData.fromJson(responseData['data']);
 
-          try {
-            final Map<String, dynamic> responseData = json.decode(responseBody);
+                debugPrint("Response data: ${data.toJson()}");
 
-            if (responseData.containsKey('data') && responseData['data'] is Map<String, dynamic>) {
-              final ChickenHouseData data = ChickenHouseData.fromJson(responseData['data']);
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Successfully saved ${data.number} ${data.item}"), backgroundColor: Colors.green,)
+                  );
+                }
 
-              debugPrint("Response data: ${data.toJson()}");
+                return data;
 
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Successfully saved ${data.number} ${data.item}"), backgroundColor: Colors.green,)
-                );
+              } else {
+                throw const FormatException("Invalid 'data' field format");
               }
-
-              return data;
-
-            } else {
-              throw const FormatException("Invalid 'data' field format");
+            } catch (e) {
+              debugPrint("Error decoding response data: $e");
+              throw FormatException("Failed to decode response body: $responseBody");
             }
-          } catch (e) {
-            debugPrint("Error decoding response data: $e");
-            throw FormatException("Failed to decode response body: $responseBody");
+          } else {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("An error occured while decoding response"), backgroundColor: Colors.orange,)
+              );
+            }
           }
         } else {
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("An error occured while decoding response"), backgroundColor: Colors.orange,)
-            );
-          }
+
+          if(!context.mounted) return ChickenHouseData.empty(); 
+          HandleException.handleHttpError(
+            context: context, 
+            statusCode: response.statusCode, 
+            responseBody: response.body
+          );
+          await Provider.of<ChickenHouseDataProvider>(context, listen: false).saveChickenHouseDataToLocal(
+            context,
+            item: item,
+            number: number,
+            date: date
+          );
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("An error occured, currently the $item is saved locally, you may sync later."), backgroundColor: Colors.orange,)
+          );
+          return ChickenHouseData.empty(); 
         }
       } else {
-
-        if(!context.mounted) return ChickenHouseData.empty(); 
-        HandleException.handleHttpError(
-          context: context, 
-          statusCode: response.statusCode, 
-          responseBody: response.body
-        );
-
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("You are currently offline, Hence, the $item is saved locally, you may sync later."), backgroundColor: Colors.orange,)
+        ); 
         await Provider.of<ChickenHouseDataProvider>(context, listen: false).saveChickenHouseDataToLocal(
           context,
           item: item,
           number: number,
           date: date
-        );
-        CustomAlert.showAlert(context, "Support", "An error occured, currently the $item is saved locally, you may sync later.");
-
-        return ChickenHouseData.empty(); 
+        );       
       }
 
     } on Exception catch (exception) {
 
       if(!context.mounted) return ChickenHouseData.empty();
       HandleException.handleExceptions(context: context, exception: exception, location: "ChickenHouseDataServices.saveChickenHouseData");
-
       await Provider.of<ChickenHouseDataProvider>(context, listen: false).saveChickenHouseDataToLocal(
         context,
         item: item,
         number: number,
         date: date
       );
-      CustomAlert.showAlert(context, "Support", "An error occured, currently the $item is saved locally, you may sync later.");
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("An error occured, currently the $item is saved locally, you may sync later."), backgroundColor: Colors.orange,)
+      );
       return ChickenHouseData.empty();
     }
     return ChickenHouseData.empty();
