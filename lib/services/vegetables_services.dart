@@ -1,21 +1,19 @@
 import 'dart:convert';
-
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:mksc/model/vegetable.dart';
 import 'package:http/http.dart' as http;
+import 'package:mksc/services/handle_exception.dart';
 import 'package:mksc/services/mksc_urls.dart';
-import 'package:mksc/widgets/custom_alert.dart';
+import 'package:mksc/services/vegetable_local_data_services.dart';
 
 class VegetablesServices {
+
   static Future<List<Vegetable>> fetchVegetableData(BuildContext context) async{
     
-    List<ConnectivityResult> connectivityResult = await Connectivity().checkConnectivity();
-
-    if (connectivityResult.contains(ConnectivityResult.none) && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No internet connection. Please check your connection and try again.')),
-      );
+    // Check for network connection and internet access
+    bool isConnected = await HandleException.checkConnectionAndInternet(context);
+   
+    if (!isConnected) {
       return List<Vegetable>.empty();
     }
 
@@ -28,9 +26,6 @@ class VegetablesServices {
         },
       );
 
-      // debugPrint("\n\n\nResponse status code ${response.statusCode}");
-      // debugPrint("\n\n\nResponse body ${response.body}");
-
       if (response.statusCode == 200) {
 
         final responseBody = response.body;
@@ -42,21 +37,32 @@ class VegetablesServices {
 
         final List<Vegetable>  fetchedData = dataList.map((data) => Vegetable.fromJson(data)).toList();
 
+        debugPrint("\n\n\n...............................Fetched Vegetable Data From Server...............................");
+        
+        for (var veg in fetchedData) {
+          debugPrint("\n ️‍🔥️ Name : ${veg.name} number : ${veg.number} image : ${veg.image}");
+        }
+
         return fetchedData;
         
       } else {
-        return List<Vegetable>.empty();
+        if(!context.mounted) return List<Vegetable>.empty();
+        HandleException.handleHttpError(
+          context: context, 
+          statusCode: response.statusCode, 
+          responseBody: response.body
+        );
       }
       
-    } catch (e) {
-      debugPrint("\n\n\nError fetching Population Data: $e\n\n\n");
+    }on Exception catch (exception) {
       if(!context.mounted) return List<Vegetable>.empty();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('An error occurred during authentication')),
+      HandleException.handleExceptionsWithToast(
+        exception: exception, 
+        location: "VegetablesServices.fetchVegetableData"
       );
       rethrow;        
     }
-
+    return List<Vegetable>.empty();
   }
 
   static Future<List<Vegetable>> fetchTodayVegetableData(
@@ -67,12 +73,10 @@ class VegetablesServices {
     }
   ) async{
     
-    List<ConnectivityResult> connectivityResult = await Connectivity().checkConnectivity();
-
-    if (connectivityResult.contains(ConnectivityResult.none) && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No internet connection. Please check your connection and try again.')),
-      );
+    // Check for network connection and internet access
+    bool isConnected = await HandleException.checkConnectionAndInternet(context);
+   
+    if (!isConnected) {
       return List<Vegetable>.empty();
     }
 
@@ -87,9 +91,6 @@ class VegetablesServices {
         body: json.encode({'date': date, 'token': token})
       );
 
-      debugPrint("\n\n\nResponse status code ${response.statusCode}");
-      debugPrint("\n\n\nResponse body ${response.body}");
-
       if (response.statusCode == 200) {
 
         final responseBody = response.body;
@@ -100,21 +101,83 @@ class VegetablesServices {
 
         final List<Vegetable>  fetchedData = dataList.map((data) => Vegetable.fromJson(data)).toList();
 
+        debugPrint("\n\n\n...............................Fetched Today Vegetable Data From Server...............................");
+        
+        for (var veg in fetchedData) {
+          debugPrint("\n ️‍🔥️ Name : ${veg.name} number : ${veg.number} image : ${veg.image}");
+        }
+
         return fetchedData;
         
       } else {
-        return List<Vegetable>.empty();
+        if(!context.mounted) return List<Vegetable>.empty();
+        HandleException.handleHttpError(
+          context: context, 
+          statusCode: response.statusCode, 
+          responseBody: response.body
+        );
       }
       
-    } catch (e) {
-      debugPrint("\n\n\nError fetching Population Data: $e\n\n\n");
+    } on Exception catch (exception) {
       if(!context.mounted) return List<Vegetable>.empty();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('An error occurred during authentication')),
+      HandleException.handleExceptionsWithToast(
+        exception: exception, 
+        location: "VegetablesServices.fetchTodayVegetableData"
       );
       rethrow;        
     }
+    return List<Vegetable>.empty();
+  }
 
+  static Future<List<Vegetable>> fetchVegetableData7Days(BuildContext context,) async{
+    
+    // Check for network connection and internet access
+    bool isConnected = await HandleException.checkConnectionAndInternet(context);
+   
+    if (!isConnected) {
+      return List<Vegetable>.empty();
+    }
+
+    try {
+      
+      final response = await http.get(Uri.parse(MKSCUrls.vegetabl7DayseUrl));
+
+      if (response.statusCode == 200) {
+
+        final responseBody = response.body;
+
+        final Map<String, dynamic> responseData = json.decode(responseBody);
+
+        final List<dynamic> dataList = responseData['data'];
+
+        final List<Vegetable> fetchedData = dataList.map((data) => Vegetable.fromJson(data)).toList();
+
+        debugPrint("\n\n\n...............................Fetched Vegetable Data From Server...............................");
+        
+        for (var veg in fetchedData) {
+          debugPrint("\n ️‍🔥️ Name : ${veg.name} number : ${veg.number} image : ${veg.image}");
+        }
+
+        return fetchedData;
+        
+      } else {
+        if(!context.mounted) return List<Vegetable>.empty();
+        HandleException.handleHttpError(
+          context: context, 
+          statusCode: response.statusCode, 
+          responseBody: response.body
+        );
+      }
+      
+    } on Exception catch (exception) {
+      if(!context.mounted) return List<Vegetable>.empty();
+      HandleException.handleExceptionsWithToast(
+        exception: exception, 
+        location: "VegetablesServices.fetchVegetableData7Days"
+      );
+      rethrow;        
+    }
+    return List<Vegetable>.empty();
   }
 
   static Future<Vegetable> editVegetableData(
@@ -127,12 +190,10 @@ class VegetablesServices {
     }
   ) async{
     
-    List<ConnectivityResult> connectivityResult = await Connectivity().checkConnectivity();
-
-    if (connectivityResult.contains(ConnectivityResult.none) && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No internet connection. Please check your connection and try again.')),
-      );
+    // Check for network connection and internet access
+    bool isConnected = await HandleException.checkConnectionAndInternet(context);
+   
+    if (!isConnected) {
       return Vegetable.empty();
     }
 
@@ -146,11 +207,7 @@ class VegetablesServices {
         },
         body: json.encode({'number': number, 'token': token, 'unit': unit})
       );
-
-      debugPrint("\n\n\nResponse status code ${response.statusCode}");
-      debugPrint("\n\n\nResponse body ${response.body}");
-
-
+      
       if (response.statusCode == 200) {
 
         final responseBody = response.body;
@@ -175,7 +232,6 @@ class VegetablesServices {
                       const SnackBar(content: Text("Update was Successfully"), backgroundColor: Colors.green,)
                     );
                   }
-
                   return firstVegetable;
                 }
               } else if (responseData['data'] is Map<String, dynamic>) {
@@ -211,18 +267,21 @@ class VegetablesServices {
         
       } else {
         if(!context.mounted) return Vegetable.empty(); 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Updating was unSuccessfull:\n${response.statusCode} : ${json.decode(response.body)['error']}"), backgroundColor: Colors.red,)
+        HandleException.handleHttpError(
+          context: context, 
+          statusCode: response.statusCode, 
+          responseBody: response.body
         );
       }
       
-    } catch (e) {
-      debugPrint("\n\n\nError fetching Population Data: $e\n\n\n");
+    } on Exception catch (exception) {
+      debugPrint("\n\n\nError fetching Population Data: $exception\n\n\n");
       if(!context.mounted) return Vegetable.empty();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('An error occurred during authentication')),
+      HandleException.handleExceptionsWithToast(
+        exception: exception, 
+        location: "VegetablesServices.fetchVegetableData"
       );
-      rethrow;        
+      rethrow;         
     }
     return Vegetable.empty();
   }
@@ -238,12 +297,12 @@ class VegetablesServices {
     }
   ) async{
     
-    List<ConnectivityResult> connectivityResult = await Connectivity().checkConnectivity();
-
-    if (connectivityResult.contains(ConnectivityResult.none) && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No internet connection. Please check your connection and try again.')),
-      );
+    // Check for network connection and internet access
+    bool isConnected = await HandleException.checkConnectionAndInternetWithToast();
+   
+    if (!isConnected) {
+      if(!context.mounted) return Vegetable.empty();
+      await VegetableLocalDataServices.saveVegetableData(context, number: number, unit: unit, date: date, item: item);
       return Vegetable.empty();
     }
 
@@ -257,10 +316,6 @@ class VegetablesServices {
         },
         body: json.encode({'number': number, 'token': token, 'unit': unit, 'date' : date, 'item' : item})
       );
-
-      debugPrint("\n\n\nResponse status code ${response.statusCode}");
-      debugPrint("\n\n\nResponse body ${response.body}");
-
 
       if (response.statusCode == 200) {
 
@@ -321,21 +376,24 @@ class VegetablesServices {
           }
         }
         
-      } else if(response.statusCode == 422){
+      } else {
+        if(!context.mounted) return Vegetable.empty();
+        VegetableLocalDataServices.saveVegetableData(context, number: number, unit: unit, date: date, item: item);
         if(!context.mounted) return Vegetable.empty(); 
-        CustomAlert.showAlert(context, "Error 422", "The unit field is required.");
-      }  else {
-        if(!context.mounted) return Vegetable.empty(); 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Saved was unSuccessfull:\n${response.statusCode} : ${json.decode(response.body)['error']}"), backgroundColor: Colors.red,)
+        HandleException.handleHttpError(
+          context: context, 
+          statusCode: response.statusCode, 
+          responseBody: response.body
         );
       }
       
-    } catch (e) {
-      debugPrint("\n\n\nError fetching Population Data: $e\n\n\n");
+    } on Exception catch (exception) {
       if(!context.mounted) return Vegetable.empty();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('An error occurred during authentication')),
+      VegetableLocalDataServices.saveVegetableData(context, number: number, unit: unit, date: date, item: item);
+      if(!context.mounted) return Vegetable.empty();
+      HandleException.handleExceptionsWithToast(
+        exception: exception, 
+        location: "VegetablesServices.fetchVegetableData"
       );
       rethrow;        
     }

@@ -544,7 +544,6 @@ class _ChickenHouseScreenState extends State<ChickenHouseScreen> {
       if (widget.token == null) {
         Provider.of<ChickenHouseDataProvider>(context, listen: false).clearChickenHouseDataList();
         fetchChickenHouseDataFromLocal(context, date: dateController.text); 
-        
       } else {
         fetchChickenHouseData(context, token: widget.token!, date: dateController.text);
       }

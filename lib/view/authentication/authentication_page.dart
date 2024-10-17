@@ -306,7 +306,6 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
         MaterialPageRoute(
           builder: (context) => VegetablesScreen(
             categoryTitle: widget.title,
-            token: savedToken,
           ),
         )
       );

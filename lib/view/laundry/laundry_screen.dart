@@ -151,8 +151,7 @@ class _LaundryScreenState extends State<LaundryScreen> {
                       height: MediaQuery.of(context).size.height * 0.13,
                       child: GridView.builder(
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: MediaQuery.of(context).orientation ==
-                                  Orientation.portrait
+                          crossAxisCount: MediaQuery.of(context).orientation ==  Orientation.portrait
                               ? 2
                               : 4,
                           crossAxisSpacing:

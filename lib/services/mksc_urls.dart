@@ -11,6 +11,7 @@ class MKSCUrls {
   static String getMenuDetailed = "https://development.mkscportal.co.tz/api/v2/menu_details";
   static String getVideoURL = "https://development.mkscportal.co.tz/api/v2/dish_video";
   static String vegetableUrl = "https://development.mkscportal.co.tz/api/v2/vegetable-list";
+  static String vegetabl7DayseUrl = "https://development.mkscportal.co.tz/api/v2/vegetable/seven_days/data";
   static String todayVegetableUrl = "https://development.mkscportal.co.tz/api/v2/vegetable-today";
   static String availablevegetableUrl = "https://development.mkscportal.co.tz/api/v2/vegetableDataDate";
   static String updateVegetableDataUrl = "https://development.mkscportal.co.tz/api/v2/vegetable";

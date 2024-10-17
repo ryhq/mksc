@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mksc/provider/chicken_house_data_provider.dart';
 import 'package:mksc/provider/greeting_provider.dart';
+import 'package:mksc/provider/vegetable_provider.dart';
 import 'package:mksc/view/home/home_widget/category_card.dart';
 import 'package:provider/provider.dart';
 
@@ -21,6 +22,7 @@ class _MKSCHomeState extends State<MKSCHome> {
   Widget build(BuildContext context) {
     String greeting = Provider.of<GreetingProvider>(context).currentGreeting;
     int chickenHouseLocalDataQuantity = Provider.of<ChickenHouseDataProvider>(context,).chickenHouseLocalDataStatus;
+    int vegetableLocalDataQuantity = Provider.of<VegetableProvider>(context,).vegetableLocalDataStatus;
     debugPrint("\n\n\nGreeting to user: $greeting");
     return Scaffold(
       backgroundColor: Colors.white,
@@ -194,10 +196,10 @@ class _MKSCHomeState extends State<MKSCHome> {
                       svgicon: "assets/icons/menu.svg",
                       localData: 0,
                     ),
-                  2 => const CategoryCard(
+                  2 => CategoryCard(
                       title: "Vegetables",
                       svgicon: "assets/icons/vegetables.svg",
-                      localData: 0,
+                      localData: vegetableLocalDataQuantity,
                     ),
                   3 => const CategoryCard(
                       title: "Laundry",
@@ -226,5 +228,6 @@ class _MKSCHomeState extends State<MKSCHome> {
 
   void initiateLocalDataStatus() async {
     await Provider.of<ChickenHouseDataProvider>(context, listen: false).fetchChickenHouseDataStatus();
+    await Provider.of<VegetableProvider>(context, listen: false).fetchVegetableDataStatus();
   }
 }

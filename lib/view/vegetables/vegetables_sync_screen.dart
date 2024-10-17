@@ -1,27 +1,28 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 
-class ChickenHouseSyncScreen extends StatefulWidget {
-  const ChickenHouseSyncScreen({super.key});
+class VegetablesSyncScreen extends StatefulWidget {
+  const VegetablesSyncScreen({super.key});
 
   @override
-  State<ChickenHouseSyncScreen> createState() => _ChickenHouseSyncScreenState();
+  State<VegetablesSyncScreen> createState() => _VegetablesSyncScreenState();
 }
 
-class _ChickenHouseSyncScreenState extends State<ChickenHouseSyncScreen> {
+class _VegetablesSyncScreenState extends State<VegetablesSyncScreen> {
   List<String> svgIconUrl = [
-    'assets/icons/chicken_.svg',
-    'assets/icons/hen.svg',
-    'assets/icons/chick.svg',
-    'assets/icons/egg.svg',
+    'assets/icons/vegetable_garden/apple.svg',
+    'assets/icons/vegetable_garden/carrot.svg',
+    'assets/icons/vegetable_garden/cherries.svg',
+    'assets/icons/vegetable_garden/pear.svg',
+    'assets/icons/vegetable_garden/pineapple.svg',
+    'assets/icons/vegetable_garden/watermelon.svg',
   ];
 
   int _currentIconIndex = 0;
   Timer? _timer;
-  
+
   @override
   void initState() {
     super.initState();
@@ -36,21 +37,6 @@ class _ChickenHouseSyncScreenState extends State<ChickenHouseSyncScreen> {
         _currentIconIndex = (_currentIconIndex + 1) % svgIconUrl.length;
       });
     });
-  }
-
-  @override
-  void dispose() {
-    // Reset orientation preferences when leaving the page
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
-    // Cancel the timer when the widget is disposed
-    _timer?.cancel();
-
-    super.dispose();
   }
   @override
   Widget build(BuildContext context) {
@@ -100,5 +86,19 @@ class _ChickenHouseSyncScreenState extends State<ChickenHouseSyncScreen> {
         ),
       )
     );
+  }
+
+  @override
+  void dispose() {
+    // Reset orientation preferences when leaving the page
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    // Cancel the timer when the widget is disposed
+    _timer?.cancel();
+    super.dispose();
   }
 }

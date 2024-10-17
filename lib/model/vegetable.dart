@@ -6,6 +6,9 @@ class Vegetable {
   final String? number;
   final String? camp;
   final String? unit;
+  final bool offline;
+  final String? created_at;
+  final String? updatedAt;
 
   Vegetable({
     required this.id, 
@@ -14,7 +17,10 @@ class Vegetable {
     required this.image, 
     required this.number, 
     required this.camp, 
-    required this.unit
+    required this.unit,
+    this.offline = false,
+    required this.created_at,
+    required this.updatedAt,
   });
 
 
@@ -27,6 +33,8 @@ class Vegetable {
       number: json['number'] ?? "",
       camp: json['camp'] ?? "",
       unit: json['unit'] ?? "",
+      created_at: json['created_at'] ?? "",
+      updatedAt: json['updatedAt'] ?? "",
     );
   }
 
@@ -51,6 +59,9 @@ class Vegetable {
     String? number,
     String? camp,
     String? unit,
+    bool? offline,
+    String? created_at,
+    String? updatedAt
   }) {
     return Vegetable(
       id: id ?? this.id,
@@ -60,6 +71,9 @@ class Vegetable {
       number: number ?? this.number,
       camp: camp ?? this.camp,
       unit: unit ?? this.unit,
+      offline: offline ?? this.offline,
+      created_at: created_at ?? this.created_at,
+      updatedAt: updatedAt ?? this.updatedAt
     );
   }
 
@@ -72,6 +86,9 @@ class Vegetable {
       number: "",
       camp: "",
       unit: "",
+      offline: false,
+      created_at: "",
+      updatedAt: "",
     );
   }
 }

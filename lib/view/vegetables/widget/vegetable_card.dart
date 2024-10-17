@@ -1,24 +1,25 @@
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:mksc/model/vegetable.dart';
 import 'package:mksc/provider/theme_provider.dart';
 import 'package:mksc/provider/vegetable_provider.dart';
 import 'package:mksc/utils/color_utility.dart';
 import 'package:mksc/utils/validator_utility.dart';
+import 'package:mksc/view/vegetables/widget/vegetable_image_section.dart';
 import 'package:mksc/widgets/ball_pulse_indicator.dart';
-import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 
 class VegetableCard extends StatefulWidget {
   const VegetableCard({
     super.key,
-    required this.vegetableData, required this.token, required this.date,
+    required this.vegetableData, this.token, required this.date,
   });
 
   final Vegetable vegetableData;
 
-  final String token;
+  final String? token;
 
   final String date;
 
@@ -73,149 +74,103 @@ class _VegetableCardState extends State<VegetableCard> {
     bool isFocused = _focusNode.hasFocus;
     return AbsorbPointer(
       absorbing: savingState,
-      child: Column(
-        children: [
-          Focus(
-            focusNode: _focusNode,
-            child: GestureDetector(
-              onTap: () {
-                if (isFocused) {
-                  _focusNode.unfocus();
-                }else{
-                  _focusNode.requestFocus(); 
-                }
-              },
-              child: Stack(
-                children: [
-                  Opacity(
-                    opacity: editMode ?
-                    (
-                      (isFocused && !editMode) ? 0.3 : 
-                      (isFocused && !editMode) ? 0.7 :
-                      1
-                    ) : (
-                      (isFocused && !addMode) ? 0.3 : 
-                      (isFocused && !addMode) ? 0.7 :
-                      1
+      child: Focus(
+        focusNode: _focusNode,
+        child: GestureDetector(
+          onTap: () {
+            if (isFocused) {
+              _focusNode.unfocus();
+              setState(() {
+                addMode = false;
+                editMode = false;
+              });
+            }else{
+              _focusNode.requestFocus();
+              setState(() {
+                addMode = false;
+                editMode = false;
+              }); 
+            }
+          },
+          child: Card(
+            elevation: 3,
+            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(21.0))),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(21.0),
+              child: Slidable(
+                enabled: !editMode,
+                key: !widget.vegetableData.offline ? null : ValueKey(widget.vegetableData.id),
+                startActionPane: !widget.vegetableData.offline ? null : 
+                ActionPane(
+                  motion: const StretchMotion(), 
+                  dismissible: DismissiblePane(
+                    onDismissed: () => _deleteVegetableData(context)
+                  ),
+                  children: <Widget>[
+                    SlidableAction(
+                      onPressed: (context) => _deleteVegetableData(context),
+                      backgroundColor: Theme.of(context).colorScheme.surface,
+                      foregroundColor: Colors.red,
+                      icon: CupertinoIcons.delete,
+                      label: 'Delete ${widget.vegetableData.name} data',
+                    )
+                  ]
+                ),
+                endActionPane: !widget.vegetableData.offline ? null : 
+                ActionPane(
+                  motion: const StretchMotion(), 
+                  dismissible: DismissiblePane(
+                    onDismissed: () => _deleteVegetableData(context)
+                  ),
+                  children: <Widget>[
+                    SlidableAction(
+                      onPressed: (context) => _deleteVegetableData(context),
+                      backgroundColor: Theme.of(context).colorScheme.surface,
+                      foregroundColor: Colors.red,
+                      icon: CupertinoIcons.delete,
+                      label: 'Delete ${widget.vegetableData.name} data',
+                    )
+                  ]
+                ),
+                child: Container(
+                  constraints: const BoxConstraints(minHeight: 150.0),
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(21.0),
+                    gradient: LinearGradient(
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: [
+                        Colors.white,
+                        Colors.grey[50]!,
+                        ColorUtils.calculateSecondaryColor(primaryColor: Theme.of(context).colorScheme.primary),
+                      ],
                     ),
-                    child: Card(
-                      elevation: 3,
-                      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(21.0))),
-                      child: Container(
-                        constraints: const BoxConstraints(minHeight: 150.0),
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(21.0),
-                          gradient: LinearGradient(
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                            colors: [
-                              Colors.white,
-                              Colors.grey[50]!,
-                              ColorUtils.calculateSecondaryColor(primaryColor: Theme.of(context).colorScheme.primary),
-      
-                              // Colors.blue[100]!,
-                            ],
-                          ),
+                  ),
+                  child: Stack(
+                    children: [
+                      Opacity(
+                        opacity: editMode ?
+                        (
+                          (isFocused && !editMode) ? 0.3 : 
+                          (isFocused && !editMode) ? 0.7 :
+                          1
+                        ) : (
+                          (isFocused && !addMode) ? 0.3 : 
+                          (isFocused && !addMode) ? 0.7 :
+                          1
                         ),
                         child: Opacity(
                           opacity: savingState ? 0.5 : 1.0,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                                            
-                              // image
-                              widget.vegetableData.image.isNotEmpty ?
-                              GestureDetector(
-                                onTap: () {
-                                  debugPrint("\n\n\nTapped as picture...👍👍👍\n\n\n");
-                                  showDialog(
-                                    context: context, 
-                                    builder: (context) => Dialog(
-                                      elevation: 3.0,
-                                      backgroundColor: Colors.transparent,
-                                      insetAnimationCurve: Curves.slowMiddle,
-                                      insetAnimationDuration: const Duration(milliseconds: 700),
-                                      insetPadding: const EdgeInsets.all(21),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(21.0),
-                                        child: SizedBox(
-                                          height: 300,
-                                          width: MediaQuery.of(context).size.width,
-                                          child: PhotoView(
-                                            minScale: PhotoViewComputedScale.contained,
-                                            maxScale: PhotoViewComputedScale.covered * 2,
-                                            imageProvider: NetworkImage(widget.vegetableData.image,),
-                                            heroAttributes: PhotoViewHeroAttributes(tag: widget.vegetableData.image),
-                                            backgroundDecoration: BoxDecoration(
-                                              color: Colors.black.withOpacity(0.9)
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: Hero(
-                                  tag: widget.vegetableData.image,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Image.network(
-                                      widget.vegetableData.image, 
-                                      width: 140,
-                                      height: 140,
-                                      loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                                        if (loadingProgress == null) {
-                                          // Image has loaded
-                                          return child;
-                                        } else {
-                                          // Image is still loading
-                                          return SizedBox(
-                                            width: 140,
-                                            height: 140,
-                                            child: Center(
-                                              child: CircularProgressIndicator(
-                                                value: loadingProgress.expectedTotalBytes != null
-                                                    ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                                                    : null,
-                                              ),
-                                            ),
-                                          );
-                                        }
-                                      },
-                                      errorBuilder: (context, error, stackTrace) {
-                                        return Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: SizedBox(
-                                            width: 140,
-                                            height: 140,
-                                            child: Icon(
-                                              Icons.error,
-                                              size: 50,
-                                              color: Theme.of(context).colorScheme.error,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ) 
-                              : 
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: SizedBox(
-                                  width: 140,
-                                  height: 140,
-                                  child: Icon(
-                                    Icons.image_not_supported,
-                                    size: 50,
-                                    color: Theme.of(context).colorScheme.primary,
-                                  ),
-                                ),
-                              ),
-                                            
-                              // Details
+                
+                              // Image Section
+                
+                              VegetableImageSection(vegetable: widget.vegetableData),
+                
+                              // Detail Section
                                             
                               Expanded(
                                 child: Column(
@@ -273,7 +228,11 @@ class _VegetableCardState extends State<VegetableCard> {
                                               return GestureDetector(
                                                 onTap: () {
                                                   setState(() {
-                                                    selectedUnit = units[index];
+                                                    if (selectedUnit == units[index]) {
+                                                      selectedUnit = "";
+                                                    } else {
+                                                      selectedUnit = units[index];
+                                                    }
                                                   });
                                                 },
                                                 child: Container(
@@ -347,7 +306,11 @@ class _VegetableCardState extends State<VegetableCard> {
                                               return GestureDetector(
                                                 onTap: () {
                                                   setState(() {
-                                                    selectedUnit = units[index];
+                                                    if (selectedUnit == units[index]) {
+                                                      selectedUnit = "";
+                                                    } else {
+                                                      selectedUnit = units[index];
+                                                    }
                                                   });
                                                 },
                                                 child: Container(
@@ -381,136 +344,202 @@ class _VegetableCardState extends State<VegetableCard> {
                           ),
                         ),
                       ),
-                    ),
-                  ),
-      
-                  Align(
-                    alignment: Alignment.center,
-                    child: Opacity(
-                      opacity: savingState ? 1.0 : 0.0,
-                      child: const Center(
-                        child: BallPulseIndicator(),
+                        
+                      Align(
+                        alignment: Alignment.center,
+                        child: Opacity(
+                          opacity: savingState ? 1.0 : 0.0,
+                          child: const Center(
+                            child: BallPulseIndicator(),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-      
-                  // actions
-                  if(isFocused && !savingState)...[
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: Container(
-                        color: Colors.transparent,
-                        child: (widget.vegetableData.number!.isEmpty) ? 
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: addMode ? ElevatedButton(
-                            onPressed: () async{
-                              if (_formKey.currentState!.validate() && selectedUnit.isNotEmpty) {
-                                setState(() {
-                                  savingState = true;
-                                });
-                                await Provider.of<VegetableProvider>(context, listen: false).saveVegetableData(
-                                  context, 
-                                  token: widget.token, 
-                                  number: editingController.text, 
-                                  unit: selectedUnit, 
-                                  date: widget.date, 
-                                  item: widget.vegetableData.name
-                                );
-                                setState(() {
-                                  savingState = false;
-                                  addMode = false;
-                                });
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('Be sure to select unit and input valid data for ${widget.vegetableData.name}'),
-                                    backgroundColor: Theme.of(context).colorScheme.error
+                  
+                      // Local Badge
+                      if(widget.vegetableData.offline)...[
+                        Positioned(
+                          top: 7,
+                          left: MediaQuery.of(context).orientation ==  Orientation.portrait ? -160 : -310,
+                          child: Align(
+                            alignment: Alignment.topLeft,
+                            child: Transform.rotate(
+                              angle: -0.785398, // 45 degrees in radians
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                width: MediaQuery.of(context).size.width,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [
+                                      Colors.grey[50]!,
+                                      Colors.grey[50]!,
+                                      Colors.grey[50]!,
+                                      Colors.red,
+                                      Colors.grey[50]!,
+                                      Colors.grey[50]!,
+                                      Colors.grey[50]!,
+                                    ],
                                   ),
-                                );
-                              }
-                            }, 
-                            child: Text(
-                              "Save",
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.primary),
+                                ),
+                                child: const Center(
+                                  child: Text(
+                                    'Offline',
+                                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                      
+                      // actions
+                      if(isFocused && !savingState)...[
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: Container(
+                            color: Colors.transparent,
+                            child: (widget.vegetableData.number!.isEmpty) ? 
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: addMode ? ElevatedButton(
+                                onPressed: () async{
+                                  if (_formKey.currentState!.validate() && selectedUnit.isNotEmpty) {
+                                    setState(() {
+                                      savingState = true;
+                                    });
+                                    widget.token == null ?
+                                    await Provider.of<VegetableProvider>(context, listen: false).saveVegetableDataLocally(
+                                      context, 
+                                      number: editingController.text, 
+                                      unit: selectedUnit, 
+                                      date: widget.date, 
+                                      item: widget.vegetableData.name
+                                    ) :
+                                    await Provider.of<VegetableProvider>(context, listen: false).saveVegetableData(
+                                      context, 
+                                      token: widget.token!, 
+                                      number: editingController.text, 
+                                      unit: selectedUnit, 
+                                      date: widget.date, 
+                                      item: widget.vegetableData.name
+                                    );
+                                    setState(() {
+                                      savingState = false;
+                                      addMode = false;
+                                    });
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Be sure to select unit and input valid data for ${widget.vegetableData.name}'),
+                                        backgroundColor: Theme.of(context).colorScheme.error
+                                      ),
+                                    );
+                                  }
+                                }, 
+                                child: Text(
+                                  "Save",
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.primary),
+                                )
+                              ) 
+                              :
+                              IconButton(
+                                tooltip: 'Add ${widget.vegetableData.name} data',
+                                onPressed: () {
+                                  setState(() {
+                                    editingController.text = widget.vegetableData.number!;
+                                    addMode = !addMode;
+                                  });
+                                }, 
+                                icon: Icon(
+                                  addMode ? Icons.save : Icons.add_circle_outline_outlined,
+                                  color: addMode ? Colors.green : Theme.of(context).colorScheme.primary,
+                                  size: Provider.of<ThemeProvider>(context).fontSize + 21,
+                                )
+                              )
                             )
-                          ) 
-                          :
-                          IconButton(
-                            tooltip: 'Add ${widget.vegetableData.name} data',
-                            onPressed: () {
-                              setState(() {
-                                editingController.text = widget.vegetableData.number!;
-                                addMode = !addMode;
-                              });
-                            }, 
-                            icon: Icon(
-                              addMode ? Icons.save : Icons.add_circle_outline_outlined,
-                              color: addMode ? Colors.green : Theme.of(context).colorScheme.primary,
-                              size: Provider.of<ThemeProvider>(context).fontSize + 21,
-                            )
-                          )
+                            :
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: editMode ? ElevatedButton(
+                                onPressed: () async{
+                                  if (_formKey.currentState!.validate() && selectedUnit.isNotEmpty) {
+                                    setState(() {
+                                      savingState = true;
+                                    });
+                                    widget.vegetableData.offline || widget.token == null ?
+                                    await Provider.of<VegetableProvider>(context, listen: false).editVegetableLocalData(
+                                      context, 
+                                      vegetable: widget.vegetableData,
+                                      number: editingController.text, 
+                                      unit: selectedUnit, 
+                                      date: widget.date, 
+                                    ) 
+                                    :
+                                    await Provider.of<VegetableProvider>(context, listen: false).editVegetableData(
+                                      context, 
+                                      token: widget.token!, 
+                                      number: editingController.text, 
+                                      unit: selectedUnit, 
+                                      date: widget.date, 
+                                      id: widget.vegetableData.tempId!
+                                    );
+                                    setState(() {
+                                      savingState = false;
+                                      editMode = false;
+                                    });
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Be sure to select unit and input valid data for ${widget.vegetableData.name}'),
+                                        backgroundColor: Theme.of(context).colorScheme.error
+                                      ),
+                                    );
+                                  }
+                                }, 
+                                child: Text(
+                                  "Update",
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.primary),
+                                )
+                              ) 
+                              :
+                              IconButton(
+                                tooltip: 'Edit ${widget.vegetableData.name} data',
+                                onPressed: () {
+                                  setState(() {
+                                    editingController.text = widget.vegetableData.number!;
+                                    editMode = !editMode;
+                                  });
+                                }, 
+                                icon: Icon(
+                                  editMode ? Icons.save : Icons.edit,
+                                  color: editMode ? Colors.green : Theme.of(context).colorScheme.error,
+                                  size: Provider.of<ThemeProvider>(context).fontSize + 21,
+                                )
+                              )
+                            ) 
+                          ),
                         )
-                        :
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: editMode ? ElevatedButton(
-                            onPressed: () async{
-                              if (_formKey.currentState!.validate() && selectedUnit.isNotEmpty) {
-                                setState(() {
-                                  savingState = true;
-                                });
-                                await Provider.of<VegetableProvider>(context, listen: false).editVegetableData(
-                                  context, 
-                                  token: widget.token, 
-                                  number: editingController.text, 
-                                  unit: selectedUnit, 
-                                  date: widget.date, 
-                                  id: widget.vegetableData.tempId!
-                                );
-                                setState(() {
-                                  savingState = false;
-                                  editMode = false;
-                                });
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('Be sure to select unit and input valid data for ${widget.vegetableData.name}'),
-                                    backgroundColor: Theme.of(context).colorScheme.error
-                                  ),
-                                );
-                              }
-                            }, 
-                            child: Text(
-                              "Update",
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.primary),
-                            )
-                          ) 
-                          :
-                          IconButton(
-                            tooltip: 'Edit ${widget.vegetableData.name} data',
-                            onPressed: () {
-                              setState(() {
-                                editingController.text = widget.vegetableData.number!;
-                                editMode = !editMode;
-                              });
-                            }, 
-                            icon: Icon(
-                              editMode ? Icons.save : Icons.edit,
-                              color: editMode ? Colors.green : Theme.of(context).colorScheme.error,
-                              size: Provider.of<ThemeProvider>(context).fontSize + 21,
-                            )
-                          )
-                        ) 
-                      ),
-                    )
-                  ]
-                ],
+                      ]
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
+  }
+
+  void _deleteVegetableData(BuildContext context) {
+    
+    Provider.of<VegetableProvider>(context, listen: false).deleteVegetableData(
+      context,
+      vegetable: widget.vegetableData,
+      date: widget.date
+    );
+    
   }
 }

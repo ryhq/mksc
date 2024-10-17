@@ -1,11 +1,10 @@
-import 'dart:io';
-
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mksc/helper/database_helper.dart';
 import 'package:mksc/provider/theme_provider.dart';
+import 'package:mksc/provider/vegetable_provider.dart';
 import 'package:mksc/view/home/mksc_home.dart';
 import 'package:mksc/services/initiatial_services.dart';
 import 'package:mksc/widgets/app_circular_progress_indicator.dart';
@@ -20,6 +19,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+
   String log = "";
 
   bool initializationComplete = false;
@@ -33,18 +33,6 @@ class _SplashScreenState extends State<SplashScreen> {
     ]);
 
     initializeApp();
-  }
-
-  @override
-  void dispose() {
-    // Reset orientation preferences when leaving the page
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
-    super.dispose();
   }
 
   @override
@@ -66,7 +54,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 ),
               ),
               Text(
-                "Bivoua",
+                "Bivouac",
                 style: Theme.of(context).textTheme.displayLarge?.copyWith(
                   fontSize: 48,
                   fontFamily: 'caesar',
@@ -93,6 +81,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void initializeApp() async{
+
     setState(() {
       log = "Initializing MKSC database...";
     });
@@ -104,18 +93,18 @@ class _SplashScreenState extends State<SplashScreen> {
     await Future.delayed(const Duration(milliseconds: 300));
 
     setState(() {
-      log = "Database MKSC : Is Open ${mksc.isOpen} : Path ${mksc.path} : Run time Type ${mksc.runtimeType}";
+      log = "Database initialization state : ${mksc.isOpen}";
     });
-    
 
     debugPrint("\n\n\n🌐🌐🌐 Check  🛜🛜🛜 Connectivity : 📶📶📶");
     
     setState(() {
       log = "Checking Connectivity...";
     });
+
     InitiatialServices initiatialServices = InitiatialServices();
+
     List<ConnectivityResult> connectivityResult = await initiatialServices.checkConnectivity();
-    
 
     await Future.delayed(const Duration(milliseconds: 1700));
 
@@ -129,21 +118,28 @@ class _SplashScreenState extends State<SplashScreen> {
       connectivityResult.contains(ConnectivityResult.vpn)
     ) {
       try {
-        final List<InternetAddress> lookupResults = await initiatialServices.checkInternetConnection();
+        final bool isInternetConnected = await initiatialServices.checkInternetConnectionBool();
 
-        if (lookupResults.isNotEmpty && lookupResults[0].address.isNotEmpty) {
+        if (isInternetConnected) {
+          // Theme Initialization
           setState(() {
             log = "Fetching Theme...";
           });
           ThemeProvider themeProvider = ThemeProvider();
-          await themeProvider.setPrimaryColorFromNet().then(
-            (_){
-              debugPrint("\n\n\n👉👉👉Primary color : ${Provider.of<ThemeProvider>(context, listen: false).primaryColor}");
-              setState(() {
-                log = "Primary color : ${Provider.of<ThemeProvider>(context, listen: false).primaryColor}";
-              });
-            }
-          );
+          await themeProvider.setPrimaryColorFromNet();
+          await Future.delayed(const Duration(milliseconds: 1700));
+          debugPrint("\n\n\n👉👉👉Primary color : ${Provider.of<ThemeProvider>(context, listen: false).primaryColor}");
+          setState(() {
+            log = "Primary color : ${Provider.of<ThemeProvider>(context, listen: false).primaryColor}";
+          });
+
+          // Vegetable initialization
+
+          setState(() {
+            log = "Initializing Vegetable garden...";
+          });
+          
+          await Provider.of<VegetableProvider>(context, listen: false).fetchVegetableBaseData(context);
         }
 
       } catch (e) {
@@ -158,7 +154,8 @@ class _SplashScreenState extends State<SplashScreen> {
         );
       }      
     }
-
+    
+    await Future.delayed(const Duration(milliseconds: 3000));
 
     setState(() {
       log = "Done...";
@@ -172,4 +169,17 @@ class _SplashScreenState extends State<SplashScreen> {
       (Route<dynamic> route) => false
     );
   }
+
+  @override
+  void dispose() {
+    // Reset orientation preferences when leaving the page
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    super.dispose();
+  }
+
 }

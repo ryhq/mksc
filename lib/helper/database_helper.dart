@@ -34,9 +34,13 @@ class DatabaseHelper {
   static Future _onCreate(Database db, int version) async{
     // When the database is created, create the tables
     await DatabaseServices.createChickenHouseTable(db, version);
+    await DatabaseServices.createVegeTableTable(db, version);
+    await DatabaseServices.createBaseVegeTableTable(db, version);
     await DatabaseServices.addIndexes(db, version);
 
     await _printSchema(db, "ChickenHouse");
+    await _printSchema(db, "VegeTable");
+    await _printSchema(db, "BaseVegeTable");
   }
 
   // Method to print the schema of a specific table

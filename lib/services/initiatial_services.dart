@@ -85,61 +85,9 @@ class InitiatialServices {
     return connectivityResult;
   }
 
-  Future<List<InternetAddress>> checkInternetConnection() async{
-    try {
-      final List<InternetAddress> lookupResults = await InternetAddress.lookup('google.com');
-
-      for (var lookup in lookupResults) {
-        debugPrint("\n👉 Look UP : \tAddress : \t${lookup.address}");
-        debugPrint("\n👉 Look UP : \tHost : \t${lookup.host}");
-        debugPrint("\n👉 Look UP : \tIs Lick Local : \t${lookup.isLinkLocal}");
-        debugPrint("\n👉 Look UP : \tIs Loop Back : \t${lookup.isLoopback}");
-        debugPrint("\n👉 Look UP : \tIs Multi Cast  : \t${lookup.isMulticast}");
-        debugPrint("\n👉 Look UP : \tRaw Address  : \t${lookup.rawAddress}");
-        debugPrint("\n👉 Look UP : \tType  : \t${lookup.type}");
-      }
-      if (lookupResults.isNotEmpty && lookupResults[0].rawAddress.isNotEmpty) {
-        Fluttertoast.showToast(
-          msg: "Internet Connection is available",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 16.0
-        ); 
-        return lookupResults;
-      } else {
-        Fluttertoast.showToast(
-          msg: "Internet Connection is not available",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0
-        );
-        return List<InternetAddress>.empty();
-      }
-    } catch (e) {
-      
-      Fluttertoast.showToast(
-        msg: "An error occured while trying to reach the internet. Please check you connection.",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0
-      );
-      
-      return List<InternetAddress>.empty();
-    } 
-  }
-
   Future<bool> checkInternetConnectionBool() async{
     try {
-      final List<InternetAddress> lookupResults = await InternetAddress.lookup('youtube.com');
+      final List<InternetAddress> lookupResults = await InternetAddress.lookup('mkscportal.co.tz');
 
       for (var lookup in lookupResults) {
         debugPrint("\n👉 Look UP : \tAddress : \t${lookup.address}");

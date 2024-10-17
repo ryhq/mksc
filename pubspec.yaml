@@ -123,6 +123,7 @@ flutter:
   assets:
     - assets/logo/MKSC_Logo.jpg
     - assets/icons/
+    - assets/icons/vegetable_garden/
     - assets/logo/
 
   # An image asset can refer to one or more resolution-specific "variants", see
