@@ -51,7 +51,7 @@ class MKSC extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'MKSC',
-      theme: Provider.of<ThemeProvider>(context).themeData,
+      theme: Provider.of<ThemeProvider>(context, listen: true).themeData,
       home: const SplashScreen(),
     );
   }
