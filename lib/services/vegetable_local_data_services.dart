@@ -159,7 +159,8 @@ class VegetableLocalDataServices {
       );
     } catch (e) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error", "Error : ${e.toString()}\n@VegetableLocalDataServices.saveVegetableData");
+      // CustomAlert.showAlert(context, "Error", "Error : ${e.toString()}\n@VegetableLocalDataServices.saveVegetableData");
+      CustomAlert.showAlert(context, "Local Save Error", "Sorry, unexpected error occured.");
       rethrow;
     }
   }
@@ -197,7 +198,8 @@ class VegetableLocalDataServices {
       );
     } catch (e) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error", "Error : ${e.toString()}\n@VegetableLocalDataServices.editVegetableData");
+      // CustomAlert.showAlert(context, "Error", "Error : ${e.toString()}\n@VegetableLocalDataServices.editVegetableData");
+      CustomAlert.showAlert(context, "Local Edit Error", "Sorry, unexpected error occured.");
       rethrow;
     }
   }
@@ -219,7 +221,8 @@ class VegetableLocalDataServices {
       await Provider.of<VegetableProvider>(context, listen: false).fetchVegetableDataStatus();
     } catch (e) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error", "Error : ${e.toString()}\n@VegetableLocalDataServices.deleteVegetableData");
+      CustomAlert.showAlert(context, "Local delete Error", "Sorry, unexpected error occured.");
+      // CustomAlert.showAlert(context, "Error", "Error : ${e.toString()}\n@VegetableLocalDataServices.deleteVegetableData");
       rethrow;
     }
   }
@@ -304,11 +307,11 @@ class VegetableLocalDataServices {
 
                   debugPrint("Response data: ${firstVegetable.toJson()}");
 
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Successfully Uploaded ${firstVegetable.number} ${firstVegetable.name}"), backgroundColor: Colors.green,)
-                    );
-                  }
+                  // if (context.mounted) {
+                  //   ScaffoldMessenger.of(context).showSnackBar(
+                  //     SnackBar(content: Text("Successfully Uploaded ${firstVegetable.number} ${firstVegetable.name}"), backgroundColor: Colors.green,)
+                  //   );
+                  // }
                 }
               } else if (responseData['data'] is Map<String, dynamic>) {
                 // Handle the case where 'data' is a single object
@@ -317,9 +320,9 @@ class VegetableLocalDataServices {
                 debugPrint("Response data: ${data.toJson()}");
 
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Successfully Uploaded ${data.number} ${data.name}"), backgroundColor: Colors.green,)
-                  );
+                  // ScaffoldMessenger.of(context).showSnackBar(
+                  //   SnackBar(content: Text("Successfully Uploaded ${data.number} ${data.name}"), backgroundColor: Colors.green,)
+                  // );
                 }
               } else {
                 throw const FormatException("Invalid 'data' field format");
@@ -332,11 +335,11 @@ class VegetableLocalDataServices {
             throw FormatException("Failed to decode response body: $responseBody");
           }
         } else {
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("An error occured while decoding response"), backgroundColor: Colors.orange,)
-            );
-          }
+          // if (context.mounted) {
+          //   ScaffoldMessenger.of(context).showSnackBar(
+          //     const SnackBar(content: Text("An error occured while decoding response"), backgroundColor: Colors.orange,)
+          //   );
+          // }
         }
       } else {
         if(!context.mounted) return;

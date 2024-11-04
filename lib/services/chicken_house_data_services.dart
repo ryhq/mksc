@@ -102,7 +102,7 @@ class ChickenHouseDataServices {
 
   static Future<ChickenHouseData> saveChickenHouseData(BuildContext context, {required String item, required int number, required String token, required String date}) async{
     
-    bool _internetConnection = await HandleException.checkConnectionAndInternetWithToast();
+    bool internetConnection = await HandleException.checkConnectionAndInternetWithToast();
     
     Map<String, dynamic> dataJSON = {
       "item" : item,
@@ -113,7 +113,7 @@ class ChickenHouseDataServices {
 
     try {
 
-      if (_internetConnection) { // Internet connection is available
+      if (internetConnection) { // Internet connection is available
         
         final response = await http.post(
           Uri.parse(MKSCUrls.chickenUrl),
@@ -154,11 +154,11 @@ class ChickenHouseDataServices {
               throw FormatException("Failed to decode response body: $responseBody");
             }
           } else {
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("An error occured while decoding response"), backgroundColor: Colors.orange,)
-              );
-            }
+            // if (context.mounted) {
+            //   ScaffoldMessenger.of(context).showSnackBar(
+            //     const SnackBar(content: Text("An error occured while decoding response"), backgroundColor: Colors.orange,)
+            //   );
+            // }
           }
         } else {
 
@@ -175,13 +175,15 @@ class ChickenHouseDataServices {
             date: date
           );
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("An error occured, currently the $item is saved locally, you may sync later."), backgroundColor: Colors.orange,)
+            // SnackBar(content: Text("An error occured, currently the $item is saved locally, you may sync later."), backgroundColor: Colors.orange,)
+            SnackBar(content: Text("$item is saved locally, you may sync later."), backgroundColor: Colors.orange,)
           );
           return ChickenHouseData.empty(); 
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("You are currently offline, Hence, the $item is saved locally, you may sync later."), backgroundColor: Colors.orange,)
+          // SnackBar(content: Text("You are currently offline, Hence, the $item is saved locally, you may sync later."), backgroundColor: Colors.orange,)
+          SnackBar(content: Text("$item is saved locally, you may sync later."), backgroundColor: Colors.orange,)
         ); 
         await Provider.of<ChickenHouseDataProvider>(context, listen: false).saveChickenHouseDataToLocal(
           context,
@@ -203,7 +205,8 @@ class ChickenHouseDataServices {
       );
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("An error occured, currently the $item is saved locally, you may sync later."), backgroundColor: Colors.orange,)
+        SnackBar(content: Text("$item is saved locally, you may sync later."), backgroundColor: Colors.orange,)
+        // SnackBar(content: Text("An error occured, currently the $item is saved locally, you may sync later."), backgroundColor: Colors.orange,)
       );
       return ChickenHouseData.empty();
     }
@@ -271,9 +274,9 @@ class ChickenHouseDataServices {
           }
         } else {
           if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("An error occured while decoding response"), backgroundColor: Colors.orange,)
-            );
+            // ScaffoldMessenger.of(context).showSnackBar(
+            //   const SnackBar(content: Text("An error occured while decoding response"), backgroundColor: Colors.orange,)
+            // );
           }
         }
       } else {

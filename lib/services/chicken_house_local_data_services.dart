@@ -106,17 +106,19 @@ class ChickenHouseLocalDataServices {
       );
 
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Successfully Uploaded ${chickenHouseData.item}'),
-          backgroundColor: Colors.green,
-          duration: const Duration(seconds: 1),
-        ),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text('Successfully Uploaded ${chickenHouseData.item}'),
+      //     backgroundColor: Colors.green,
+      //     duration: const Duration(seconds: 1),
+      //   ),
+      // );
       await Provider.of<ChickenHouseDataProvider>(context, listen: false).fetchChickenHouseDataStatus();
     } catch (e) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error", "Error : ${e.toString()}\n@ChickenHouseLocalDataServices.fetchChickenHouseData");
+      // CustomAlert.showAlert(context, "Error", "Error : ${e.toString()}\n@ChickenHouseLocalDataServices.fetchChickenHouseData");
+      CustomAlert.showAlert(context, "Upload Error", "Sorry, Unexpected error occured.");
+      debugPrint("\n\n\nError : \n\n${e.toString()}\n@ChickenHouseLocalDataServices.fetchChickenHouseData");
       await Provider.of<ChickenHouseDataProvider>(context, listen: false).fetchChickenHouseDataStatus();
       rethrow;
     }
@@ -230,12 +232,12 @@ class ChickenHouseLocalDataServices {
           try {
             final Map<String, dynamic> responseData = json.decode(responseBody);
             if (responseData.containsKey('data') && responseData['data'] is Map<String, dynamic>) {
-              final ChickenHouseData data = ChickenHouseData.fromJson(responseData['data']);
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Successfully Uploaded ${data.number} ${data.item}"), backgroundColor: Colors.green,)
-                );
-              }
+              // final ChickenHouseData data = ChickenHouseData.fromJson(responseData['data']);
+              // if (context.mounted) {
+              //   ScaffoldMessenger.of(context).showSnackBar(
+              //     SnackBar(content: Text("Successfully Uploaded ${data.number} ${data.item}"), backgroundColor: Colors.green,)
+              //   );
+              // }
               return;
             } else {
               throw const FormatException("Invalid 'data' field format");
@@ -245,11 +247,11 @@ class ChickenHouseLocalDataServices {
             throw FormatException("Failed to decode response body: $responseBody");
           }
         } else {
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("An error occured while decoding response"), backgroundColor: Colors.orange,)
-            );
-          }
+          // if (context.mounted) {
+          //   ScaffoldMessenger.of(context).showSnackBar(
+          //     const SnackBar(content: Text("An error occured while decoding response"), backgroundColor: Colors.orange,)
+          //   );
+          // }
         }
       } else {
         if(!context.mounted) return;
