@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mksc/model/vegetable.dart';
 import 'package:mksc/services/handle_exception.dart';
@@ -272,10 +273,14 @@ class VegetableProvider with ChangeNotifier{
           for (var online in fetchedData) {
             if (local.name == online.name && _formatDateTime(local.created_at!) == _formatDateTime(online.created_at!)) {
               if (!context.mounted) return;
-              CustomAlert.showAlert(
-                context,
-                "Data Conflict",
-                "Sorry, '${local.name}' data already exists on MKSC server, try editing the real data on '${_formatDateTime(online.created_at!)}'."
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    "Sorry, '${local.name}' data already exists on MKSC server, try editing the real data on '${_formatDateTime(online.created_at!)}'."
+                  ),
+                  backgroundColor: Colors.red,
+                  duration: const Duration(seconds: 1),
+                ),
               );
               dataExists = true;
               break;

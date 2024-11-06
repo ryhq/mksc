@@ -179,7 +179,10 @@ class _ChickenHouseDataCardState extends State<ChickenHouseDataCard> {
                 savingState ? const BallPulseIndicator() :
                 Text(
                   widget.chickenHouseData.item,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: widget.isLocalData && widget.chickenHouseData.isConflict ? Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.onSurface
+                  ),
                 ),
                 subtitle: isFocused && !savingState  ? Text(
                   "You are editing ${widget.chickenHouseData.item} data",
@@ -202,7 +205,9 @@ class _ChickenHouseDataCardState extends State<ChickenHouseDataCard> {
                 savingState ? const AppCircularProgressIndicator() :
                 Text(
                   widget.chickenHouseData.number.toString(),
-                  style: Theme.of(context).textTheme.headlineSmall,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: widget.isLocalData && widget.chickenHouseData.isConflict ? Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.onSurface
+                  ),
                 ),
               ),
             ),

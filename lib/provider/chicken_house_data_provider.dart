@@ -205,11 +205,43 @@ class ChickenHouseDataProvider with ChangeNotifier {
             // If data already exists on the server
             if (data.item == chickenHouseData.item && _formatDateTime(data.created_at!) == _formatDateTime(chickenHouseData.created_at!)) {
               if (!context.mounted) return;
-              CustomAlert.showAlert(
-                context,
-                "Data Conflict",
-                "Sorry, '${data.item}' data already exists on MKSC server, try editing the real data on '${_formatDateTime(chickenHouseData.created_at!)}'."
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    "Sorry, '${data.item}' data already exists on MKSC server, try editing the real data on '${_formatDateTime(chickenHouseData.created_at!)}'."
+                  ),
+                  backgroundColor: Colors.red,
+                  duration: const Duration(seconds: 1),
+                ),
               );
+        
+              // Set isConflict to true
+              // int index = _chickenHouseDataLocalList.indexOf(data);
+              int index = 0;
+
+              fetchChickenHouseDataFromLocal(context, date: data.created_at!);
+
+              for (int i = 0; i < _chickenHouseDataLocalList.length; i++) {
+
+                debugPrint("\n👉${data.item} ${data.id} == ${_chickenHouseDataList[i].item} ${_chickenHouseDataList[i].id} = ${data.id == _chickenHouseDataList[i].id}");
+                if (data.id == _chickenHouseDataList[i].id) {
+                  index = i;
+                }
+              }
+
+              if (index != -1) {
+                _chickenHouseDataLocalList[index] = data.copyWith(isConflict: true);
+              }
+
+              debugPrint("\n\n\nINdex $index ${data.toJson()}");
+              // debugPrint("\n\n\n${_chickenHouseDataLocalList[index]}");
+
+              for (var da in _chickenHouseDataLocalList) {
+                debugPrint("\n\n\n${da.toJson()} _chickenHouseDataLocalList.indexOf(da) {_chickenHouseDataLocalList.indexWhere()}");
+                // // da.isConflict ? debugPrint("\n\n\n👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉Data:\t${da.item} ${da.isConflict}") : null;
+                // debugPrint("\n\n\n👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉Data:\t${da.item} ${da.isConflict}");
+              }
+              notifyListeners();
               dataExists = true;
               break;
             }
