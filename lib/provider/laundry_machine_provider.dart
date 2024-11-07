@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mksc/model/laundry_data.dart';
 import 'package:mksc/model/laundry_machine.dart';
+import 'package:mksc/services/handle_exception.dart';
 import 'package:mksc/services/laundry_machine_services.dart';
-import 'package:mksc/widgets/custom_alert.dart';
 
 class LaundryMachineProvider with ChangeNotifier {
   
@@ -72,9 +72,13 @@ class LaundryMachineProvider with ChangeNotifier {
         _laundryDataList[index] = newData;
       }
       notifyListeners();
-    } catch (e) {
+    } on Exception catch (exception) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error", "Failed to update laudry data: ${e.toString()}");    
+      HandleException.handleExceptions(
+        exception: exception, 
+        context: context, 
+        location: "LaundryMachineProvider.editLaundryDataByDate"
+      );
     }
   }
 
@@ -92,9 +96,13 @@ class LaundryMachineProvider with ChangeNotifier {
       final LaundryData newData = await LaundryMachineServices.saveLaundryDataByDate(context, camp: camp, circle: circle, token: token, machineType: machineType, date: date);
       newData.id == 0 ? null : _laundryDataList.add(newData);
       notifyListeners();
-    } catch (e) {
+    } on Exception catch (exception) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error", "Failed to update laudry data: ${e.toString()}");    
+      HandleException.handleExceptions(
+        exception: exception, 
+        context: context, 
+        location: "LaundryMachineProvider.saveLaundryDataByDate"
+      );
     }
   }
   

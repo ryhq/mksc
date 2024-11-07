@@ -1,12 +1,9 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mksc/model/chicken_house_data.dart';
 import 'package:mksc/services/chicken_house_data_services.dart';
 import 'package:mksc/services/chicken_house_local_data_services.dart';
 import 'package:mksc/services/handle_exception.dart';
-import 'package:mksc/widgets/custom_alert.dart';
 
 
 class ChickenHouseDataProvider with ChangeNotifier {
@@ -45,15 +42,13 @@ class ChickenHouseDataProvider with ChangeNotifier {
       
       notifyListeners();
 
-    } on SocketException catch (_) {
-      // Handle network issues (e.g., no internet, DNS failures)
-      debugPrint("Network error: Could not resolve hostname.");
-      if (context.mounted) {
-        CustomAlert.showAlert(context, "Error", "Network error: Could not reach the server. Please check your internet connection.");      
-      }
-    }catch (e) {
+    } on Exception catch (exception) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error", "Failed to load today chicken house data: \n\n${e.toString()}");      
+      HandleException.handleExceptions(
+        exception: exception, 
+        context: context, 
+        location: "ChickenHouseDataProvider.fetchChickenHouseData"
+      );
     }
   }
   
@@ -62,10 +57,14 @@ class ChickenHouseDataProvider with ChangeNotifier {
       ChickenHouseData newData = await ChickenHouseDataServices.saveChickenHouseData(context, item: item, number: number, token: token, date: date);
       newData.id == 0 ? null : _chickenHouseDataList.add(newData);
       notifyListeners();
-    } catch (e) {
+    } on Exception catch (exception) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error", "Failed to save chicken house data: ${e.toString()}");      
-    }
+      HandleException.handleExceptions(
+        exception: exception, 
+        context: context, 
+        location: "ChickenHouseDataProvider.saveChickenHouseData"
+      );
+    } 
   }
   
   Future<void> editChickenHouseData(BuildContext context, {required String item, required int number, required String token, required int id}) async{
@@ -77,10 +76,14 @@ class ChickenHouseDataProvider with ChangeNotifier {
         _chickenHouseDataList[index] = newData;
       }
       notifyListeners();
-    } catch (e) {
+    } on Exception catch (exception) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error", "Failed to update chicken house data: ${e.toString()}");      
-    }
+      HandleException.handleExceptions(
+        exception: exception, 
+        context: context, 
+        location: "ChickenHouseDataProvider.editChickenHouseData"
+      );
+    } 
   }
 
   /// For local Storage 
@@ -95,10 +98,14 @@ class ChickenHouseDataProvider with ChangeNotifier {
       final List<ChickenHouseData> fetchedData = await ChickenHouseLocalDataServices.fetchChickenHouseData(context, date: date);
       _chickenHouseDataLocalList = fetchedData;
       notifyListeners();
-    } catch (e) {
+    } on Exception catch (exception) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error", "Error : ${e.toString()}\n@ChickenHouseDataProvider.fetchChickenHouseDataFromLocal");      
-    }
+      HandleException.handleExceptions(
+        exception: exception, 
+        context: context, 
+        location: "ChickenHouseDataProvider.fetchChickenHouseDataFromLocal"
+      );
+    } 
   }
 
   void clearChickenHouseDataList(){
@@ -111,9 +118,13 @@ class ChickenHouseDataProvider with ChangeNotifier {
       await ChickenHouseLocalDataServices.saveChickenHouseData(context, item: item, number: number,  date: date);
       fetchChickenHouseDataFromLocal(context, date: date);
       notifyListeners();
-    } catch (e) {
+    } on Exception catch (exception) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error", "Failed to save chicken house data: ${e.toString()}\n@ChickenHouseDataProvider.saveChickenHouseDataToLocal");      
+      HandleException.handleExceptions(
+        exception: exception, 
+        context: context, 
+        location: "ChickenHouseDataProvider.saveChickenHouseDataToLocal"
+      );
     }
   }
 
@@ -124,9 +135,13 @@ class ChickenHouseDataProvider with ChangeNotifier {
       await ChickenHouseLocalDataServices.editChickenHouseData(context, chickenHouseData: chickenHouseData, number: number,);
       fetchChickenHouseDataFromLocal(context, date: date);
       notifyListeners();
-    } catch (e) {
+    } on Exception catch (exception) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error", "Failed to update chicken house data: ${e.toString()}\n@ChickenHouseDataProvider.editChickenHouseDataFromLocal");      
+      HandleException.handleExceptions(
+        exception: exception, 
+        context: context, 
+        location: "ChickenHouseDataProvider.editChickenHouseDataFromLocal"
+      );
     }
   }
 
@@ -138,9 +153,13 @@ class ChickenHouseDataProvider with ChangeNotifier {
       if (!context.mounted) return;
       fetchChickenHouseDataFromLocal(context, date: date);
       notifyListeners();
-    } catch (e) {
+    } on Exception catch (exception) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error", "Failed to update chicken house data: ${e.toString()}\n@ChickenHouseDataProvider.deleteChickenHouseData");      
+      HandleException.handleExceptions(
+        exception: exception, 
+        context: context, 
+        location: "ChickenHouseDataProvider.deleteChickenHouseData"
+      );
     }
   }
 
@@ -162,10 +181,8 @@ class ChickenHouseDataProvider with ChangeNotifier {
 
       if (!isConnected) {
         if (!context.mounted) return;
-        CustomAlert.showAlert(
-          context,
-          "Network Error",
-          "Sorry, you do not have active internet connection, kindly check your internet connection and try again."
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(backgroundColor: Colors.red, content: Text("Network Error\nSorry, you do not have active internet connection, kindly check your internet connection and try again."))
         );
         return;
       }
@@ -275,9 +292,13 @@ class ChickenHouseDataProvider with ChangeNotifier {
         }
       }
       notifyListeners();
-    } catch (e) {
+    } on Exception catch (exception) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error", "Error ${e.toString()}\n@ChickenHouseDataProvider.uploadData");
+      HandleException.handleExceptions(
+        exception: exception, 
+        context: context, 
+        location: "ChickenHouseDataProvider.uploadData"
+      );
     }
   }
 

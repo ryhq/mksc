@@ -5,7 +5,6 @@ import 'package:mksc/model/vegetable.dart';
 import 'package:mksc/services/handle_exception.dart';
 import 'package:mksc/services/vegetable_local_data_services.dart';
 import 'package:mksc/services/vegetables_services.dart';
-import 'package:mksc/widgets/custom_alert.dart';
 
 class VegetableProvider with ChangeNotifier{
   
@@ -40,9 +39,13 @@ class VegetableProvider with ChangeNotifier{
       final List<Vegetable> fetchedData = await VegetableLocalDataServices.fetchVegetableBaseData(context);
       _vegetableDataList = fetchedData;
       notifyListeners();
-    } catch (e) {
+    }  on Exception catch (exception) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error", "Failed to load vegetable data from local storage: \n\n${e.toString()}");      
+      HandleException.handleExceptions(
+        exception: exception, 
+        context: context, 
+        location: "VegetableProvider.editLaundryDataByDate"
+      );
     }
   }
 
@@ -60,9 +63,13 @@ class VegetableProvider with ChangeNotifier{
       _todayVegetableDataList.isEmpty ? await fetchVegetableData(context) : null;
       await _filterVegetableDataList();
       notifyListeners();
-    } catch (e) {
+    } on Exception catch (exception) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error", "Failed to load today vegetable data: \n\n${e.toString()}");      
+      HandleException.handleExceptions(
+        exception: exception, 
+        context: context, 
+        location: "LaundryMachineProvider.fetchTodayVegetableData"
+      );
     }
   }
 
@@ -81,9 +88,13 @@ class VegetableProvider with ChangeNotifier{
       if (!context.mounted) return;
       fetchTodayVegetableData(context, token: token, date: date);
       notifyListeners();
-    } catch (e) {
+    } on Exception catch (exception) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error", "Failed to update vegetable data: \n\n${e.toString()}");      
+      HandleException.handleExceptions(
+        exception: exception, 
+        context: context, 
+        location: "VegetableProvider.editVegetableData"
+      );
     }
   }
 
@@ -106,9 +117,13 @@ class VegetableProvider with ChangeNotifier{
       fetchVegetableDataLocally(context, date: date);
       await _filterVegetableDataList();
       notifyListeners();
-    } catch (e) {
+    } on Exception catch (exception) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error", "Failed to save today vegetable data online: \n\n${e.toString()}");
+      HandleException.handleExceptions(
+        exception: exception, 
+        context: context, 
+        location: "VegetableProvider.saveVegetableData"
+      );
       // Incase of any faults, save the data locally
       await VegetableLocalDataServices.saveVegetableData(context, number: number, unit: unit, date: date, item: item);
     }
@@ -143,9 +158,13 @@ class VegetableProvider with ChangeNotifier{
       fetchVegetableDataLocally(context, date: date);
       await _filterVegetableDataList();
       notifyListeners();
-    } catch (e) {
+    } on Exception catch (exception) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error", "Failed to save today vegetable data online: \n\n${e.toString()}");
+      HandleException.handleExceptions(
+        exception: exception, 
+        context: context, 
+        location: "VegetableProvider.saveVegetableDataLocally"
+      );
       // Incase of any faults, save the data locally
       await VegetableLocalDataServices.saveVegetableData(context, number: number, unit: unit, date: date, item: item);
     }
@@ -166,9 +185,13 @@ class VegetableProvider with ChangeNotifier{
       await fetchVegetableDataLocally(context, date: date);
       await _filterVegetableDataList();
       notifyListeners();
-    } catch (e) {
+    } on Exception catch (exception) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error", "Failed to update vegetable data: \n\n${e.toString()}");      
+      HandleException.handleExceptions(
+        exception: exception, 
+        context: context, 
+        location: "VegetableProvider.saveVegetableDataLocally"
+      );
     }
   }
 
@@ -186,9 +209,13 @@ class VegetableProvider with ChangeNotifier{
       await fetchVegetableDataLocally(context, date: date);
       await _filterVegetableDataList();
       notifyListeners();
-    } catch (e) {
+    } on Exception catch (exception) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error", "Failed to update chicken house data: ${e.toString()}\n@ChickenHouseDataProvider.deleteChickenHouseData");      
+      HandleException.handleExceptions(
+        exception: exception, 
+        context: context, 
+        location: "VegetableProvider.deleteVegetableData"
+      );
     }
   }
 
@@ -250,12 +277,12 @@ class VegetableProvider with ChangeNotifier{
       // Check for network connection and internet access
       bool isConnected = await HandleException.checkConnectionAndInternetWithToast();
       if (!isConnected) {
+
         if (!context.mounted) return;
-        CustomAlert.showAlert(
-          context,
-          "Network Error",
-          "Sorry, you do not have active internet connection, kindly check your internet connection and try again."
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(backgroundColor: Colors.red, content: Text("Network Error\nSorry, you do not have active internet connection, kindly check your internet connection and try again."))
         );
+
         return;
       }
 
@@ -314,9 +341,13 @@ class VegetableProvider with ChangeNotifier{
           notifyListeners();
         }
       }
-    } catch (e) {
+    }  on Exception catch (exception) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error", "Error ${e.toString()}\n@ChickenHouseDataProvider.uploadData");
+      HandleException.handleExceptions(
+        exception: exception, 
+        context: context, 
+        location: "VegetableProvider.uploadData"
+      );
     }
   }
 

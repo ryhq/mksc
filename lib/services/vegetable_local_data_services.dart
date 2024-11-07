@@ -7,7 +7,6 @@ import 'package:mksc/model/vegetable.dart';
 import 'package:mksc/provider/vegetable_provider.dart';
 import 'package:mksc/services/handle_exception.dart';
 import 'package:mksc/services/mksc_urls.dart';
-import 'package:mksc/widgets/custom_alert.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite/sqlite_api.dart';
 import 'package:http/http.dart' as http;
@@ -51,11 +50,16 @@ class VegetableLocalDataServices {
       );
       List<Vegetable> list = data.map((data) => Vegetable.fromJson(data)).toList();
       return list;
-    } catch (e) {
+    } on Exception catch  (e) {
       if (!context.mounted) return List<Vegetable>.empty();
-      CustomAlert.showAlert(context, "Error", "Error : ${e.toString()}\n@VegetableLocalDataServices.fetchVegetableBaseData");
-      rethrow;
+      // Handle any other types of exceptions
+      HandleException.handleExceptions(
+        exception: e, 
+        context: context, 
+        location: "VegetableLocalDataServices.fetchVegetableBaseData"
+      );
     }
+    return List<Vegetable>.empty();
   }
 
   static Future<int> fetchVegetableDataStatus() async {
@@ -95,11 +99,16 @@ class VegetableLocalDataServices {
       }
 
       return list;
-    } catch (e) {
+    } on Exception catch  (e) {
       if (!context.mounted) return List<Vegetable>.empty();
-      CustomAlert.showAlert(context, "Error", "Error : ${e.toString()}\n@VegetableLocalDataServices.fetchVegetableData");
+      // Handle any other types of exceptions
+      HandleException.handleExceptions(
+        exception: e, 
+        context: context, 
+        location: "VegetableLocalDataServices.fetchVegetableData"
+      );
       await Provider.of<VegetableProvider>(context, listen: false).fetchVegetableDataStatus();
-      rethrow;
+      return List<Vegetable>.empty();
     }
   }
 
@@ -113,18 +122,16 @@ class VegetableLocalDataServices {
       );
       List<Vegetable> list = data.map((data) => Vegetable.fromJson(data)).toList();
       return list;
-    } on DatabaseException catch (e) {
-      // Handle database-specific exceptions
+    }  on Exception catch  (e) {
       if (!context.mounted) return List<Vegetable>.empty();
-      CustomAlert.showAlert(context, "Database Error", "Failed to fetch data from the database: ${e.toString()}\nPlease try again later.");
-      await Provider.of<VegetableProvider>(context, listen: false).fetchVegetableDataStatus();
-      return List<Vegetable>.empty(); // Return an empty list if an error occurs
-    } on Exception catch (e) {
       // Handle any other types of exceptions
-      if (!context.mounted) return List<Vegetable>.empty();
-      CustomAlert.showAlert(context, "Error", "An unexpected error occurred: ${e.toString()}\n@VegetableLocalDataServices.fetchVegetableAllData");
+      HandleException.handleExceptions(
+        exception: e, 
+        context: context, 
+        location: "VegetableLocalDataServices.fetchVegetableAllData"
+      );
       await Provider.of<VegetableProvider>(context, listen: false).fetchVegetableDataStatus();
-      return List<Vegetable>.empty(); // Return an empty list if an error occurs
+      return List<Vegetable>.empty();
     }
   }
   
@@ -157,11 +164,15 @@ class VegetableLocalDataServices {
           backgroundColor: Colors.green,
         ),
       );
-    } catch (e) {
+    } on Exception catch  (e) {
       if (!context.mounted) return;
-      // CustomAlert.showAlert(context, "Error", "Error : ${e.toString()}\n@VegetableLocalDataServices.saveVegetableData");
-      CustomAlert.showAlert(context, "Local Save Error", "Sorry, unexpected error occured.");
-      rethrow;
+      // Handle any other types of exceptions
+      HandleException.handleExceptions(
+        exception: e, 
+        context: context, 
+        location: "VegetableLocalDataServices.saveVegetableData"
+      );
+      await Provider.of<VegetableProvider>(context, listen: false).fetchVegetableDataStatus();
     }
   }
   
@@ -196,11 +207,15 @@ class VegetableLocalDataServices {
           backgroundColor: Colors.green,
         ),
       );
-    } catch (e) {
+    } on Exception catch  (e) {
       if (!context.mounted) return;
-      // CustomAlert.showAlert(context, "Error", "Error : ${e.toString()}\n@VegetableLocalDataServices.editVegetableData");
-      CustomAlert.showAlert(context, "Local Edit Error", "Sorry, unexpected error occured.");
-      rethrow;
+      // Handle any other types of exceptions
+      HandleException.handleExceptions(
+        exception: e, 
+        context: context, 
+        location: "VegetableLocalDataServices.editVegetableData"
+      );
+      await Provider.of<VegetableProvider>(context, listen: false).fetchVegetableDataStatus();
     }
   }
 
@@ -219,11 +234,15 @@ class VegetableLocalDataServices {
       );
       if (!context.mounted) return;
       await Provider.of<VegetableProvider>(context, listen: false).fetchVegetableDataStatus();
-    } catch (e) {
+    } on Exception catch  (e) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Local delete Error", "Sorry, unexpected error occured.");
-      // CustomAlert.showAlert(context, "Error", "Error : ${e.toString()}\n@VegetableLocalDataServices.deleteVegetableData");
-      rethrow;
+      // Handle any other types of exceptions
+      HandleException.handleExceptions(
+        exception: e, 
+        context: context, 
+        location: "VegetableLocalDataServices.deleteVegetableData"
+      );
+      await Provider.of<VegetableProvider>(context, listen: false).fetchVegetableDataStatus();
     }
   }
 
@@ -238,7 +257,9 @@ class VegetableLocalDataServices {
     
     if (!internetConnection) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Network Error", "Sorry, you do not have active internet connection, kindly check you internet connection and try again.");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(backgroundColor: Colors.red, content: Text("Network Error\nSorry, you do not have active internet connection, kindly check your internet connection and try again."))
+      );
       return;
     }
 
@@ -253,11 +274,15 @@ class VegetableLocalDataServices {
         vegetable: vegetable,
       );
       await Provider.of<VegetableProvider>(context, listen: false).fetchVegetableDataStatus();
-    } catch (e) {
+    }on Exception catch  (e) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error", "Error : ${e.toString()}\n@ChickenHouseLocalDataServices.fetchChickenHouseData");
+      // Handle any other types of exceptions
+      HandleException.handleExceptions(
+        exception: e, 
+        context: context, 
+        location: "VegetableLocalDataServices.uploadData"
+      );
       await Provider.of<VegetableProvider>(context, listen: false).fetchVegetableDataStatus();
-      rethrow;
     }
   }
   

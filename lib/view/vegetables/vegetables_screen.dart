@@ -331,13 +331,6 @@ class _VegetablesScreenState extends State<VegetablesScreen> {
     setState(() {
       isSyncing = true;
     });
-
-    // CustomAlert.showAlert(context, "Service Unavailable", "Sorry, this service is temporarily under development.");
-    // setState(() {
-    //   isSyncing = false;
-    // });
-    // return;
-    debugPrint("\n👉 Syncing state  : \t$isSyncing");
     await Provider.of<VegetableProvider>(
       context, 
       listen: false
@@ -347,6 +340,5 @@ class _VegetablesScreenState extends State<VegetablesScreen> {
     });
     if (!context.mounted) return;
     await fetchTodayVegetableData(context, token: widget.token!, date: dateController.text);
-    debugPrint("\n👉 Syncing state  : \t$isSyncing");
   }
 }

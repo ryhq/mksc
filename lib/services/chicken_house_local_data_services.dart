@@ -7,7 +7,6 @@ import 'package:mksc/model/chicken_house_data.dart';
 import 'package:mksc/provider/chicken_house_data_provider.dart';
 import 'package:mksc/services/handle_exception.dart';
 import 'package:mksc/services/mksc_urls.dart';
-import 'package:mksc/widgets/custom_alert.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:sqflite/sqlite_api.dart';
@@ -45,12 +44,15 @@ class ChickenHouseLocalDataServices {
       debugPrint("\n\n\n$data");
       List<ChickenHouseData> list = data.map((data) => ChickenHouseData.fromJson(data)).toList();
       return list;
-    } catch (e) {
+    } on Exception catch (exception) {
       if (!context.mounted) return List<ChickenHouseData>.empty();
-      CustomAlert.showAlert(context, "Error", "Error : ${e.toString()}\n@ChickenHouseLocalDataServices.fetchChickenHouseData");
-      await Provider.of<ChickenHouseDataProvider>(context, listen: false).fetchChickenHouseDataStatus();
-      rethrow;
+      HandleException.handleExceptions(
+        exception: exception, 
+        context: context, 
+        location: "ChickenHouseLocalDataServices.fetchChickenHouseData"
+      );
     }
+    return List<ChickenHouseData>.empty();
   }
 
   static Future<List<ChickenHouseData>> fetchChickenHouseAllData(BuildContext context) async {
@@ -63,20 +65,15 @@ class ChickenHouseLocalDataServices {
       );
       List<ChickenHouseData> list = data.map((data) => ChickenHouseData.fromJson(data)).toList();
       return list;
-    } on DatabaseException catch (e) {
-      // Handle database-specific exceptions
+    }on Exception catch (exception) {
       if (!context.mounted) return List<ChickenHouseData>.empty();
-      CustomAlert.showAlert(context, "Database Error", "Failed to fetch data from the database: ${e.toString()}\nPlease try again later.");
-      await Provider.of<ChickenHouseDataProvider>(context, listen: false).fetchChickenHouseDataStatus();
-      return List<ChickenHouseData>.empty(); // Return an empty list if an error occurs
-    } on Exception catch (e) {
-      // Handle any other types of exceptions
-      if (!context.mounted) return List<ChickenHouseData>.empty();
-      CustomAlert.showAlert(context, "Error", "An unexpected error occurred: ${e.toString()}\n@ChickenHouseLocalDataServices.fetchChickenHouseData");
-      await Provider.of<ChickenHouseDataProvider>(context, listen: false).fetchChickenHouseDataStatus();
-      return List<ChickenHouseData>.empty(); // Return an empty list if an error occurs
+      HandleException.handleExceptions(
+        exception: exception, 
+        context: context, 
+        location: "ChickenHouseLocalDataServices.fetchChickenHouseData"
+      );
     }
-
+    return List<ChickenHouseData>.empty();
   }
   
   static Future<void> uploadData(
@@ -89,8 +86,6 @@ class ChickenHouseLocalDataServices {
     bool _internetConnection = await HandleException.checkConnectionAndInternetWithToast();
 
     if (!_internetConnection) {
-      if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Network Error", "Sorry, you do not have active internet connection, kindly check you internet connection and try again.");
       return;
     }
 
@@ -114,10 +109,14 @@ class ChickenHouseLocalDataServices {
       //   ),
       // );
       await Provider.of<ChickenHouseDataProvider>(context, listen: false).fetchChickenHouseDataStatus();
-    } catch (e) {
+    } on Exception catch (e) {
       if (!context.mounted) return;
-      // CustomAlert.showAlert(context, "Error", "Error : ${e.toString()}\n@ChickenHouseLocalDataServices.fetchChickenHouseData");
-      CustomAlert.showAlert(context, "Upload Error", "Sorry, Unexpected error occured.");
+      // Handle any other types of exceptions
+      HandleException.handleExceptions(
+        exception: e, 
+        context: context, 
+        location: "ChickenHouseLocalDataServices.uploadData"
+      );
       debugPrint("\n\n\nError : \n\n${e.toString()}\n@ChickenHouseLocalDataServices.fetchChickenHouseData");
       await Provider.of<ChickenHouseDataProvider>(context, listen: false).fetchChickenHouseDataStatus();
       rethrow;
@@ -135,10 +134,14 @@ class ChickenHouseLocalDataServices {
       });
       if (!context.mounted) return;
       await Provider.of<ChickenHouseDataProvider>(context, listen: false).fetchChickenHouseDataStatus();
-    } catch (e) {
+    } on Exception catch  (e) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error", "Error : ${e.toString()}\n@ChickenHouseLocalDataServices.saveChickenHouseData");
-      rethrow;
+      // Handle any other types of exceptions
+      HandleException.handleExceptions(
+        exception: e, 
+        context: context, 
+        location: "ChickenHouseLocalDataServices.saveChickenHouseData"
+      );
     }
   }
 
@@ -162,11 +165,14 @@ class ChickenHouseLocalDataServices {
         where: 'id = ? AND created_at = ?',
         whereArgs: [chickenHouseData.id, chickenHouseData.created_at],
       );
-    } catch (e) {
+    } on Exception catch  (e) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error",
-          "Error : ${e.toString()}\n@ChickenHouseLocalDataServices.editChickenHouseData");
-      rethrow;
+      // Handle any other types of exceptions
+      HandleException.handleExceptions(
+        exception: e, 
+        context: context, 
+        location: "ChickenHouseLocalDataServices.editChickenHouseData"
+      );
     }
   }
 
@@ -183,10 +189,14 @@ class ChickenHouseLocalDataServices {
       );
       if (!context.mounted) return;
       await Provider.of<ChickenHouseDataProvider>(context, listen: false).fetchChickenHouseDataStatus();
-    } catch (e) {
+    } on Exception catch  (e) {
       if (!context.mounted) return;
-      CustomAlert.showAlert(context, "Error", "Error : ${e.toString()}\n@ChickenHouseLocalDataServices.deleteChickenHouseData");
-      rethrow;
+      // Handle any other types of exceptions
+      HandleException.handleExceptions(
+        exception: e, 
+        context: context, 
+        location: "ChickenHouseLocalDataServices.deleteChickenHouseData"
+      );
     }
   }
 
