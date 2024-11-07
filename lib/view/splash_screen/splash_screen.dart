@@ -125,10 +125,11 @@ class _SplashScreenState extends State<SplashScreen> {
           setState(() {
             log = "Fetching Theme...";
           });
-          ThemeProvider themeProvider = ThemeProvider();
-          await themeProvider.setPrimaryColorFromNet();
+          await Provider.of<ThemeProvider>(context, listen: false).setPrimaryColorFromNet();
           await Future.delayed(const Duration(milliseconds: 1700));
-          debugPrint("\n\n\n👉👉👉Primary color : ${Provider.of<ThemeProvider>(context, listen: false).primaryColor}");
+          debugPrint("\n\n\nTheme.of(context).colorScheme.primary\n👉👉👉Primary color : ${Theme.of(context).colorScheme.primary}");
+          debugPrint("\n\n\nProvider.of<ThemeProvider>(context, listen: false).primaryColor\n👉👉👉Primary color : ${Provider.of<ThemeProvider>(context, listen: false).primaryColor}");
+          Provider.of<ThemeProvider>(context, listen: false).setPrimaryColor(Theme.of(context).colorScheme.primary);
           setState(() {
             log = "Primary color : ${Provider.of<ThemeProvider>(context, listen: false).primaryColor}";
           });

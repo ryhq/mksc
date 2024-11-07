@@ -37,11 +37,11 @@ class VegetablesServices {
 
         final List<Vegetable>  fetchedData = dataList.map((data) => Vegetable.fromJson(data)).toList();
 
-        debugPrint("\n\n\n...............................Fetched Vegetable Data From Server...............................");
+        // debugPrint("\n\n\n...............................Fetched Vegetable Data From Server...............................");
         
-        for (var veg in fetchedData) {
-          debugPrint("\n ️‍🔥️ Name : ${veg.name} number : ${veg.number} image : ${veg.image}");
-        }
+        // for (var veg in fetchedData) {
+        //   debugPrint("\n ️‍🔥️ Name : ${veg.name} number : ${veg.number} image : ${veg.image}");
+        // }
 
         return fetchedData;
         

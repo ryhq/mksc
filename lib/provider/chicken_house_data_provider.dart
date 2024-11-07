@@ -239,8 +239,6 @@ class ChickenHouseDataProvider with ChangeNotifier {
               fetchChickenHouseDataFromLocal(context, date: data.created_at!);
 
               for (int i = 0; i < _chickenHouseDataLocalList.length; i++) {
-
-                debugPrint("\n👉${data.item} ${data.id} == ${_chickenHouseDataList[i].item} ${_chickenHouseDataList[i].id} = ${data.id == _chickenHouseDataList[i].id}");
                 if (data.id == _chickenHouseDataList[i].id) {
                   index = i;
                 }
@@ -250,14 +248,6 @@ class ChickenHouseDataProvider with ChangeNotifier {
                 _chickenHouseDataLocalList[index] = data.copyWith(isConflict: true);
               }
 
-              debugPrint("\n\n\nINdex $index ${data.toJson()}");
-              // debugPrint("\n\n\n${_chickenHouseDataLocalList[index]}");
-
-              for (var da in _chickenHouseDataLocalList) {
-                debugPrint("\n\n\n${da.toJson()} _chickenHouseDataLocalList.indexOf(da) {_chickenHouseDataLocalList.indexWhere()}");
-                // // da.isConflict ? debugPrint("\n\n\n👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉Data:\t${da.item} ${da.isConflict}") : null;
-                // debugPrint("\n\n\n👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉👉Data:\t${da.item} ${da.isConflict}");
-              }
               notifyListeners();
               dataExists = true;
               break;
@@ -275,7 +265,6 @@ class ChickenHouseDataProvider with ChangeNotifier {
             );
             if (!context.mounted) return;
             data.created_at!.isEmpty ? null : await fetchChickenHouseDataFromLocal(context, date: data.created_at!);
-            notifyListeners();
           }
         } else {
           // If server data is not present, upload it
@@ -288,7 +277,6 @@ class ChickenHouseDataProvider with ChangeNotifier {
           );
           if (!context.mounted) return;
           data.created_at!.isEmpty ? null : await fetchChickenHouseDataFromLocal(context, date: data.created_at!);
-          notifyListeners();
         }
       }
       notifyListeners();
