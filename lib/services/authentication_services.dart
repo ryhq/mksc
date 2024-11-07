@@ -9,7 +9,6 @@ import 'package:mksc/storage/token_storage.dart';
 import 'package:mksc/view/chickenHouse/chicken_house_screen.dart';
 import 'package:mksc/view/laundry/laundry_screen.dart';
 import 'package:mksc/view/vegetables/vegetables_screen.dart';
-import 'package:mksc/widgets/custom_alert.dart';
 
 class AuthenticationServices {
 
@@ -100,7 +99,9 @@ class AuthenticationServices {
           const SnackBar(content: Text("Sorry, The requested resource has been temporarily moved to a new location"))
         );
       } else if(response.statusCode == 401 && context.mounted){
-        CustomAlert.showAlert(context, "Failed", "Status code : ${response.statusCode}\nMessage : ${json.decode(response.body)['message']}");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Status code : ${response.statusCode}\nMessage : ${json.decode(response.body)['message']}"))
+        );
       } else {
         debugPrint('\n\n\n🚨🚨🚨Unexpected status code: ${response.statusCode} with body: ${response.body}\n\n\n🚨🚨🚨');
         if(!context.mounted) return;
