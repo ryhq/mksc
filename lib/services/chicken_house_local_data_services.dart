@@ -218,7 +218,6 @@ class ChickenHouseLocalDataServices {
     Map<String, dynamic> dataJSON = {
       "item" : chickenHouseData.item,
       "number" : chickenHouseData.number,
-      'token': token,
       'date': date,
     };
 
@@ -229,6 +228,7 @@ class ChickenHouseLocalDataServices {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
         },
         body: json.encode(dataJSON),
       );

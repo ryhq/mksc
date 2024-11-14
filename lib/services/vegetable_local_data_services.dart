@@ -299,7 +299,6 @@ class VegetableLocalDataServices {
       "item" : vegetable.name,
       "number" : vegetable.number,
       "unit" : vegetable.unit,
-      'token': token,
       'date': date,
     };
 
@@ -310,6 +309,7 @@ class VegetableLocalDataServices {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
         },
         body: json.encode(dataJSON),
       );

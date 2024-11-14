@@ -551,6 +551,10 @@ class _ChickenHouseScreenState extends State<ChickenHouseScreen> {
   }
 
   void syncData() async {
+    int data = Provider.of<ChickenHouseDataProvider>(context, listen: false).chickenHouseLocalDataStatus;
+    if (data == 0) {
+      return;
+    }
     setState(() {
       isSyncing = true;
     });

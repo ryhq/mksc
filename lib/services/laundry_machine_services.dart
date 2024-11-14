@@ -79,8 +79,9 @@ class LaundryMachineServices {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
         },
-        body: json.encode({'camp': camp, 'circle': circle, 'token': token, 'machineType': machineType,})
+        body: json.encode({'camp': camp, 'circle': circle, 'machineType': machineType,})
       );
       debugPrint("\n\n\n👉👉👉Response status code ${response.statusCode}");
       debugPrint("\n\n\n👉👉👉Response body ${response.body}");
@@ -162,8 +163,9 @@ class LaundryMachineServices {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
         },
-        body: json.encode({'camp': camp, 'circle': circle, 'token': token, 'machineType': machineType, 'date': date})
+        body: json.encode({'camp': camp, 'circle': circle, 'machineType': machineType, 'date': date})
       );
       debugPrint("\n\n\n👉👉👉Response status code ${response.statusCode}");
       debugPrint("\n\n\n👉👉👉Response body ${response.body}");

@@ -87,8 +87,9 @@ class VegetablesServices {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
         },
-        body: json.encode({'date': date, 'token': token})
+        body: json.encode({'date': date,})
       );
 
       if (response.statusCode == 200) {
@@ -204,8 +205,9 @@ class VegetablesServices {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
         },
-        body: json.encode({'number': number, 'token': token, 'unit': unit})
+        body: json.encode({'number': number, 'unit': unit})
       );
       
       if (response.statusCode == 200) {
@@ -313,8 +315,9 @@ class VegetablesServices {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
         },
-        body: json.encode({'number': number, 'token': token, 'unit': unit, 'date' : date, 'item' : item})
+        body: json.encode({'number': number, 'unit': unit, 'date' : date, 'item' : item})
       );
 
       if (response.statusCode == 200) {

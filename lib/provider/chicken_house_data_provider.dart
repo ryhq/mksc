@@ -190,7 +190,10 @@ class ChickenHouseDataProvider with ChangeNotifier {
       // First fetch data from the server.
       if (!context.mounted) return;
       
-      List<ChickenHouseData> chickenHouseData7DaysList = await ChickenHouseDataServices.fetchChickenHouseData7Days(context);
+      List<ChickenHouseData> chickenHouseData7DaysList = await ChickenHouseDataServices.fetchChickenHouseData7Days(
+        context,
+        token: token
+      );
 
       debugPrint("\n\n\n👉👉👉.......................Fetched chicken House Data in past Seven (07) Days.......................\n\n\n");
 

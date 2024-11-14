@@ -30,8 +30,9 @@ class ChickenHouseDataServices {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
         },
-        body: json.encode({'date': date, 'token': token}),
+        body: json.encode({'date': date,}),
       );
 
       debugPrint("Response status code ${response.statusCode}");
@@ -61,7 +62,11 @@ class ChickenHouseDataServices {
     }
   }
 
-  static Future<List<ChickenHouseData>> fetchChickenHouseData7Days(BuildContext context,) async{    
+  static Future<List<ChickenHouseData>> fetchChickenHouseData7Days(
+    BuildContext context,{
+      required String token,
+    }
+  ) async{    
 
     // Check for network connection and internet access
     bool isConnected = await HandleException.checkConnectionAndInternetWithToast();
@@ -71,7 +76,14 @@ class ChickenHouseDataServices {
     }
     try {
       
-      final response = await http.get(Uri.parse(MKSCUrls.chicken7DaysUrl));
+      final response = await http.get(
+        Uri.parse(MKSCUrls.chicken7DaysUrl),
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
 
       debugPrint("Response status code ${response.statusCode}");
 
@@ -100,14 +112,21 @@ class ChickenHouseDataServices {
     }
   }
 
-  static Future<ChickenHouseData> saveChickenHouseData(BuildContext context, {required String item, required int number, required String token, required String date}) async{
+  static Future<ChickenHouseData> saveChickenHouseData(
+    BuildContext context, 
+    {
+      required String item, 
+      required int number, 
+      required String token, 
+      required String date
+    }
+  ) async{
     
     bool internetConnection = await HandleException.checkConnectionAndInternetWithToast();
     
     Map<String, dynamic> dataJSON = {
       "item" : item,
       "number" : number,
-      'token': token,
       'date': date
     };
 
@@ -120,6 +139,7 @@ class ChickenHouseDataServices {
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
           },
           body: json.encode(dataJSON),
         );
@@ -226,7 +246,6 @@ class ChickenHouseDataServices {
     Map<String, dynamic> dataJSON = {
       "item" : item,
       "number" : number,
-      'token': token,
     };
 
     try {
@@ -236,6 +255,7 @@ class ChickenHouseDataServices {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
         },
         body: json.encode(dataJSON),
       );
