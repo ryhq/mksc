@@ -328,6 +328,10 @@ class _VegetablesScreenState extends State<VegetablesScreen> {
   }
   
   Future<void> syncData() async {
+    int dataCount = Provider.of<VegetableProvider>(context, listen: false).vegetableLocalDataStatus;
+    if (dataCount == 0) {
+      return;
+    }
     setState(() {
       isSyncing = true;
     });

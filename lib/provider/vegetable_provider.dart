@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mksc/model/vegetable.dart';
@@ -318,7 +317,7 @@ class VegetableProvider with ChangeNotifier{
                 context
               );
 
-              break;
+              return;
             }
           }
 

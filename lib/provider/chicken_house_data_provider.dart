@@ -259,7 +259,7 @@ class ChickenHouseDataProvider with ChangeNotifier {
 
               notifyListeners();
               dataExists = true;
-              break;
+              return;
             }
           }
 

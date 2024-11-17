@@ -218,7 +218,10 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
         email: email, 
         passwordCode: passwordCodeController.text
       );
-    
+
+      if (!context.mounted) {
+        return;
+      }
       setState(() {
         _continueClicked = false;
       });

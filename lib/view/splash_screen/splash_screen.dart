@@ -96,8 +96,6 @@ class _SplashScreenState extends State<SplashScreen> {
       log = "Database initialization state : ${mksc.isOpen}";
     });
 
-    debugPrint("\n\n\n🌐🌐🌐 Check  🛜🛜🛜 Connectivity : 📶📶📶");
-    
     setState(() {
       log = "Checking Connectivity...";
     });
@@ -118,6 +116,7 @@ class _SplashScreenState extends State<SplashScreen> {
       connectivityResult.contains(ConnectivityResult.vpn)
     ) {
       try {
+
         final bool isInternetConnected = await initiatialServices.checkInternetConnectionBool();
 
         if (isInternetConnected) {
@@ -125,11 +124,9 @@ class _SplashScreenState extends State<SplashScreen> {
           setState(() {
             log = "Fetching Theme...";
           });
-          await Provider.of<ThemeProvider>(context, listen: false).setPrimaryColorFromNet();
-          await Future.delayed(const Duration(milliseconds: 1700));
-          debugPrint("\n\n\nTheme.of(context).colorScheme.primary\n👉👉👉Primary color : ${Theme.of(context).colorScheme.primary}");
-          debugPrint("\n\n\nProvider.of<ThemeProvider>(context, listen: false).primaryColor\n👉👉👉Primary color : ${Provider.of<ThemeProvider>(context, listen: false).primaryColor}");
-          Provider.of<ThemeProvider>(context, listen: false).setPrimaryColor(Theme.of(context).colorScheme.primary);
+
+          await _initializeAppPrimaryColory();
+
           setState(() {
             log = "Primary color : ${Provider.of<ThemeProvider>(context, listen: false).primaryColor}";
           });
@@ -140,7 +137,7 @@ class _SplashScreenState extends State<SplashScreen> {
             log = "Initializing Vegetable garden...";
           });
           
-          await Provider.of<VegetableProvider>(context, listen: false).fetchVegetableBaseData(context);
+          await _initializeVegetableGardern();
         }
 
       } catch (e) {
@@ -163,12 +160,33 @@ class _SplashScreenState extends State<SplashScreen> {
     });
     
     await Future.delayed(const Duration(milliseconds: 3000));
+    
+    _goHome();
+  }
 
+  void _goHome() {
     Navigator.pushAndRemoveUntil(
       context, 
       MaterialPageRoute(builder: (context) => const MKSCHome(),), 
       (Route<dynamic> route) => false
     );
+  }
+
+  Future<void> _initializeVegetableGardern() async {
+    await Provider.of<VegetableProvider>(context, listen: false).fetchVegetableBaseData(context);
+  }
+
+  Future<void> _initializeAppPrimaryColory() async {
+    
+    await Provider.of<ThemeProvider>(context, listen: false).setPrimaryColorFromNet();
+    
+    await Future.delayed(const Duration(milliseconds: 1700));
+
+    _setPrimaryColor();
+  }
+
+  void _setPrimaryColor() {
+    Provider.of<ThemeProvider>(context, listen: false).setPrimaryColor(Theme.of(context).colorScheme.primary);
   }
 
   @override
