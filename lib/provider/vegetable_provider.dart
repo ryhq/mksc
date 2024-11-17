@@ -310,6 +310,14 @@ class VegetableProvider with ChangeNotifier{
                 ),
               );
               dataExists = true;
+
+              // Deleting from the local storage incase of conflict
+
+              VegetableLocalDataServices.deleteVegetableData(
+                vegetable: local,
+                context
+              );
+
               break;
             }
           }

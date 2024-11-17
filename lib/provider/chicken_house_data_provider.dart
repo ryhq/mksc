@@ -251,6 +251,12 @@ class ChickenHouseDataProvider with ChangeNotifier {
                 _chickenHouseDataLocalList[index] = data.copyWith(isConflict: true);
               }
 
+              // Deleting from the local storage incase of conflict
+
+              ChickenHouseLocalDataServices.deleteChickenHouseData(
+                context, chickenHouseData: data
+              );
+
               notifyListeners();
               dataExists = true;
               break;
