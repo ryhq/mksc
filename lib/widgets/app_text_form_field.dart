@@ -11,6 +11,8 @@ class AppTextFormField extends StatefulWidget {
   final String? Function(String?)? validator;
   final TextEditingController? textEditingController;
   final List<TextInputFormatter>? inputFormatters;
+  final TextStyle? hintStyle;
+  final TextStyle? style;
   const AppTextFormField({
     super.key,
     required this.hintText,
@@ -21,7 +23,9 @@ class AppTextFormField extends StatefulWidget {
     this.readOnly = false,
     this.onChanged,
     this.validator,
-    this.inputFormatters
+    this.inputFormatters, 
+    this.style,
+    this.hintStyle
   });
 
   @override
@@ -79,7 +83,7 @@ class _AppTextFormFieldState extends State<AppTextFormField> {
           borderRadius: BorderRadius.circular(21.0)
         ),
         hintText: widget.hintText,
-        hintStyle: Theme.of(context).textTheme.bodyMedium,
+        hintStyle: widget.hintStyle ?? Theme.of(context).textTheme.bodyMedium,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
         border: const OutlineInputBorder(),
         prefixIcon: Container(
@@ -126,7 +130,7 @@ class _AppTextFormFieldState extends State<AppTextFormField> {
           color: Theme.of(context).colorScheme.primary),
         ) : null
       ),
-      style: Theme.of(context).textTheme.bodyMedium,
+      style: widget.style ?? Theme.of(context).textTheme.bodyMedium,
     );
   }
 }

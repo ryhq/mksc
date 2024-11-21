@@ -5,7 +5,6 @@ import 'package:mksc/model/menu.dart';
 import 'package:mksc/model/other_dish.dart';
 import 'package:mksc/provider/menu_provider.dart';
 import 'package:mksc/provider/theme_provider.dart';
-import 'package:mksc/view/menu_screen/portion%20widget/dish_image_section.dart';
 import 'package:mksc/view/menu_screen/portion%20widget/portion_section.dart';
 import 'package:mksc/widgets/ball_pulse_indicator.dart';
 import 'package:mksc/widgets/shimmer_widgets.dart';
@@ -151,38 +150,38 @@ class _PortionConfigurationState extends State<PortionConfiguration> {
         
                   detailedMenu.portions.isEmpty ? const SizedBox() : const PortionSection(),
 
-                  if (detailedMenu.image.isNotEmpty) ...[
-                    const SizedBox(height: 8.0,),
+                  // if (detailedMenu.image.isNotEmpty) ...[
+                  //   const SizedBox(height: 8.0,),
                     
-                    const DishImageSection()
-                  ]else...[
-                    const SizedBox(height: 21.0,),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Dish Image Unavailable",
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.error,
-                          ),
-                        ),
-                        const SizedBox(height: 8.0,),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: SizedBox(
-                            width: MediaQuery.of(context).size.width,
-                            child: Icon(
-                              Icons.image_not_supported,
-                              size: 50,
-                              color: Theme.of(context).colorScheme.error,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ]
+                  //   const DishImageSection()
+                  // ]else...[
+                  //   const SizedBox(height: 21.0,),
+                  //   Column(
+                  //     mainAxisAlignment: MainAxisAlignment.center,
+                  //     crossAxisAlignment: CrossAxisAlignment.center,
+                  //     children: [
+                  //       Text(
+                  //         "Dish Image Unavailable",
+                  //         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  //           fontWeight: FontWeight.bold,
+                  //           color: Theme.of(context).colorScheme.error,
+                  //         ),
+                  //       ),
+                  //       const SizedBox(height: 8.0,),
+                  //       Padding(
+                  //         padding: const EdgeInsets.all(8.0),
+                  //         child: SizedBox(
+                  //           width: MediaQuery.of(context).size.width,
+                  //           child: Icon(
+                  //             Icons.image_not_supported,
+                  //             size: 50,
+                  //             color: Theme.of(context).colorScheme.error,
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ]
                 ]
               ]else...[
                 SizedBox(

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:mksc/model/detailed_menu.dart';
 import 'package:mksc/model/portion.dart';
 import 'package:mksc/provider/menu_provider.dart';
+import 'package:mksc/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
 
 class PortionSection extends StatefulWidget {
@@ -39,7 +40,8 @@ class _PortionSectionState extends State<PortionSection> {
                 "Number of Pax",
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
-              Expanded(
+              Flexible(
+                flex: 3,
                 child: TextFormField(
                   controller: paxController,
                   keyboardType: const TextInputType.numberWithOptions(decimal: false, signed: false),
@@ -65,7 +67,9 @@ class _PortionSectionState extends State<PortionSection> {
                       updatePax(1);
                     }
                   },
-                  style: Theme.of(context).textTheme.bodyLarge,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    fontSize: Provider.of<ThemeProvider>(context).fontSize + 14
+                  ),
                   decoration: InputDecoration(
                     enabledBorder: const OutlineInputBorder(
                       borderSide: BorderSide.none
@@ -74,7 +78,11 @@ class _PortionSectionState extends State<PortionSection> {
                       borderSide: BorderSide.none
                     ),
                     hintText: "123",
-                    hintStyle: Theme.of(context).textTheme.bodyLarge,
+                    hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      fontFamily: 'Mono',
+                      color: Colors.grey[400],
+                      fontSize: Provider.of<ThemeProvider>(context).fontSize + 14
+                    ),
                     hintTextDirection: TextDirection.rtl,
                   ),
                 ),

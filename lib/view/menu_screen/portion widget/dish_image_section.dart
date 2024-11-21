@@ -16,7 +16,33 @@ class _DishImageSectionState extends State<DishImageSection> {
   Widget build(BuildContext context) {
     DetailedMenu detailedMenu = Provider.of<MenuProvider>(context, listen: true).detailedMenu;
 
-    return Column(
+    return detailedMenu.image.isEmpty ? Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          "Dish Image Unavailable",
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.error,
+          ),
+        ),
+        const SizedBox(height: 8.0,),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: Icon(
+              Icons.image_not_supported,
+              size: 50,
+              color: Theme.of(context).colorScheme.error,
+            ),
+          ),
+        ),
+      ],
+    )
+    :
+    Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

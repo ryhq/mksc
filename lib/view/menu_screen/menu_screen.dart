@@ -6,6 +6,7 @@ import 'package:mksc/model/other_dish.dart';
 import 'package:mksc/provider/menu_provider.dart';
 import 'package:mksc/provider/theme_provider.dart';
 import 'package:mksc/view/menu_screen/menu_video_screen.dart';
+import 'package:mksc/view/menu_screen/portion%20widget/dish_image_section.dart';
 import 'package:mksc/view/menu_screen/portion_configuration.dart';
 import 'package:mksc/view/menu_screen/recipe_part.dart';
 import 'package:provider/provider.dart';
@@ -36,7 +37,7 @@ class _MenuScreenState extends State<MenuScreen> {
 
     return Scaffold(
       body: DefaultTabController(
-        length: 2,
+        length: 3,
         child: Scaffold(
           appBar: AppBar(
             automaticallyImplyLeading: true,
@@ -80,6 +81,13 @@ class _MenuScreenState extends State<MenuScreen> {
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white)
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10.0),
+                  child: Text(
+                    'Dish Image',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white)
+                  ),
+                ),
               ],
             ),
             centerTitle: true,
@@ -101,7 +109,11 @@ class _MenuScreenState extends State<MenuScreen> {
           body: TabBarView(
             children: [
               PortionConfiguration(menu: widget.menu),
-              RecipePart(menu: widget.menu)
+              RecipePart(menu: widget.menu),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: DishImageSection(),
+              )
             ]
           ),
         )

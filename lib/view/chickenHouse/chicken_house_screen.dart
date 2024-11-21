@@ -295,6 +295,15 @@ class _ChickenHouseScreenState extends State<ChickenHouseScreen> {
                                           obscureText: false,
                                           textInputType: TextInputType.number,
                                           textEditingController: dataController,
+
+                                          hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                            color: Colors.grey[400],
+                                            fontSize: Provider.of<ThemeProvider>(context).fontSize + 14
+                                          ),
+
+                                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                            fontSize: Provider.of<ThemeProvider>(context).fontSize + 14
+                                          ),
                                           onChanged: (value) {
                                             // Check if the input is a positive integer
                                             if (value.isNotEmpty && int.tryParse(value) != null && int.parse(value) > 0) {
