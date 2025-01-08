@@ -1,23 +1,42 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:mksc/model/auth_token.dart';
 
 class TokenStorage {
   // Create an instance of FlutterSecureStorage to handle secure storage operations
   final FlutterSecureStorage _storedToken = const FlutterSecureStorage();
 
   // Store token securely
-  Future<void> saveToken({required String tokenKey, required String token}) async {
+  Future<void> saveToken({
+    required String tokenKey, 
+    required AuthToken authToken,
+  }) async {
 
-    debugPrint("\n\n\n ️‍🔥️‍🔥️‍🔥️‍🔥 Saving Token  with $tokenKey as key : $token\n\n\n");
+    debugPrint("\n\n\n ️‍🔥️‍🔥️‍🔥️‍🔥 Saving Token  with $tokenKey as key : ${authToken.token}\n\n\n");
+
+    debugPrint("\n\n\n ️‍🔥️‍🔥️‍🔥️‍🔥 Expires on ${authToken.expireAt}\n\n\n");
+
+    // Combine token and expiry into a single JSON string
+    String tokenData = jsonEncode({
+      'token': authToken.token,
+      'expires_at': authToken.expireAt.toIso8601String(),
+    });
 
     // This method stores the token securely using Flutter Secure Storage.
-    await _storedToken.write(key: tokenKey, value: token);
+    await _storedToken.write(key: tokenKey, value: tokenData);
   }
 
   // Retrieve token asynchronously
-  Future<String?> getToken({required String tokenKey}) async {
+  Future<AuthToken> getToken({required String tokenKey}) async {
+
+    String authTokenString = await _storedToken.read(key: tokenKey) ?? "";
+
     // This method retrieves the stored token.
-    return await _storedToken.read(key: tokenKey);
+    AuthToken authToken = authTokenString.isEmpty ? AuthToken.empty() : AuthToken.fromJson(jsonDecode(authTokenString));
+
+    return authToken;
   }
 
   // Delete token
@@ -27,19 +46,28 @@ class TokenStorage {
   }
 
   // Retrieve  token synchronously (not truly synchronous but simplifies usage)
-  Future<String?> getTokenSync({required String tokenKey}) async {
+  Future<AuthToken> getTokenSync({required String tokenKey}) async {
     // This method retrieves the stored  token and handles the Future internally.
     // This is still an async method and returns a Future.
-    String? token = await _storedToken.read(key: tokenKey);
+
+    String authTokenString = await _storedToken.read(key: tokenKey) ?? "";
+
+    // This method retrieves the stored token.
+    AuthToken authToken = authTokenString.isEmpty ? AuthToken.empty() : AuthToken.fromJson(jsonDecode(authTokenString));
     // Return the retrieved token or null if not found
-    return token;
+    return authToken;
   }
 
   // Retrieve token synchronously as a direct String
-  Future<String> getTokenDirect({required String tokenKey}) async {
+  Future<AuthToken> getTokenDirect({required String tokenKey}) async {
     // This method retrieves the stored  token and handles the Future internally.
-    String? token = await _storedToken.read(key: tokenKey);
     // Return the retrieved token or an empty string if not found
-    return token ?? '';
+
+    String authTokenString = await _storedToken.read(key: tokenKey) ?? "";
+
+    // This method retrieves the stored token.
+    AuthToken authToken = authTokenString.isEmpty ? AuthToken.empty() : AuthToken.fromJson(jsonDecode(authTokenString));
+
+    return authToken;
   }
 }

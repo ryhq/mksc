@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mksc/provider/theme_provider.dart';
+import 'package:mksc/navigator_key.dart';
+import 'package:mksc/providers/theme_provider.dart';
 import 'package:mksc/storage/token_storage.dart';
-import 'package:mksc/view/home/mksc_home.dart';
+import 'package:mksc/views/home/mksc_home.dart';
 import 'package:provider/provider.dart';
 
 class LogOutActionButton extends StatelessWidget {
@@ -22,8 +23,7 @@ class LogOutActionButton extends StatelessWidget {
     
         await tokenStorage.deleteToken(tokenKey: categoryTitle);
     
-        Navigator.pushAndRemoveUntil(
-          context, 
+        navigatorKey.currentState?.pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const MKSCHome(),), 
           (Route<dynamic> route) => false
         );

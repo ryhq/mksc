@@ -1,12 +1,14 @@
 class Vegetable {
   final int id;
-  final int? tempId; // This id changes daily based on the data collected per day
+  // This id changes daily based on the data collected per day
+  final int? tempId; 
   final String name;
   final String image;
   final String? number;
   final String? camp;
   final String? unit;
-  final bool offline;
+  final bool isLocal;
+  final bool isConflict;
   final String? created_at;
   final String? updatedAt;
 
@@ -18,7 +20,8 @@ class Vegetable {
     required this.number, 
     required this.camp, 
     required this.unit,
-    this.offline = false,
+    this.isLocal = false,
+    this.isConflict = false,
     required this.created_at,
     required this.updatedAt,
   });
@@ -47,7 +50,11 @@ class Vegetable {
       'image': image,
       'number': number,
       'camp': camp,
+      'isLocal': isLocal,
+      'isConflict': isConflict,
       'unit': unit,
+      'created_at': created_at,
+      'updatedAt': updatedAt
     };
   }
 
@@ -59,7 +66,8 @@ class Vegetable {
     String? number,
     String? camp,
     String? unit,
-    bool? offline,
+    bool? isLocal,
+    bool? isConflict,
     String? created_at,
     String? updatedAt
   }) {
@@ -71,7 +79,8 @@ class Vegetable {
       number: number ?? this.number,
       camp: camp ?? this.camp,
       unit: unit ?? this.unit,
-      offline: offline ?? this.offline,
+      isLocal: isLocal ?? this.isLocal,
+      isConflict: isConflict ?? this.isConflict,
       created_at: created_at ?? this.created_at,
       updatedAt: updatedAt ?? this.updatedAt
     );
@@ -86,7 +95,8 @@ class Vegetable {
       number: "",
       camp: "",
       unit: "",
-      offline: false,
+      isLocal: false,
+      isConflict: false,
       created_at: "",
       updatedAt: "",
     );

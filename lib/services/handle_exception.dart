@@ -9,7 +9,11 @@ import 'package:mksc/services/initiatial_services.dart';
 import 'package:mksc/widgets/custom_alert.dart';
 
 class HandleException {
-  static void handleExceptions({required Exception exception, required BuildContext context, required String location}) {
+  static void handleExceptions({
+    required Exception exception, 
+    required BuildContext context, 
+    required String location
+  }) {
     // Log the exception for debugging purposes
     debugPrint("🚨 Exception caught: $exception");
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mksc/provider/theme_provider.dart';
+import 'package:mksc/providers/theme_provider.dart';
 import 'package:provider/provider.dart';
 
 class AppCircularProgressIndicator extends StatelessWidget {

@@ -5,9 +5,12 @@ class AppTextFormField extends StatefulWidget {
   final String hintText;
   final IconData iconData;
   final bool obscureText;
+  final bool autofocus;
   final bool readOnly;
+  final bool enabled;
   final TextInputType textInputType;
   final Function(String)? onChanged;
+  final GestureTapCallback? onTap;
   final String? Function(String?)? validator;
   final TextEditingController? textEditingController;
   final List<TextInputFormatter>? inputFormatters;
@@ -21,11 +24,14 @@ class AppTextFormField extends StatefulWidget {
     required this.textInputType,
     this.textEditingController,
     this.readOnly = false,
+    this.enabled = true,
+    this.autofocus = false,
     this.onChanged,
     this.validator,
-    this.inputFormatters, 
-    this.style,
-    this.hintStyle
+    this.onTap,
+    this.inputFormatters,
+    this.hintStyle,
+    this.style
   });
 
   @override
@@ -56,11 +62,14 @@ class _AppTextFormFieldState extends State<AppTextFormField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      autofocus: widget.autofocus,
       focusNode: _focusNode,
       controller: widget.textEditingController,
       onChanged: widget.onChanged,
       validator: widget.validator,
+      onTap: widget.onTap,
       readOnly: widget.readOnly,
+      enabled: widget.enabled,
       keyboardType: widget.textInputType,
       textInputAction: TextInputAction.done,
       obscureText: showPassword ? false : widget.obscureText,
@@ -84,7 +93,8 @@ class _AppTextFormFieldState extends State<AppTextFormField> {
         ),
         hintText: widget.hintText,
         hintStyle: widget.hintStyle ?? Theme.of(context).textTheme.bodyMedium,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+        contentPadding: const EdgeInsets.symmetric(vertical: 21),
+        // contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
         border: const OutlineInputBorder(),
         prefixIcon: Container(
           height: 50.0,

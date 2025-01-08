@@ -1,46 +1,55 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:mksc/provider/camp_provider.dart';
-import 'package:mksc/provider/chicken_house_data_provider.dart';
-import 'package:mksc/provider/greeting_provider.dart';
-import 'package:mksc/provider/internet_connection_provider.dart';
-import 'package:mksc/provider/laundry_machine_provider.dart';
-import 'package:mksc/provider/menu_provider.dart';
-import 'package:mksc/provider/menu_type_provider.dart';
-import 'package:mksc/provider/theme_provider.dart';
-import 'package:mksc/provider/vegetable_provider.dart';
-import 'package:mksc/view/splash_screen/splash_screen.dart';
+import 'package:mksc/navigator_key.dart';
+import 'package:mksc/providers/camp_provider.dart';
+import 'package:mksc/providers/chicken_house_provider.dart';
+import 'package:mksc/providers/greeting_provider.dart';
+import 'package:mksc/providers/internet_connection_provider.dart';
+import 'package:mksc/providers/laundry_machine_provider.dart';
+import 'package:mksc/providers/menu_provider.dart';
+import 'package:mksc/providers/menu_type_provider.dart';
+import 'package:mksc/providers/theme_provider.dart';
+import 'package:mksc/providers/vegetable_provider.dart';
+import 'package:mksc/views/splash_screen/splash_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-void main(List<String> args) async {
+void main(List<String> args) {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+
+  // Check if the platform is Android or iOS (use native SQLite) or desktop (use FFI SQLite)
+  if (
+    kIsWeb || defaultTargetPlatform == TargetPlatform.linux || 
+    defaultTargetPlatform == TargetPlatform.macOS || 
+    defaultTargetPlatform == TargetPlatform.windows
+  ) {
+    sqfliteFfiInit(); // Initialize FFI for Linux/macOS/Windows
+    databaseFactory = databaseFactoryFfi; // Set the FFI database factory
+  } else {
+    // Use the default SQLite database factory for Android/iOS
+  }
+  
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   FlutterNativeSplash.remove(); 
+
   runApp(
     MultiProvider(
       providers: [
-        // Theme Provider
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        // Chicken House Data Provider 
-        ChangeNotifierProvider(create: (_) => ChickenHouseDataProvider()),
-        // Greeting Provider
         ChangeNotifierProvider(create: (_) => GreetingProvider()),
-        // Camp Provider
-        ChangeNotifierProvider(create: (_) => CampProvider()),
-        // Menu Type Provider
-        ChangeNotifierProvider(create: (_) => MenuTypeProvider()),
-        // Menu Provider
-        ChangeNotifierProvider(create: (_) => MenuProvider()),
-        // Vegetable Provider
-        ChangeNotifierProvider(create: (_) => VegetableProvider()),
-        // Laundry Machine Provider
-        ChangeNotifierProvider(create: (_) => LaundryMachineProvider()),
-        // Internet Connection Provider
         ChangeNotifierProvider(create: (_) => InternetConnectionProvider()),
+        ChangeNotifierProvider(create: (_) => ChickenHouseProvider()),
+        ChangeNotifierProvider(create: (_) => VegetableProvider()),
+        ChangeNotifierProvider(create: (_) => CampProvider()),
+        ChangeNotifierProvider(create: (_) => MenuTypeProvider()),
+        ChangeNotifierProvider(create: (_) => MenuProvider()),
+        ChangeNotifierProvider(create: (_) => LaundryMachineProvider()),
       ],
       child: const MKSC(),
     )
   );
+
 }
 
 class MKSC extends StatelessWidget {
@@ -48,10 +57,12 @@ class MKSC extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ThemeProvider themeProvider = Provider.of<ThemeProvider>(context,);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'MKSC',
-      theme: Provider.of<ThemeProvider>(context, listen: true).themeData,
+      navigatorKey: navigatorKey,
+      theme: themeProvider.getThemeData(context),
       home: const SplashScreen(),
     );
   }

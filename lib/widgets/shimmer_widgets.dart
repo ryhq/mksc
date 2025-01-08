@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:mksc/utils/color_utility.dart';
+import 'package:mksc/utilities/color_utility.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ShimmerWidgets extends StatelessWidget {
@@ -29,7 +29,7 @@ class ShimmerWidgets extends StatelessWidget {
                     width: MediaQuery.of(context).size.width,
                     height: randomHeight, // Apply the random height here
                     child: Shimmer.fromColors(
-                      baseColor: ColorUtils.calculateSecondaryColor(primaryColor: Theme.of(context).colorScheme.primary),
+                      baseColor: ColorUtility.calculateSecondaryColorWithAlpha(primaryColor: Theme.of(context).colorScheme.primary, alpha: 90),
                       highlightColor: Colors.grey[100]!,
                       child: Container(
                         color: Colors.white,

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:mksc/provider/theme_provider.dart';
+import 'package:mksc/providers/theme_provider.dart';
 import 'package:provider/provider.dart';
 
 class Button extends StatefulWidget {
@@ -58,6 +58,7 @@ class _ButtonState extends State<Button> with SingleTickerProviderStateMixin {
   }
   @override
   Widget build(BuildContext context) {
+    
     return GestureDetector(
       onTap:widget.onTap,
       child: widget.danger! || !widget.vibrate! ?
@@ -88,6 +89,8 @@ class _ButtonState extends State<Button> with SingleTickerProviderStateMixin {
               child: Center(
                 child: Text(
                   widget.title,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white)
                 ),
               ),
