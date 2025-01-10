@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:mksc/model/vegetable.dart';
 import 'package:photo_view/photo_view.dart';
@@ -13,6 +15,7 @@ class VegetableImageSection extends StatefulWidget {
 class _VegetableImageSectionState extends State<VegetableImageSection> {
   @override
   Widget build(BuildContext context) {
+    final isLocalImage = widget.vegetable.image.startsWith('/'); // Local paths usually start with "/"
     return 
     widget.vegetable.image.isNotEmpty ?
 
@@ -34,7 +37,7 @@ class _VegetableImageSectionState extends State<VegetableImageSection> {
                 child: PhotoView(
                   minScale: PhotoViewComputedScale.contained,
                   maxScale: PhotoViewComputedScale.covered * 2,
-                  imageProvider: NetworkImage(widget.vegetable.image,),
+                  imageProvider: isLocalImage ? FileImage(File(widget.vegetable.image)) : NetworkImage(widget.vegetable.image,),
                   heroAttributes: PhotoViewHeroAttributes(tag: widget.vegetable.image + widget.vegetable.name),
                   backgroundDecoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.9)
@@ -49,8 +52,8 @@ class _VegetableImageSectionState extends State<VegetableImageSection> {
         tag: widget.vegetable.image + widget.vegetable.name,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Image.network(
-            widget.vegetable.image, 
+          child: Image(
+            image: isLocalImage ? FileImage(File(widget.vegetable.image)) : NetworkImage(widget.vegetable.image) as ImageProvider,
             width: 140,
             height: 140,
             loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {

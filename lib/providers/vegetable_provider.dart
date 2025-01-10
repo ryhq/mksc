@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mksc/model/auth_token.dart';
@@ -10,6 +12,9 @@ import 'package:mksc/services/initiatial_services.dart';
 import 'package:mksc/services/vegetable/vegetable_local_data_services.dart';
 import 'package:mksc/services/vegetable/vegetable_online_data_services.dart';
 import 'package:mksc/storage/token_storage.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:http/http.dart' as http;
+
 
 class VegetableProvider with ChangeNotifier{
   InitiatialServices initiatialServices = InitiatialServices();
@@ -658,9 +663,44 @@ class VegetableProvider with ChangeNotifier{
     List<Vegetable> vegetableList = await VegetableOnlineDataServices.fetchVegetableData(
       context : context
     );
+
+    // Clear existing data
     await VegetableLocalDataServices.deleteAllVegetableBaseData();
+
     for (var vegetable in vegetableList) {
-      await VegetableLocalDataServices.saveVegetableBaseData(vegetable: vegetable);
+      // Download and save the image locally
+
+      final localImagePath = await downloadAndSaveImageLocally(vegetable.image, vegetable.name);
+
+      // Save the vegetable data, including the local image path
+      await VegetableLocalDataServices.saveVegetableBaseData(
+        vegetable: vegetable.copyWith(
+          image: localImagePath ?? vegetable.image
+        )
+      );
+
+      debugPrint("${vegetable.name} online image URL ${vegetable.image} local image path $localImagePath");
     }
   }
+
+  Future<String?> downloadAndSaveImageLocally(String imageUrl, String fileName) async {
+  try {
+    final directory = await getApplicationSupportDirectory();
+    final filePath = '${directory.path}/$fileName.png';
+
+    // Check if the file already exists
+    if (File(filePath).existsSync()) return filePath;
+
+    // Download the image
+    final response = await http.get(Uri.parse(imageUrl));
+    if (response.statusCode == 200) {
+      final file = File(filePath);
+      await file.writeAsBytes(response.bodyBytes);
+      return filePath;
+    }
+  } catch (e) {
+    debugPrint("Failed to download image: $e");
+  }
+  return null; // Return null if download failed
+}
 }
